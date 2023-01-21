@@ -10,7 +10,7 @@ const path = require('path');
 const { Server } = require("socket.io");
 const app = require("express")();
 
-//var server = require('http').createServer(app)
+var server = require('http').createServer(app)
 const globalUsers = require("./resources/traficBus");
 const PORT = 443;
 require("dotenv").config()

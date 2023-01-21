@@ -36,9 +36,6 @@ const {
   ENTRANCE_PORT,
 
 } = process.env
-app.listen(ENTRANCE_PORT, () => {
-  console.log(`Front rodando na porta ${ENTRANCE_PORT}`);
-})
 
 db.on("open", () => {
   console.log("Conectado ao mongo pelo ENTRANCE SERVICE! ");

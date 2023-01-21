@@ -30,17 +30,17 @@ serviceEndpoints:
   httpbin:
     url: 'http://0.0.0.0:443'
   authService:
-    url: 'http://localhost:3004'
+    url: 'http://localhost:5000'
   qrcodeService:
-    url: 'http://localhost:3006'
+    url: 'http://localhost:6000'
   adminService:
-    url: 'http://localhost:3002'
+    url: 'http://localhost:3000'
   frontService:
-    url: 'http://localhost:3003'
+    url: 'http://localhost:4000'
   crudService:
-    url: 'http://localhost:3001'
+    url: 'http://localhost:7000'
   entranceService:
-    url: 'http://locahost:3005'
+    url: 'http://locahost:8000'
 policies:
   - basic-auth
   - cors

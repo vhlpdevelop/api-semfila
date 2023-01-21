@@ -40,7 +40,7 @@ serviceEndpoints:
   crudService:
     url: 'http://localhost:3001'
   entranceService:
-    url: 'http://locahost:3007'
+    url: 'http://locahost:3005'
 policies:
   - basic-auth
   - cors

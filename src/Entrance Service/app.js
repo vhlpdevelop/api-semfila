@@ -15,7 +15,7 @@ const globalUsers = require("./resources/traficBus");
 const PORT = 443;
 require("dotenv").config()
 const {createWebhook} = require('./config/gerenciaNet.config')
-/*
+
 const httpsOptions = {
   cert: fs.readFileSync('/etc/letsencrypt/live/api-semfila.api-semfila.online/fullchain.pem'), // Certificado fullchain do dominio
   key: fs.readFileSync('/etc/letsencrypt/live/api-semfila.api-semfila.online/privkey.pem'), // Chave privada do domínio
@@ -24,12 +24,12 @@ const httpsOptions = {
   requestCert: true,
   rejectUnauthorized: false, //Mantenha como false para que os demais endpoints da API não rejeitem requisições sem MTLS
 };
-*/
+
 app.use(cors());
 app.use(helmet());
 app.use(mongoSanitize())
 app.disable('x-powered-by')
-//var server = require("https").createServer(httpsOptions, app);
+var server = require("https").createServer(httpsOptions, app);
 app.use(bodyParser.json({limit: '30mb'}));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 const {

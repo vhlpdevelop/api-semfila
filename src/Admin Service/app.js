@@ -12,7 +12,6 @@ app.use(mongoSanitize())
 app.disable('x-powered-by')
 app.use(bodyParser.json({limit: '30mb'}));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
-const {createWebhook} = require('./config/gerenciaNet.config')
 const {
     ADMIN_PORT,
 
@@ -20,9 +19,6 @@ const {
 
 app.listen(ADMIN_PORT, () => {
   console.log(`ADMIN SERVICE rodando na porta ${ADMIN_PORT}`);
-  createWebhook().then((output) => {
-    console.log('webhook created.', output)
-  })
 })
 db.on("open", () => {
   console.log("Conectado ao mongo pelo ADMIN SERVICE! ");

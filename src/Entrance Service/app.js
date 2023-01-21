@@ -85,7 +85,7 @@ app.post("/webhook/pix*", (req, res) => {
   }
   res.send({ ok: 1 })
 });
-/*
+
 const io = require("socket.io")(server, {
   cors: {
     origins: [],
@@ -146,4 +146,4 @@ io.sockets.on("connection", (socket) => { //Caso usuario não receba qrcode deve
 });
 app.set("socketio", io);
 
-*/
+

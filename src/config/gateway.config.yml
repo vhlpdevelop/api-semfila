@@ -1,0 +1,122 @@
+http:
+  port: 443
+admin:
+  port: 9876
+  host: localhost
+apiEndpoints:
+  api:
+    host: localhost
+    paths: '/ip'
+  auth:
+    host: localhost
+    paths: ['/auth','/auth/*']
+  qrcode:
+    host: localhost
+    paths: ['/qrcode','/qrcode/*']
+  admin:
+    host: localhost
+    path: ['/admin', '/admin/*']
+  front:
+    host: localhost
+    path: ['/frontService', '/frontService/*']
+  crud:
+    host: localhost
+    path: ['/crud', '/crud/*']
+  entrance:
+    host: localhost
+    path: ['/webhook', '/webhook/*', '/payment', '/payment/*']
+  
+serviceEndpoints:
+  httpbin:
+    url: 'http://0.0.0.0:443'
+  authService:
+    url: 'http://localhost:3004'
+  qrcodeService:
+    url: 'http://localhost:3006'
+  adminService:
+    url: 'http://localhost:3002'
+  frontService:
+    url: 'http://localhost:3003'
+  crudService:
+    url: 'http://localhost:3001'
+  entranceService:
+    url: 'http://locahost:3030'
+policies:
+  - basic-auth
+  - cors
+  - expression
+  - key-auth
+  - log
+  - proxy
+  - rate-limit
+pipelines:
+  default:
+    apiEndpoints:
+      - api
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+    # - key-auth:
+      - proxy:
+          - action:
+              serviceEndpoint: httpbin
+              changeOrigin: true
+  authPipeline:
+    apiEndpoints:
+      - auth
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+    # - key-auth:
+      - proxy:
+          - action:
+              serviceEndpoint: authService
+              changeOrigin: true
+  qrcodePipeline:
+    apiEndpoints:
+      - qrcode
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+    # - key-auth:
+      - proxy:
+          - action:
+              serviceEndpoint: qrcodeService
+              changeOrigin: true
+  adminPipeline:
+    apiEndpoints:
+      - admin
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+    # - key-auth:
+      - proxy:
+          - action:
+              serviceEndpoint: adminService
+              changeOrigin: true
+  frontPipeline:
+    apiEndpoints:
+      - front
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+    # - key-auth:
+      - proxy:
+          - action:
+              serviceEndpoint: frontService
+              changeOrigin: true
+  crudPipeline:
+    apiEndpoints:
+      - crud
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+    # - key-auth:
+      - proxy:
+          - action:
+              serviceEndpoint: crudService
+              changeOrigin: true
+  entrancePipeline:
+    apiEndpoints:
+      - entrance
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+    # - key-auth:
+      - proxy:
+          - action:
+              serviceEndpoint: entranceService
+              changeOrigin: true

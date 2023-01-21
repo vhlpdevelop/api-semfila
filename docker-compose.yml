@@ -1,0 +1,36 @@
+version: '3.4'
+
+services:
+    appone:
+        container_name: appOne
+        build: .
+        restart: always
+        volumes:
+          - .:/usr/src/APP_ONE
+        working_dir: /usr/src/app/APP_ONE
+        env_file:
+            - .env
+        ports:
+            - ${APP_PORT}:${APP_PORT}
+        command: npm run start
+    apptwo:
+        container_name: appTwo
+        build: .
+        restart: always
+        volumes:
+          - .:/usr/src/APP_TWO
+        working_dir: /usr/src/APP_TWO
+        env_file:
+            - .env
+        ports:
+            - ${APP_SECOND_PORT}:${APP_SECOND_PORT}
+        command: npm run start
+    nginx:
+        image: nginx:latest
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf:ro
+        depends_on:
+            - appone
+            - apptwo
+        ports:
+            - "8080:8080"

@@ -89,10 +89,11 @@ const io = require("socket.io")(server, {
   },
 });
 
-server.listen(ENTRANCE_PORT, "0.0.0.0", () => {
+server.listen(ENTRANCE_PORT, () => {
   console.log(`Servidor rodando na porta ${ENTRANCE_PORT}`);
   createWebhook().then((output) => {
-    console.log('webhook created.', output)
+    
+    console.log('webhook created. not')//,output)
   })
 
 });

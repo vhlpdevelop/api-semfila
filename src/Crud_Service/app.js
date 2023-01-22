@@ -28,29 +28,29 @@ db.on("error", (err) => {
 });
 
 
-app.get('/crud/teste', (req,res) => {
+app.get('/teste', (req,res) => {
   return res.send('funfou!')
 })
 
 //cardapio
 const cardapio = require("./routes/cardapio.route");
-app.use("/crud/cardapio", cardapio);
+app.use("/cardapio", cardapio);
 //Categoria
 const categoria = require("./routes/categoria.route");
-app.use("/crud/categoria", categoria);
+app.use("/categoria", categoria);
 
 //ITEM
 const item = require("./routes/item.route");
-app.use("/crud/item", item);
+app.use("/item", item);
 
 //Store
 const store = require("./routes/store.route");
-app.use("/crud/store", store);
+app.use("/store", store);
 
 //Pedidos
 const pedido = require("./routes/pedidos.route");
-app.use("/crud/pedidos", pedido);
+app.use("/pedidos", pedido);
 
 //Financeiro
 const financeiro = require("./routes/financeiro.route")
-app.use("/crud/financeiro", financeiro)
+app.use("/financeiro", financeiro)

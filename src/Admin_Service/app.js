@@ -27,7 +27,7 @@ db.on("error", (err) => {
   console.log(err);
 });
 const admin = require('./routes/admin.route')
-app.get("/admin/adminService", () => {
+app.get("/adminService", () => {
   console.log("encontrou")
 })
-app.use("/admin", admin)
+app.use("/", admin)

@@ -28,4 +28,4 @@ db.on("error", (err) => {
 });
 
 const login = require('./routes/auth.route')
-app.use("/auth", login)
+app.use("/", login)

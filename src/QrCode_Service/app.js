@@ -27,4 +27,4 @@ db.on("error", (err) => {
   console.log(err);
 });
 const qrcode = require('./routes/qrcode.route')
-app.use("/qrcode", qrcode)
+app.use("/", qrcode)

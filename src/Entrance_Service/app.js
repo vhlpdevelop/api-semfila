@@ -25,46 +25,13 @@ db.on("open", () => {
 db.on("error", (err) => {
   console.log(err);
 });
-
+app.listen(ENTRANCE_PORT, () => {
+  console.log(`ENTRACE SERVICE rodando na porta ${ENTRANCE_PORT}`);
+})
 //Pagamentos
-const { QrcodeReturner, QrCodeReSend } = require ( "./controllers/pagamento.controllers");
 const payment = require("./routes/payment.route");
 
-app.use("/payment", payment);
-
-
-
-
-app.post("/webhook", (request, response) => {
-  // Verifica se a requisição que chegou nesse endpoint foi autorizada
-  console.log("Entrou aqui 1")
-  if (request.client.authorized) { 
-      response.status(200).end();
-  } else {
-      response.status(401).end();
-  }
-});
-
-app.post("/webhook/pix*", (req, res) => {
-  console.log("WEB HOOK RECEBIDO ")
-  
-  const {pix} = req.body
-  if (!req.client.authorized) {
-    return res.status(401).send('Invalid client certificate.');
-  }
-  if(pix){
-    console.log("Foi pago e entrou aqui")
-    for (const order of pix) {
-      let aux = {
-        object: order.txid
-      }
-      req.aux = aux
-      QrcodeReturner(req)
-    }
-  }
-  res.send({ ok: 1 })
-});
-
+app.use("/", payment);
 
 
 

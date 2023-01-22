@@ -29,4 +29,4 @@ db.on("error", (err) => {
 });
 
 const front = require('./routes/frontService.route')
-app.use("/frontService", front)
+app.use("/", front)

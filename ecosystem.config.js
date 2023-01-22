@@ -14,6 +14,10 @@ module.exports = {
         script: "./src/Crud_Service/app.js",
     },
     {
+        name: "QrCode Service",
+        script: "./src/QrCode_Service/app.js",
+    },
+    {
         name: "Entrance Service",
         script: "./src/Entrance_Service/app.js",
     },

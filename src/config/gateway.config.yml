@@ -1,5 +1,17 @@
-http:
-  port: 443
+https: 
+    port: 4444,
+    tls: 
+      default: 
+        key: /etc/letsencrypt/live/api-semfila.api-semfila.online/privkey.pem
+        cert: /etc/letsencrypt/live/api-semfila.api-semfila.online/fullchain.pem
+        ca: ["./certs/chain-pix-prod.crt"]
+      
+    
+    options: 
+      "requestCert": true,
+      "rejectUnauthorized": true
+  
+  
 admin:
   port: 9876
   host: localhost

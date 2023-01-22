@@ -54,7 +54,7 @@ app.use('/auth', (req, res, next) => LoginServiceProxy(req, res, next));
 app.use('/qrcode', (req, res, next) => QrCodeServiceProxy(req, res, next));
 app.use('/crud', (req, res, next) => CrudServiceProxy(req, res, next));
 app.use('/payment', (req, res, next) => EntranceServiceProxy(req, res, next));
-const { QrcodeReturner, QrCodeReSend } = require ( "./Entrance Service/controllers/pagamento.controllers");
+const { QrcodeReturner, QrCodeReSend } = require ( "./Entrance_Service/controllers/pagamento.controllers");
 
 app.post("/webhook", (request, response) => {
   // Verifica se a requisição que chegou nesse endpoint foi autorizada

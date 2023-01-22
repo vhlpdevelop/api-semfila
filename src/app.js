@@ -2,7 +2,7 @@ const express = require('express');
 const httpProxy = require('express-http-proxy');
 const app = express();
 require("dotenv").config()
-
+const globalUsers = require("./resources/traficBus");
 const {createWebhook} = require('./config/gerenciaNet.config')
 const fs = require("fs");
 const path = require('path');

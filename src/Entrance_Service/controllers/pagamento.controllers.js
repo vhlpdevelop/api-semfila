@@ -12,7 +12,7 @@ const storeModel = require("../../models/store.model");
 const Encrypter = require("./methods/Encrypter");
 const qr = require("qr-image");
 const globalUsers = require("../resources/traficBus");
-const mailer = require("../../config/NodeMailer.config");
+const mailer = require("../../modules/NodeMailer.config");
 const mailerconfig = require("../../config/NodeMailer.config");
 const moment = require('moment');
 

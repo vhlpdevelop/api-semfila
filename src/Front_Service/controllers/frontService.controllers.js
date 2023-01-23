@@ -4,7 +4,7 @@ const menuModel = require("../../models/menu.model")
 const menu_category_model = require("../../models/menu_category.model");
 const itemsModel = require("../../models/items.model");
 const categoryModel = require("../../models/category.model");
-const ratingModel = require("./../models/rating.model")
+const ratingModel = require("../../models/rating.model")
 module.exports = {
     async search(req,res){
        

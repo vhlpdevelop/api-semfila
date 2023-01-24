@@ -107,7 +107,6 @@ module.exports = {
         });
       }
       if (response.type.trim() === "Common") {
-        console.log("Aqui")
         return res.send({
           success: false,
           msg: "Por favor, entre com uma conta empresarial",
@@ -206,8 +205,20 @@ module.exports = {
           path: "/usuarios",
           icon: "mdi-account",
         });
+        obj_builder_one =  [{ title: "Cardapio" }, { title: "QR CODE" }, { title: "Financeiro" }, {title: "Logistica"}]
+        obj_builder_two = [
+          { title: "QR CODE" },
+          { title: "Cardapio" },
+          { title: "Loja"},
+          { title: "Financeiro" },
+          { title: "Usuários" },
+          { title: "Logistica"},
+          { title: "Minha Conta" },
+        ]
       }
       if (userStore.type === 'Func') {
+        obj_builder_one = [{ title: "QR CODE" }, {title: "Minha Conta"}]
+        obj_builder_two = [{ title: "QR CODE" }, {title: "Minha Conta"}]
         rotas.push({
           title: "Leitor QR CODE",
           path: "/qrcode",
@@ -239,6 +250,8 @@ module.exports = {
         token: datatoken,
         stores: store,
         company_name: company.company_name,
+        obj_builder_one: menu,
+        obj_builder_two: menuTwo,
         user: {
           name: response.name,
           user: response.email,

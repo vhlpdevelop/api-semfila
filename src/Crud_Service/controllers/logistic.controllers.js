@@ -1,5 +1,5 @@
-const financialModel = require("../../models/menu.model");
-const sell_registry = require("../../models/menu_category.model");
+const financialModel = require("../../models/financial.model");
+const sell_registry = require("../../models/sell_registry.model");
 module.exports = {
     async fetchLogistic(req, res) { //Busca logistica da sell_registry utilizando datas
         if (!req.authenticate) {
@@ -37,8 +37,7 @@ module.exports = {
                 return res.send({
                     success: true,
                     obj: response,
-                    finance: financy,
-                    msg: "",
+                    msg: "Items carregados",
                 });
 
 
@@ -98,8 +97,7 @@ module.exports = {
                 return res.send({
                     success: true,
                     obj: response,
-                    finance: financy,
-                    msg: "",
+                    msg: "Items de hoje carregados.",
                 });
 
 

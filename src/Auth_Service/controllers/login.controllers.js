@@ -154,6 +154,8 @@ module.exports = {
       //console.log("Store->")
       //console.log(store);
       const rotas = [];
+      var obj_builder_one = []
+      var obj_builder_two = []
       if (userStore.type === "dono") {
         rotas.push({
           title: "Cardapio",
@@ -205,8 +207,8 @@ module.exports = {
           path: "/usuarios",
           icon: "mdi-account",
         });
-        obj_builder_one =  [{ title: "Cardapio" }, { title: "QR CODE" }, { title: "Financeiro" }, {title: "Logistica"}]
-        obj_builder_two = [
+         obj_builder_one =  [{ title: "Cardapio" }, { title: "QR CODE" }, { title: "Financeiro" }, {title: "Logistica"}]
+         obj_builder_two = [
           { title: "QR CODE" },
           { title: "Cardapio" },
           { title: "Loja"},
@@ -217,7 +219,7 @@ module.exports = {
         ]
       }
       if (userStore.type === 'Func') {
-        obj_builder_one = [{ title: "QR CODE" }, {title: "Minha Conta"}]
+         obj_builder_one = [{ title: "QR CODE" }, {title: "Minha Conta"}]
         obj_builder_two = [{ title: "QR CODE" }, {title: "Minha Conta"}]
         rotas.push({
           title: "Leitor QR CODE",
@@ -250,8 +252,8 @@ module.exports = {
         token: datatoken,
         stores: store,
         company_name: company.company_name,
-        obj_builder_one: menu,
-        obj_builder_two: menuTwo,
+        obj_builder_one: obj_builder_one,
+        obj_builder_two: obj_builder_two,
         user: {
           name: response.name,
           user: response.email,

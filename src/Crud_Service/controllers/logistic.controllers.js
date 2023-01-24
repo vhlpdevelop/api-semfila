@@ -59,7 +59,7 @@ module.exports = {
             });
         }
     },
-    async fetchLogisticToday(req, res) { //Busca logistica da sell_registry utilizando datas
+    async fetchLogisticToday(req, res) { //Busca logistica da sell_registry utilizando data de Hoje e amanhã
         if (!req.authenticate) {
             return res.json({
                 success: false,

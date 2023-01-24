@@ -51,6 +51,10 @@ app.use("/store", store);
 const pedido = require("./routes/pedidos.route");
 app.use("/pedidos", pedido);
 
+//Logistica
+const logistic = require("./routes/logistic.route");
+app.use("/logistic", logistic);
+
 //Financeiro
 const financeiro = require("./routes/financeiro.route")
 app.use("/financeiro", financeiro)

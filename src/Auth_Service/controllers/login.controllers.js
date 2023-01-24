@@ -187,6 +187,11 @@ module.exports = {
           icon: "mdi-finance",
         });
         rotas.push({
+          title: "Logistica",
+          path: "/logistica",
+          icon: "mdi-table-cog",
+        });
+        rotas.push({
           title: "Minha Conta",
           path: "/conta",
           icon: "mdi-account",

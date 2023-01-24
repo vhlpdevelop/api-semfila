@@ -1,17 +1,17 @@
 const sell_registry = require("../../models/sell_registry.model");
 const financialModel = require("../../models/financial.model");
 const drawReqModel = require("../../models/drawReq.model");
+
+
 module.exports = {
   async getNFE(req,res){
     console.log(req.body)
     if (!req.authenticate) {
-      res.json({
+      
+      return res.json({
         success: false,
         msg: "Usuário não tem permissão."
       });
-      return;
-
-      //Receber a data, converte-la em ISO e pesquisar os pedidos feitos.
     }
     var dataIni = new Date(req.body.dataIni).toUTCString();
     var dataFim = new Date(req.body.dataFim).toUTCString();
@@ -34,6 +34,13 @@ module.exports = {
 
   },
   async withdrawRequest(req, res) {
+    if (!req.authenticate) {
+      
+      return res.json({
+        success: false,
+        msg: "Usuário não tem permissão."
+      });
+    }
     const company = req.company_id; //VAI PRECISAR ALTERAR QUANDO CRIAR A FUNÇÃO DE LOJAS DUPLAS
     const store_id = req.stores[0]._id; //
     try {
@@ -153,17 +160,22 @@ module.exports = {
     }
   },
   async fetch(req, res) {
-    const company = req.company_id; //Ainda não sei pra que usar o id do usuario
+    if (!req.authenticate) {
+      
+      return res.json({
+        success: false,
+        msg: "Usuário não tem permissão."
+      });
+    }
+    const company = req.company_id; 
     console.log(company)
     const store_id = req.stores[0]._id;
     try {
       const response = await sell_registry.find({ store_id: store_id });
-      //console.log(response);
+    
       if (response) {
-        //console.log(response)
-        //buscar financial
+ 
         const financy = await financialModel.findOne({ company_id: company });
-        //console.log(financy)
         if (financy) {
           return res.send({
             success: true,
@@ -194,6 +206,13 @@ module.exports = {
     }
   },
   async changeState(req, res) {
+    if (!req.authenticate) {
+      
+      return res.json({
+        success: false,
+        msg: "Usuário não tem permissão."
+      });
+    }
     const state = req.body.itemData;
     const company = req.company_id;
 

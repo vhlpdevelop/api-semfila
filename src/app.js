@@ -44,29 +44,24 @@ const QrCodeServiceProxy = httpProxy('http://localhost:'+QRCODE_PORT);
 const CrudServiceProxy = httpProxy('http://localhost:'+CRUD_PORT);
 const EntranceServiceProxy = httpProxy('http://localhost:'+ENTRANCE_PORT);
 
-
-
-app.get('/', (req, res) => res.send('Hello Gateway API'));
-
 app.use('/admin', (req, res, next) => AdminServiceProxy(req, res, next));
-
+/*
 app.use('/payment',(req, res, next) => { //TESTE
   const allowedOrigins = ['https://semfila.app', 'https://semfila.tech'];
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
-       res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Origin', origin);
   }
-  //res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:8020');
   res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   return EntranceServiceProxy(req, res, next);
 });
-
+*/
 app.use('/frontService', (req, res, next) => FrontServiceProxy(req, res, next));
 app.use('/auth', (req, res, next) => LoginServiceProxy(req, res, next));
 app.use('/qrcode', (req, res, next) => QrCodeServiceProxy(req, res, next));
 app.use('/crud', (req, res, next) => CrudServiceProxy(req, res, next));
-//app.use('/payment', (req, res, next) => EntranceServiceProxy(req, res, next));
+app.use('/payment', (req, res, next) => EntranceServiceProxy(req, res, next));
 const { QrcodeReturner, QrCodeReSend } = require ( "./Entrance_Service/controllers/pagamento.controllers");
 
 app.post("/webhook", (request, response) => {

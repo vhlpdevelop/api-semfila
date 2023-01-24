@@ -81,8 +81,8 @@ module.exports = {
                     success: false,
                     msg: "Não encontramos os dados da loja",
                 });
-            var dataIni = new Date(req.body.today.toDateString()).toUTCString();
-            var aux_fim = new Date(req.body.today.toDateString())
+            var dataIni = new Date(new Date(req.body.today).toDateString()).toUTCString();
+            var aux_fim = new Date(new Date(req.body.today).toDateString())
             aux_fim.setDate(aux_fim.getDate() + 1);
             var dataFim = new Date(aux_fim).toUTCString();
             console.log(dataIni)

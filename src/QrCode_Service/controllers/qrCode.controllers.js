@@ -368,7 +368,7 @@ module.exports = {
   },
   async updateQrCode(req, res) {
     const itemUpdate = req.body;
-
+    console.log("Entrou aqui")
     //Buscar qrcode para validar
     try {
       //Verificar primeiro se QrCode é dessa loja mesmo.
@@ -390,18 +390,23 @@ module.exports = {
             msg: "QrCode em processo de Reembolso.",
           });
         }
+        console.log("Flag 1")
         if (qrcode.quantity >= itemUpdate.quantity && itemUpdate.quantity > 0) {
           //Verificar se é maior q 0
 
           //ALTERAR QRCODE E SALVAR NO REGISTRO
           qrcode.quantity = qrcode.quantity - itemUpdate.quantity;
-          if(qrcode.quantity < 0) //Nunca se sabe
+          if(qrcode.quantity < 0){//Nunca se sabe
+            console.log("Flag 2")
           return res.send({
             obj: null,
             success: false,
             msg: "Erro 712 - Qtd negativa.",
           });
+          } 
+          
           if (qrcode.quantity === "0") {
+            console.log("Flag 3")
             qrcode.state = false;
           }
 
@@ -425,13 +430,15 @@ module.exports = {
             quantity: itemUpdate.quantity,
             total: aux_price,
           };
-
+          console.log("Flag 4")
           const sellRegistry = await sellRegistryModel.create(objeto_registro);
           if (sellRegistry) {
+            console.log("Flag 5")
             const qrcodeUpdater = await QrCodesModel.findByIdAndUpdate(
               qrcode._id,
               qrcode
             );
+            console.log("Flag 6")
             if (qrcodeUpdater) {
               console.log("Foi");
               return res.send({
@@ -474,6 +481,7 @@ module.exports = {
           });
         }
       } else {
+        console.log("Flag 7")
         return res.send({
           obj: null,
           success: false,

@@ -23,8 +23,12 @@ module.exports = {
                     success: false,
                     msg: "Não encontramos os dados da loja",
                 });
-            var dataIni = new Date(req.body.dataIni).toUTCString();
-            var dataFim = new Date(req.body.dataFim).toUTCString();
+            var aux_ini = new Date(req.body.dataIni).toUTCString();
+            aux_ini.setUTCHours(0,0,0,0);
+            var dataIni = new Date(aux_ini).toUTCString();
+            var aux_fim = new Date(new Date(req.body.dataFim).toDateString())
+            aux_fim.setUTCHours(23,59,59,999);
+            var dataFim = new Date(aux_fim).toUTCString();
 
             const response = await sell_registry.find({
                 store_id: store_id,

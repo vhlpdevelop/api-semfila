@@ -331,13 +331,46 @@ module.exports = {
             msg: "QrCode de outro cardapio",
           });
         }
-        if (QrCode) {
+        if (QrCode) { //Verificar se qrcode esta expirado ou não
           if (QrCode.state) {
-            return res.send({
-              obj: QrCode,
-              success: true,
-              msg: "QrCode Encontrado",
-            });
+            if (!QrCode.item.promotion) {
+              //SE NAO ESTIVER, SOMAR COM 6 MESES
+              var d = new Date(QrCode.createdAt);
+              var seconds = d.getTime() / 1000;
+              var expire = seconds + 6 * 730 * 3600;
+              var date_expire = new Date(expire * 1000);
+              //checagem de 6 meses
+              if (Date.now() > date_expire) { //Pode utilizar
+                return res.send({
+                  obj: QrCode,
+                  success: true,
+                  msg: "QrCode Encontrado",
+                });
+              } else { //Expirou
+                return res.send({
+                  obj: null,
+                  success: false,
+                  msg: "QrCode está Expirado",
+                });
+              }
+            }else{
+              var teste = new Date(QrCode.createdAt)
+              if(teste > Date.now){ //Pode utilizar
+                return res.send({
+                  obj: QrCode,
+                  success: true,
+                  msg: "QrCode Encontrado",
+                });
+              }else{ //Expirou
+                return res.send({
+                  obj: null,
+                  success: false,
+                  msg: "QrCode está Expirado",
+                });
+              }
+            }
+            
+            
           } else {
             return res.send({
               obj: null,
@@ -368,7 +401,7 @@ module.exports = {
   },
   async updateQrCode(req, res) {
     const itemUpdate = req.body;
-    console.log("Entrou aqui")
+   
     //Buscar qrcode para validar
     try {
       //Verificar primeiro se QrCode é dessa loja mesmo.
@@ -390,7 +423,7 @@ module.exports = {
             msg: "QrCode em processo de Reembolso.",
           });
         }
-        console.log("Flag 1")
+        
         if (qrcode.quantity >= itemUpdate.quantity && itemUpdate.quantity > 0) {
           //Verificar se é maior q 0
 
@@ -406,7 +439,6 @@ module.exports = {
           } 
           
           if (qrcode.quantity === "0") {
-            console.log("Flag 3")
             qrcode.state = false;
           }
 
@@ -430,17 +462,17 @@ module.exports = {
             quantity: itemUpdate.quantity,
             total: aux_price,
           };
-          console.log("Flag 4")
+      
           const sellRegistry = await sellRegistryModel.create(objeto_registro);
           if (sellRegistry) {
-            console.log("Flag 5")
+           
             const qrcodeUpdater = await QrCodesModel.findByIdAndUpdate(
               qrcode._id,
               qrcode
             );
-            console.log("Flag 6")
+           
             if (qrcodeUpdater) {
-              console.log("Foi");
+              //console.log("Foi");
               return res.send({
                 obj: qrcode,
                 success: true,
@@ -481,7 +513,7 @@ module.exports = {
           });
         }
       } else {
-        console.log("Flag 7")
+        
         return res.send({
           obj: null,
           success: false,

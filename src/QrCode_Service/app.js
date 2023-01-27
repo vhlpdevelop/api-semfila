@@ -10,8 +10,8 @@ app.use(cors());
 app.use(helmet());
 app.use(mongoSanitize())
 app.disable('x-powered-by')
-app.use(bodyParser.json({limit: '30mb'}));
-app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
+app.use(bodyParser.json({ limit: '30mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '30mb' }));
 const {
     QRCODE_PORT,
 } = process.env

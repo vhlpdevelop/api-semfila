@@ -171,7 +171,7 @@ module.exports = {
     console.log(company)
     const store_id = req.stores[0]._id;
     try {
-      const response = await sell_registry.find({ store_id: store_id });
+      const response = await sell_registry.find({ store_id: store_id, draw:false });
     
       if (response) {
  

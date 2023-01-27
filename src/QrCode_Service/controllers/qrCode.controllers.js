@@ -354,8 +354,13 @@ module.exports = {
                 });
               }
             }else{
+              var d = new Date(QrCode.createdAt);
+              var seconds = d.getTime() / 1000;
+              var expire =
+                seconds +
+                parseFloat(QrCode.item.promotion_duration) * 24 * 3600;
               var teste = new Date(QrCode.createdAt)
-              if(teste > Date.now){ //Pode utilizar
+              if(d > teste){ //Pode utilizar
                 return res.send({
                   obj: QrCode,
                   success: true,

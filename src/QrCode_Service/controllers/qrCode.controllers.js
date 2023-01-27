@@ -340,7 +340,7 @@ module.exports = {
               var expire = seconds + 6 * 730 * 3600;
               var date_expire = new Date(expire * 1000);
               //checagem de 6 meses
-              if (Date.now() > date_expire) { //Pode utilizar
+              if (date_expire>Date.now()) { //Pode utilizar
                 return res.send({
                   obj: QrCode,
                   success: true,
@@ -359,8 +359,8 @@ module.exports = {
               var expire =
                 seconds +
                 parseFloat(QrCode.item.promotion_duration) * 24 * 3600;
-              var teste = new Date(QrCode.createdAt)
-              if(d > teste){ //Pode utilizar
+              var today = new Date(QrCode.createdAt)
+              if(d > today){ //Pode utilizar
                 return res.send({
                   obj: QrCode,
                   success: true,

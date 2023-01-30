@@ -433,7 +433,7 @@ module.exports = {
             res.send({
               success: true,
               msg: "Pix Gerado",
-
+              obj_pedido: pedido._id,
               obj: pixCode.data, //CODIGO PIX
             });
           }

@@ -1,7 +1,7 @@
 const sell_registry = require("../../models/sell_registry.model");
 const financialModel = require("../../models/financial.model");
 const drawReqModel = require("../../models/drawReq.model");
-
+const contractModel = require("../../models/contract.model");
 
 module.exports = {
   async getNFE(req, res) {
@@ -50,6 +50,11 @@ module.exports = {
         var value = 0;
         if (financy)
           if (financy.draw) {
+            //Trazer dados do contrato.
+            const contract = contractModel.findById({_id: financy.contract_id})
+            if(!contract){
+              return res.send({success:false, msg:"Contrato não foi localizado."})
+            }
             //PERCORRER E VERIFICAR SE O REGISTRO É SACAVEL E O VALOR
             //Verificar se a data do proximo saque está liberada.
             let aux_date = new Date(financy.next_draw)
@@ -71,17 +76,20 @@ module.exports = {
 
 
               if (value > 0) {
-                var earns = (parseFloat(value) * 0.05).toFixed(2);
+                //Utilizar o contrato para conta.
+                var tax = parseFloat(contract.tax) / 100;
+                var tax_week = parseFloat(contract.tax_week) / 100;
+                console.log(tax)
+                console.log(tax_week)
+                var earns = (parseFloat(value) * tax).toFixed(2);
                 var aux_value = value;
-                value = (parseFloat(value) - parseFloat(value) * 0.05).toFixed(2);
+                value = (parseFloat(value) - parseFloat(value) * tax).toFixed(2);
                 if (financy.draw_type === "week") {
                   earns = (
                     parseFloat(earns) +
-                    parseFloat(aux_value) * 0.01
+                    parseFloat(aux_value) * tax_week
                   ).toFixed(2);
-                  value = (parseFloat(value) - parseFloat(value) * 0.01).toFixed(
-                    2
-                  );
+                  value = (parseFloat(value) - parseFloat(value) * tax_week).toFixed(2);
                 }
 
 
@@ -101,7 +109,7 @@ module.exports = {
                   financy.last_draw = Date.now();
                   if (financy.draw_type === 'week') {
                     let aux = new Date(financy.last_draw)
-                    aux.setDate(aux.getDate() + 7)
+                    aux.setDate(aux.getDate() + parseInt(contract.days))
                     financy.next_draw = aux
                   } else {
                     let aux = new Date(financy.last_draw)
@@ -159,7 +167,7 @@ module.exports = {
       });
     }
   },
-  async fetchFinanceiroToday(req, res) {
+  async fetchFinanceiroToday(req, res) { //Traz tudo sobre o financeiro, vendas e o contrato.
     if (!req.authenticate) {
 
       return res.json({
@@ -182,6 +190,7 @@ module.exports = {
           success: false,
           msg: "Não encontramos os dados da loja",
         });
+      
       var aux_ini = new Date(new Date(req.body.today).toDateString())
       aux_ini.setUTCHours(0, 0, 0, 0);
       var dataIni = new Date(aux_ini).toUTCString();
@@ -198,12 +207,17 @@ module.exports = {
       })
 
       if (response) {
-        return res.send({
-          success: true,
-          obj: response,
-          finance: financy,
-          msg: "Dados localizados",
-        });
+        const contract = await contractModel.findById({_id: financy.contract_id})
+        if(contract){
+          return res.send({
+            success: true,
+            obj: response,
+            finance: financy,
+            contract: contract,
+            msg: "Dados localizados",
+          });
+        }
+
       } else {
         return res.send({
           success: false,
@@ -229,7 +243,6 @@ module.exports = {
         msg: "Usuário não tem permissão."
       });
     }
-    const company = req.company_id;
     const store_id = req.stores[0]._id;
     try {
       if (!req.body.dataIni || !req.body.dataFim) {
@@ -238,12 +251,7 @@ module.exports = {
           msg: "Erro. 505",
         });
       }
-      const financy = await financialModel.findOne({ company_id: company });
-      if (!financy)
-        return res.send({
-          success: false,
-          msg: "Não encontramos os dados da loja",
-        });
+
       var aux_ini = new Date(new Date(req.body.dataIni).toDateString())
       aux_ini.setUTCHours(0, 0, 0, 0);
       var dataIni = new Date(aux_ini).toUTCString();
@@ -264,7 +272,6 @@ module.exports = {
         return res.send({
           success: true,
           obj: response,
-          finance: financy,
           msg: "Dados localizados",
         });
       } else {
@@ -309,13 +316,13 @@ module.exports = {
           financy
         );
         if (updater) {
-          console.log("Ok")
+          
           return res.send({
             success: true,
             msg: "Saque atualizado",
           });
         } else {
-          console.log("nao ok")
+         
           return res.send({
             success: false,
             msg: "Erro ao atualizar o saque",

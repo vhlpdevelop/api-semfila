@@ -2,7 +2,7 @@
 const { Schema, model } = require('mongoose');
 const financial = new Schema({
         company_id: {type:String},
-        contract_id: {type:String},
+        contract_id: {type:String, default: "633f3735495e7e3f75b808ba"},
         responsible: {type:Object},
         account_number: {type:String},
         bank:{type:String},

@@ -170,12 +170,12 @@ module.exports = {
     const company = req.company_id;
     const store_id = req.stores[0]._id;
     try {
-      if (!req.body.dataIni || !req.body.dataFim) {
+      if (!req.body) {
         return res.send({
-          success: false,
-          msg: "Erro. 505",
+            success: false,
+            msg: "Erro. 505",
         });
-      }
+    }
       const financy = await financialModel.findOne({ company_id: company });
       if (!financy)
         return res.send({

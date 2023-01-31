@@ -89,8 +89,6 @@ module.exports = {
             var aux_fim = new Date(new Date(req.body.today).toDateString())
             aux_fim.setDate(aux_fim.getDate() + 1);
             var dataFim = new Date(aux_fim).toUTCString();
-            console.log(dataIni)
-            console.log(dataFim)
             const response = await sell_registry.find({
                 store_id: store_id,
                 createdAt: {

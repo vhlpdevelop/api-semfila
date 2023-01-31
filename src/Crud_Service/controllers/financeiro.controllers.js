@@ -63,7 +63,7 @@ module.exports = {
 
               for (let i = 0; i < response.length; i++) {
                 if (!response[i].cortesia) {
-                  if (response[i].draw) {
+                  if (!response[i].draw) {
                     value = parseFloat(value) + parseFloat(response[i].total);
                     response[i].draw = true;
                     await sell_registry.findByIdAndUpdate(

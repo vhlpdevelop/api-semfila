@@ -44,14 +44,15 @@ module.exports = {
     const company = req.company_id; //VAI PRECISAR ALTERAR QUANDO CRIAR A FUNÇÃO DE LOJAS DUPLAS
     const store_id = req.stores[0]._id; //
     try {
-      const response = await sell_registry.find({ store_id: store_id });
+      const response = await sell_registry.find({ store_id: store_id, draw: false });
       if (response) {
         const financy = await financialModel.findOne({ company_id: company });
         var value = 0;
         if (financy)
           if (financy.draw) {
             //Trazer dados do contrato.
-            const contract = contractModel.findById({_id: financy.contract_id})
+            const contract = await contractModel.findById({_id: financy.contract_id})
+       
             if(!contract){
               return res.send({success:false, msg:"Contrato não foi localizado."})
             }
@@ -63,14 +64,12 @@ module.exports = {
 
               for (let i = 0; i < response.length; i++) {
                 if (!response[i].cortesia) {
-                  if (!response[i].draw) {
                     value = parseFloat(value) + parseFloat(response[i].total);
                     response[i].draw = true;
                     await sell_registry.findByIdAndUpdate(
                       response[i]._id,
                       response[i]
                     );
-                  }
                 }
               }
 
@@ -79,8 +78,7 @@ module.exports = {
                 //Utilizar o contrato para conta.
                 var tax = parseFloat(contract.tax) / 100;
                 var tax_week = parseFloat(contract.tax_week) / 100;
-                console.log(tax)
-                console.log(tax_week)
+            
                 var earns = (parseFloat(value) * tax).toFixed(2);
                 var aux_value = value;
                 value = (parseFloat(value) - parseFloat(value) * tax).toFixed(2);

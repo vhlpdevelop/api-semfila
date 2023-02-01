@@ -346,6 +346,7 @@ module.exports = {
         }
         if (QrCode) { //Verificar se qrcode esta expirado ou não
           if (QrCode.state) {
+            console.log(Qrcode.item.promotion)
             if (!QrCode.item.promotion) {
               //SE NAO ESTIVER, SOMAR COM 6 MESES
               var d = new Date(QrCode.createdAt);
@@ -372,8 +373,9 @@ module.exports = {
               var expire =
                 seconds +
                 parseFloat(QrCode.item.promotion_duration) * 24 * 3600;
-              var today = new Date(expire * 1000)
-              if(d > today){ //Pode utilizar
+              var date_expire = new Date(expire * 1000)
+              console.log(date_expire)
+              if(date_expire > d){ //Pode utilizar
                 return res.send({
                   obj: QrCode,
                   success: true,

@@ -372,7 +372,7 @@ module.exports = {
               var expire =
                 seconds +
                 parseFloat(QrCode.item.promotion_duration) * 24 * 3600;
-              var today = new Date(QrCode.createdAt)
+              var today = new Date(expire * 1000)
               if(d > today){ //Pode utilizar
                 return res.send({
                   obj: QrCode,

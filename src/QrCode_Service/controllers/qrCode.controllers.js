@@ -140,6 +140,19 @@ module.exports = {
                 } else {
                   trigger = false;
                 }
+              }else{ //Checar se estiver em promoção mas invalidou.
+                var d = new Date(QrCode.createdAt);
+                var seconds = d.getTime() / 1000;
+                var expire =
+                  seconds +
+                  parseFloat(QrCode.item.promotion_duration) * 24 * 3600;
+                var date_expire = new Date(expire * 1000);
+                if (Date.now() > date_expire) {
+                  QrCode.state = false;
+                  trigger = true;
+                } else {
+                  trigger = false;
+                }
               }
             } else {
               QrCode.state = false;

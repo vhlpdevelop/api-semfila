@@ -351,7 +351,7 @@ module.exports = {
               item_name: itemChecker.item_name,
               description: itemChecker.description,
               type: itemChecker.type,
-              image_url: itemChecker.image_url,
+              //image_url: itemChecker.image_url, RETIRADO PARA DIMINUIR ESPAÇO.
               price: itemChecker.price,
               ncm: itemChecker.ncm,
               icms: itemChecker.icms,
@@ -516,7 +516,7 @@ module.exports = {
                 item_name: itemChecker.item_name,
                 description: itemChecker.description,
                 type: itemChecker.type,
-                image_url: itemChecker.image_url,
+                //image_url: itemChecker.image_url, RETIRADO PARA POUPAR ESPAÇO
                 price: itemChecker.price,
                 qtd: dados[i].qtd,
                 category_id: itemChecker.category_id,

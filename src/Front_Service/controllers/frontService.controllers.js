@@ -89,7 +89,9 @@ module.exports = {
                   var items_show = []
                   for(let y = 0; y<aux_items.length;y++){
                     if(aux_items[y].status){
+                      console.log("Aqui 1")
                       if(aux_items[y].limit_switch){
+                        console.log("Aqui 2")
                         if(aux_items[y].limit_number > 0){
                           items_show.push(aux_items[y])
                         }

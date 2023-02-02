@@ -66,6 +66,7 @@ module.exports = {
   },
   async QrcodeReturner(req, res) {
     //APENAS EMITIR SOCKET
+     console.log("ENTROU AQUI DEUS DO CÉU")
     const io = req.app.get("socketio");
     try {
       const pedido = await pedidosModel.findOne({ txid: req.aux.object });

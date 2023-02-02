@@ -78,10 +78,15 @@ module.exports = {
       for (let i = 0; i < pedido.items.length; i++) {
         console.log("Aqui")
         console.log(pedido.items[i]._id)
-        if(!limiter.limit_controller(pedido.items[i]._id)){ //Caso falhe realizar o processo de estorno e enviar email.
-          //Processo de Estorno.
+        var verify = await limiter.limit_controller(pedido.items[i]._id)
+        if(!verify.status && verify.find){ //Caso falhe realizar o processo de estorno e enviar email.
+          //Processo de Reembolso.
           withDrawer(pedido);
           return ;
+        }else{
+          if(!verify.find){ //Caso um dos items não sejam encontrados, então reembolsar.
+            withDrawLostItem(pedido)
+          }
         }
         aux_ticket = {
           item: pedido.items[i],

@@ -73,10 +73,11 @@ module.exports = {
       var aux_ticket = {};
       var dataToSend = [];
       var dataToSave = [];
-      var trigger = true;
+      
       var total = 0;
       for (let i = 0; i < pedido.items.length; i++) {
-      
+        console.log("Aqui")
+        console.log(pedido.items[i]._id)
         if(!limiter.limit_controller(pedido.items[i]._id)){ //Caso falhe realizar o processo de estorno e enviar email.
           //Processo de Estorno.
           withDrawer(pedido);

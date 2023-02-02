@@ -15,7 +15,8 @@ const globalUsers = require("../resources/traficBus");
 const mailer = require("../../modules/NodeMailer.controllers");
 const mailerconfig = require("../../config/NodeMailer.config");
 const moment = require('moment');
-
+const limiter = require("./methods/limit_control")
+const withDrawer = require("./methods/withDrawFunction")
 function AssimilateTime(time) {
   const d = new Date(time);
   moment.locale("pt-br");
@@ -65,24 +66,26 @@ module.exports = {
   },
   async QrcodeReturner(req, res) {
     //APENAS EMITIR SOCKET
-
-    console.log("===============");
-
     const io = req.app.get("socketio");
     try {
       const pedido = await pedidosModel.findOne({ txid: req.aux.object });
-      console.log(pedido);
       if (!pedido) console.log("FALHOU");
       var aux_ticket = {};
       var dataToSend = [];
       var dataToSave = [];
+      
       var total = 0;
       for (let i = 0; i < pedido.items.length; i++) {
+        if(!limiter.limit_controller(pedido.items[i]._id)){ //Caso falhe realizar o processo de estorno e enviar email.
+          //Processo de Estorno.
+          withDrawer(pedido);
+          return ;
+        }
         aux_ticket = {
           item: pedido.items[i],
           user_id: pedido.user_id,
+          user_email: pedido.user_email,
           pedido_id: pedido._id,
-       
           cortesia: pedido.cortesia,
           company_id: pedido.company_id,
           store_id: pedido.store_id,
@@ -231,7 +234,7 @@ module.exports = {
       
      }
         
-
+     
       //
       if (!aux_ticket.cortesia)
         io.to(pedido.socket)
@@ -262,6 +265,7 @@ module.exports = {
   async payPix(req, res) {
     var auth = "";
     var nome = req.body.itemData.nome;
+    var email = req.body.itemData.email;
     var cpf = req.body.itemData.cpf;
     if (req.headers.authorization) {
       //AUTH
@@ -291,6 +295,7 @@ module.exports = {
         console.log(alterar_user)
         nome = alterar_user.name;
         cpf = alterar_user.cpf;
+        email = alterar_user.email
         alterar_user = "";
         
     }
@@ -327,6 +332,15 @@ module.exports = {
             _id: dados.cart[i]._id,
           });
           if (itemChecker !== undefined) {
+            if(itemChecker.limit_switch){
+              if(itemChecker.limit_number<=0){
+                return res.send({
+                  success:false,
+                  msg: "Este item do cardapio acabou o estoque.",
+                  obj:itemChecker.item_name
+                })
+              }
+            }
             //Este item existe. Guardar ele em uma variavel diferente para não haver discrepancias nos dados.
             itemChecker.qtd = dados.cart[i].qtd;
 
@@ -418,6 +432,7 @@ module.exports = {
             const cobResponse = await reqGN.post("/v2/cob/", dataCob);
 
             pedido.txid = cobResponse.data.txid;
+            pedido.email = email
             pedido.devedor = {
               cpf: cpf,
               nome: nome

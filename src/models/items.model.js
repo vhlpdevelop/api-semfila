@@ -14,6 +14,8 @@ const item = new Schema({
   promotion: {type:Boolean},
   discount_status: {type:Boolean},
   discount_value: {type:String},
+  limit_number: {type:Number, default: 0},
+  limit_switch: {type:Boolean, default: false},
   promotion_duration: {type:String},
   destaques: {type:Boolean},
   createdAt:{ type: Date, default: Date.now },

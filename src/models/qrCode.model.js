@@ -3,6 +3,7 @@ const { Schema, model } = require('mongoose');
 const qrcode = new Schema({
   item: {type:Object},
   user_id: {type:String},
+  user_email: {type:String},
   pedido_id: {type:String},
   company_id: { type:String},
   quantity: {type:String},

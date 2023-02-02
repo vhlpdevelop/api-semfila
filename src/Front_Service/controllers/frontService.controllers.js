@@ -78,18 +78,23 @@ module.exports = {
                 _id: menu_category[i].category_id,
               });
            
-              var aux_items = "";
+              var aux_items = [];
               if (aux_cardapio) {
                 aux_items = await itemsModel.find({
                   category_id: menu_category[i].category_id.toString(),
+                  
                 });
                 if(aux_cardapio.status === true){
                   var items_show = []
                   for(let y = 0; y<aux_items.length;y++){
-                    
                     if(aux_items[y].status){
-                      items_show.push(aux_items[y])
-                      
+                      if(aux_items[y].limit_switch){
+                        if(aux_items[y].limit_number > 0){
+                          items_show.push(aux_items[y])
+                        }
+                      }else{
+                        items_show.push(aux_items[y])
+                      }
                     }
                   }
                   let aux_category = {

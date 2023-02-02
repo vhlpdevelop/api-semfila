@@ -422,7 +422,7 @@ module.exports = {
         }
 
     },
-    async withDrawAction(req, res) { //Ja marca o pedido como estornado e 
+    async withDrawAction(req, res) { //Ja marca o pedido como estornado e  reembolsa
         try {
             console.log(req.body)
             const pedido = await pedido_model.findById({ _id: req.body.pedido_id })

@@ -6,6 +6,7 @@ const pedido = new Schema({
   socket: {type:String},
   loc_id: {type:String},
   user_id: {type:String},
+  user_email: {type:String},
   devedor: {
     cpf: {type:String},
     nome: {type:String}

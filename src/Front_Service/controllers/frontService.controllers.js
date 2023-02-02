@@ -84,6 +84,7 @@ module.exports = {
                   category_id: menu_category[i].category_id.toString(),
                   
                 });
+                console.log(aux_items.limit_switch)
                 if(aux_cardapio.status === true){
                   var items_show = []
                   for(let y = 0; y<aux_items.length;y++){

@@ -76,12 +76,11 @@ module.exports = {
       var trigger = true;
       var total = 0;
       for (let i = 0; i < pedido.items.length; i++) {
-        console.log("Aqui")
+      
         if(!limiter.limit_controller(pedido.items[i]._id)){ //Caso falhe realizar o processo de estorno e enviar email.
           //Processo de Estorno.
           withDrawer(pedido);
-          trigger = false;
-          break;
+          return ;
         }
         aux_ticket = {
           item: pedido.items[i],
@@ -133,9 +132,6 @@ module.exports = {
           { _id: ticket._id },
           ticket
         );
-      }
-      if(!trigger){
-        return;
       }
       pedido.status = true; //PEDIDO FOI PAGO
       await pedidosModel.findByIdAndUpdate(pedido._id, pedido);

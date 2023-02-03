@@ -349,7 +349,7 @@ module.exports = {
                 return res.send({
                   success:false,
                   msg: itemChecker.item_name+" sobrou apenas: "+itemChecker.limit_number +"un.",
-                  obj:itemChecker.item_name
+                  obj: itemChecker._id,
                 })
               }
             }

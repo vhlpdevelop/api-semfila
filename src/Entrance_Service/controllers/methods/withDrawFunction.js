@@ -52,8 +52,8 @@ module.exports = {
 
             const reqGN = await reqGNAlready;
             const cobResponse = await reqGN.get(`/v2/cob/${pedido.txid}`);
-
-            const pix = await reqGN.put(`/v2/pix/${cobResponse.data.pix[0].endToEndId}/devolucao/${pedido.txid}`, { valor: pedido.price })
+            //valor: pedido.price
+            const pix = await reqGN.put(`/v2/pix/${cobResponse.data.pix[0].endToEndId}/devolucao/${pedido.txid}`, { valor: '0.10' })
             if(pix.data.id){
                 if (pedido.user_email) { //Caso tenha um usuario enviar um email
                     let escopo = "Infelizmente realizamos um reembolso inesperado. "

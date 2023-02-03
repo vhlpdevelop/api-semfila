@@ -58,3 +58,7 @@ app.use("/logistic", logistic);
 //Financeiro
 const financeiro = require("./routes/financeiro.route")
 app.use("/financeiro", financeiro)
+
+//Limiter
+const limiter = require("./routes/limiter.route");
+app.use("/limiter", limiter)

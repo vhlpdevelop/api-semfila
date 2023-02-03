@@ -89,7 +89,11 @@ app.post("/webhook/pix*", (req, res, next) => {
       }
       req.aux = aux
       console.log(pix)
-      QrcodeReturner(req)
+      //Só pode chamar caso for um pagamento.
+      if(!order.devolucoes){
+        QrcodeReturner(req)
+      }
+      
     }
   }
   res.send({ ok: 1 })

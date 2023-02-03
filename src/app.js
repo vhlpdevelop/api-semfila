@@ -74,7 +74,7 @@ app.post("/webhook", (request, response) => {
   }
 });
 
-app.post("/webhook/pix*", (req, res, next) => {
+app.post("/webhook/pix*", (req, res) => {
   console.log("WEB HOOK RECEBIDO ")
   
   const {pix} = req.body
@@ -94,8 +94,9 @@ app.post("/webhook/pix*", (req, res, next) => {
         console.log('Test!');
       })();
     }
+    
   }
-  res.send({ ok: 1 })
+  return res.send({ ok: 1 })
 });
 const io = require("socket.io")(server, {
   cors: {

@@ -10,10 +10,10 @@ module.exports = {
                 return { status:false, find:false};
             }
             if(item.limit_switch){ //TEM LIMITADOR
-                item.limit_number = item.limit_number - 1; //TESTA
+                item.limit_number = item.limit_number - qtd; //TESTA
                 console.log(item.limit_number)
                 item.save();
-                if(item.limit_number <=0){ //FALHA.
+                if(item.limit_number <0){ //FALHA.
                     return { status:false, find:true};
                 }
                 return {status:true} //>= 0

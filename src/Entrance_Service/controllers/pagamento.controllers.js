@@ -76,8 +76,8 @@ module.exports = {
  
       var total = 0;
       for (let i = 0; i < pedido.items.length; i++) {
-        let verify = limiter.limit_controller(pedido.items[i]._id)
-
+        let verify = limiter.limit_controller(pedido.items[i]._id, pedido.items[i].qtd)
+          console.log(verify)
           if(!verify.status && verify.find){ //Caso falhe realizar o processo de estorno e enviar email.
             //Processo de Reembolso.
             console.log("Aqui")

@@ -11,6 +11,7 @@ module.exports = {
 
             const reqGN = await reqGNAlready;
             const cobResponse = await reqGN.get(`/v2/cob/${pedido.txid}`);
+            console.log("FLAG PEDIDO")
             console.log(pedido.price)
             await reqGN.put(`/v2/pix/${cobResponse.data.pix[0].endToEndId}/devolucao/${pedido.txid}`, { valor: '0.10' })
             if (pedido.user_email) { //Caso tenha um usuario enviar um email
@@ -37,8 +38,8 @@ module.exports = {
 
             return { success: true }
         } catch (e) {
-            console.log(e)
-            return { success: false, msg: e.message }
+            
+            return { success: false, msg: "ocorreu um erro"}
         }
     },
     async withDrawLostItem(pedido) {
@@ -75,8 +76,8 @@ module.exports = {
             }
             return { success: true }
     } catch(e) {
-        console.log(e)
-        return { success: false, msg: e.message }
+        
+        return { success: false, msg: "ocorreu um erro"}
     }
 }
 }

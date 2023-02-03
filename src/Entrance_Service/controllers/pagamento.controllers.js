@@ -444,7 +444,7 @@ module.exports = {
             const cobResponse = await reqGN.post("/v2/cob/", dataCob);
 
             pedido.txid = cobResponse.data.txid;
-            pedido.email = email
+            pedido.user_email = email
             pedido.devedor = {
               cpf: cpf,
               nome: nome

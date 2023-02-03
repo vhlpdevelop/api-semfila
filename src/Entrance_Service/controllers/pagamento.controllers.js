@@ -73,7 +73,7 @@ module.exports = {
       var aux_ticket = {};
       var dataToSend = [];
       var dataToSave = [];
- 
+      var trigger = true;
       var total = 0;
       for (let i = 0; i < pedido.items.length; i++) {
         let verify = await limiter.limit_controller(pedido.items[i]._id, pedido.items[i].qtd)
@@ -83,58 +83,64 @@ module.exports = {
             console.log("Aqui")
             let withDrawer_return = await withDrawer.withDrawPedido(pedido);
             console.log(withDrawer_return)
-            return ;
-          }       
-        aux_ticket = {
-          item: pedido.items[i],
-          user_id: pedido.user_id,
-          user_email: pedido.user_email,
-          pedido_id: pedido._id,
-          cortesia: pedido.cortesia,
-          company_id: pedido.company_id,
-          store_id: pedido.store_id,
-          store_name: pedido.store_name,
-          devedor: { 
-            nome: pedido.devedor.nome,
-            cpf: pedido.devedor.cpf
-          },
-          quantity: pedido.items[i].qtd,
-          duration: pedido.items[i].duration,
-          QrImage: "",
-          state: true,
-        };
-        
-        total = parseFloat((parseFloat(total)+parseFloat(pedido.items[i].price)).toFixed(2))
-
-        var ticket = await QrCodesModel.create(aux_ticket);
-
-        let datatoEncrypt = {
-          _id: ticket._id,
-          store_id: ticket.store_id,
-        };
-
-        let texto = Encrypter.encrypt(datatoEncrypt);
-        const code = qr.imageSync(texto, {
-          type: "png",
-          size: 10,
-        });
-
-        //console.log(code);
-        var base64data = Buffer.from(code, "binary").toString("base64");
-        //console.log(base64data);
-        ticket.QrImage = base64data;
-        //console.log(ticket.QrImage);
-
-        let object = {
-          qrcode: base64data,
-          data: ticket,
-        };
-        dataToSend.push(object);
-        dataToSave.push(ticket._id)
-        let updater = await QrCodesModel.findByIdAndUpdate(
-          { _id: ticket._id },
-          ticket
-        );
+            trigger =false;
+            break;
+          }     
+        if(trigger) {
+          aux_ticket = {
+            item: pedido.items[i],
+            user_id: pedido.user_id,
+            user_email: pedido.user_email,
+            pedido_id: pedido._id,
+            cortesia: pedido.cortesia,
+            company_id: pedido.company_id,
+            store_id: pedido.store_id,
+            store_name: pedido.store_name,
+            devedor: { 
+              nome: pedido.devedor.nome,
+              cpf: pedido.devedor.cpf
+            },
+            quantity: pedido.items[i].qtd,
+            duration: pedido.items[i].duration,
+            QrImage: "",
+            state: true,
+          };
+          
+          total = parseFloat((parseFloat(total)+parseFloat(pedido.items[i].price)).toFixed(2))
+  
+          var ticket = await QrCodesModel.create(aux_ticket);
+  
+          let datatoEncrypt = {
+            _id: ticket._id,
+            store_id: ticket.store_id,
+          };
+  
+          let texto = Encrypter.encrypt(datatoEncrypt);
+          const code = qr.imageSync(texto, {
+            type: "png",
+            size: 10,
+          });
+  
+          //console.log(code);
+          var base64data = Buffer.from(code, "binary").toString("base64");
+          //console.log(base64data);
+          ticket.QrImage = base64data;
+          //console.log(ticket.QrImage);
+  
+          let object = {
+            qrcode: base64data,
+            data: ticket,
+          };
+          dataToSend.push(object);
+          dataToSave.push(ticket._id)
+          let updater = await QrCodesModel.findByIdAndUpdate(
+            { _id: ticket._id },
+            ticket
+          );
+        }
+      }
+      if(!trigger){
+        return "Finalizado.";
       }
       pedido.status = true; //PEDIDO FOI PAGO
       await pedidosModel.findByIdAndUpdate(pedido._id, pedido);

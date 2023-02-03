@@ -18,8 +18,9 @@ module.exports = {
           });
         }
 
-        item.limit_status = req.body.switch //FALSE OU TRUE;
-        item.markModified('limit_status');
+        item.limit_switch = req.body.switch //FALSE OU TRUE;
+       
+        item.markModified('limit_switch');
         item.save(); //SALVAR
         return res.send({
           success:true,

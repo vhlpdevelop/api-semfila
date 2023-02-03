@@ -5,7 +5,6 @@ module.exports = {
     async limit_controller(id, qtd){ //Apenas métodos de pagamento.
         try{
             const item = await itemsModel.findById({_id: id})
-            c
             if(!item){
                 return { status:false, find:false};
             }

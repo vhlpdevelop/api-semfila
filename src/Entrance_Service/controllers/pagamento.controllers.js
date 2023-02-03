@@ -73,27 +73,23 @@ module.exports = {
       var aux_ticket = {};
       var dataToSend = [];
       var dataToSave = [];
-      var trigger = true;
+ 
       var total = 0;
       for (let i = 0; i < pedido.items.length; i++) {
-         trigger = await limiter.limit_controller(pedido.items[i]._id).then( async (verify) => {
+        let verify = limiter.limit_controller(pedido.items[i]._id)
+        
           if(!verify.status && verify.find){ //Caso falhe realizar o processo de estorno e enviar email.
             //Processo de Reembolso.
             let withDrawer_return = await withDrawer.withDrawPedido(pedido);
             console.log(withDrawer_return)
-            return false;
+            return ;
           }else{
             if(!verify.find){ //Caso um dos items não sejam encontrados, então reembolsar.
               let withDrawer_return = await withDrawer.withDrawLostItem(pedido)
               console.log(withDrawer_return)
-              return false;
+              return ;
             }
-          }
-          return true
-        })
-        if(!trigger){
-          return ;
-        }
+          }        
         aux_ticket = {
           item: pedido.items[i],
           user_id: pedido.user_id,
@@ -346,7 +342,7 @@ module.exports = {
           });
           if (itemChecker !== undefined) {
             if(itemChecker.limit_switch){
-              if(itemChecker.limit_number<=0){
+              if(itemChecker.limit_number - dados.cart[i].qtd <=0){
                 return res.send({
                   success:false,
                   msg: "Este item do cardapio acabou o estoque.",

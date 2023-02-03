@@ -2,7 +2,7 @@
 const itemsModel= require("../../../models/items.model")
 
 module.exports = {
-    async limit_controller(id){ //Apenas métodos de pagamento.
+    async limit_controller(id, qtd){ //Apenas métodos de pagamento.
         try{
             const item = await itemsModel.findById({_id: id})
             c

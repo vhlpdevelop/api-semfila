@@ -87,7 +87,7 @@ app.post("/webhook/pix*", (req, res, next) => {
       let aux = {
         object: order.txid
       }
-      req.aux = aux
+      req.aux = aux;
       (async () => {
         await QrcodeReturner(req)
         console.log('Test!');

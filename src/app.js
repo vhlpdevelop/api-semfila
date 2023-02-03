@@ -3,6 +3,7 @@ const httpProxy = require('express-http-proxy');
 const app = express();
 require("dotenv").config()
 const globalUsers = require("./resources/traficBus");
+const orderBus = require("./resources/orderBus")
 const {createWebhook} = require('./config/gerenciaNet.config')
 const fs = require("fs");
 const path = require('path');
@@ -85,14 +86,23 @@ app.post("/webhook/pix*", (req, res) => {
     console.log("Foi pago e entrou aqui")
     console.log(pix.length)
     for (let i =0; i<pix.length; i++) {
-      let aux = {
-        object: pix[i].txid
+      let index = orderBus.findIndex(function (order) {
+        return order === pix[i].txid
+      });
+      if(index > -1){
+        orderBus.push(pix[i]._id)
+        let aux = {
+          object: pix[i].txid
+        }
+        req.aux = aux;
+        (async () => {
+          await QrcodeReturner(req)
+          console.log('Test!');
+        })();
+      }else{
+        orderBus.splice(index, 1)
       }
-      req.aux = aux;
-      (async () => {
-        await QrcodeReturner(req)
-        console.log('Test!');
-      })();
+      
     }
     
   }

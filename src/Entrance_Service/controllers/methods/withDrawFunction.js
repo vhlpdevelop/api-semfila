@@ -2,7 +2,7 @@ const { GNRequest } = require("../../config/gerenciaNet.config");
 const mailer = require("../../../modules/NodeMailer.controllers");
 const mailerconfig = require("../../../config/NodeMailer.config");
 module.exports = {
-    async withDrawPedido(pedido) { //Reembolso pelo pedido
+    async withDrawPedido(pedido, i) { //Reembolso pelo pedido
         try {
             const reqGNAlready = GNRequest({
                 clientID: process.env.GN_CLIENT_ID,
@@ -13,17 +13,17 @@ module.exports = {
             const cobResponse = await reqGN.get(`/v2/cob/${pedido.txid}`);
             console.log("Email =>")
             console.log(pedido.user_email)
-            await reqGN.put(`/v2/pix/${cobResponse.data.pix[0].endToEndId}/devolucao/${pedido.txid}`, { valor: '0.10' })
+            await reqGN.put(`/v2/pix/${cobResponse.data.pix[0].endToEndId}/devolucao/${pedido.txid}`, { valor: '0.10' }) //ALTERAR DEPOIS
             if (pedido.user_email) { //Caso tenha um usuario enviar um email
                 let escopo = "Infelizmente realizamos um reembolso inesperado. "
-                let mensagem = "O Reembolso vindo do pedido " + pedido._id + " no valor de: R$" + valor +
-                    ". Sentimos muito, mas o Estoque de um dos itens está zerado, por isso realizamos seu reembolso. Por SemFila."
+                let mensagem = "O Reembolso vindo do pedido " + pedido._id + " no valor de: R$" + pedido.price +
+                    ". Sentimos muito, mas o Estoque do item- "+pedido.item[i].item_name+"  está zerado, por isso realizamos seu reembolso. Por SemFila."
                 mailer.sendMail(
                     {
                         to: pedido.user_email,
                         from: mailerconfig.from,
                         template: "EmailTemplateBasic",
-                        subject: "SemFila - Reembolso efetuado.",
+                        subject: "SemFila - Reembolso automático efetuado.",
                         context: { escopo, mensagem },
                     },
                     (err) => {

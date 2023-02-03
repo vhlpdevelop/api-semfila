@@ -38,7 +38,7 @@ module.exports = {
 
             return { success: true }
         } catch (e) {
-            
+            console.log(e.message)
             return { success: false, msg: "ocorreu um erro"}
         }
     },

@@ -76,6 +76,8 @@ module.exports = {
       var trigger = true;
       var total = 0;
       for (let i = 0; i < pedido.items.length; i++) {
+        console.log(pedido.items[i].item_name)
+        console.log("Loop => "+i)
         let verify = await limiter.limit_controller(pedido.items[i]._id, pedido.items[i].qtd)
           console.log(verify)
           if(!verify.status && verify.find && trigger){ //Caso falhe realizar o processo de estorno e enviar email.

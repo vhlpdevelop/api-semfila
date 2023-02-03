@@ -89,7 +89,8 @@ app.post("/webhook/pix*", (req, res) => {
       let index = orderBus.findIndex(function (order) {
         return order === pix[i].txid
       });
-      if(index > -1){
+      console.log(index)
+      if(index === -1){
         orderBus.push(pix[i]._id)
         let aux = {
           object: pix[i].txid

@@ -203,6 +203,11 @@ module.exports = {
           icon: "mdi-lightning-bolt-circle",
         });
         rotas.push({
+          title: "Limitador",
+          path: "/limitador",
+          icon: "mdi-contrast",
+        });
+        rotas.push({
           title: "Usuários",
           path: "/usuarios",
           icon: "mdi-account",
@@ -212,6 +217,7 @@ module.exports = {
           { title: "QR CODE" },
           { title: "Cardapio" },
           { title: "Loja"},
+          { title: "Limitador"},
           { title: "Financeiro" },
           { title: "Usuários" },
           { title: "Logistica"},

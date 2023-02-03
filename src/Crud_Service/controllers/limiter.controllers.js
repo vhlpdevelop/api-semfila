@@ -19,6 +19,7 @@ module.exports = {
         }
 
         item.limit_status = req.body.switch //FALSE OU TRUE;
+        item.markModified('limit_status');
         item.save(); //SALVAR
         return res.send({
           success:true,

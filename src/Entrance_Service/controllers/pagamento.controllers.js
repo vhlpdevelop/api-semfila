@@ -342,10 +342,10 @@ module.exports = {
           });
           if (itemChecker !== undefined) {
             if(itemChecker.limit_switch){
-              if(itemChecker.limit_number - dados.cart[i].qtd <=0){
+              if(itemChecker.limit_number - dados.cart[i].qtd <0){
                 return res.send({
                   success:false,
-                  msg: itemChecker.item_name+" sobrou apenas: "+itemChecker.limit_number,
+                  msg: itemChecker.item_name+" sobrou apenas: "+itemChecker.limit_number +"un.",
                   obj:itemChecker.item_name
                 })
               }

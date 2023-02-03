@@ -11,13 +11,11 @@ module.exports = {
 
             const reqGN = await reqGNAlready;
             const cobResponse = await reqGN.get(`/v2/cob/${pedido.txid}`);
-            console.log("Email =>")
-            console.log(pedido.user_email)
             await reqGN.put(`/v2/pix/${cobResponse.data.pix[0].endToEndId}/devolucao/${pedido.txid}`, { valor: '0.10' }) //ALTERAR DEPOIS
             if (pedido.user_email) { //Caso tenha um usuario enviar um email
                 let escopo = "Infelizmente realizamos um reembolso inesperado. "
                 let mensagem = "O Reembolso vindo do pedido " + pedido._id + " no valor de: R$" + pedido.price +
-                    ". Sentimos muito, mas o Estoque do item- "+pedido.item[i].item_name+"  está zerado, por isso realizamos seu reembolso. Por SemFila."
+                    ". Sentimos muito, mas o Estoque do item- "+pedido.items[i].item_name+"  está zerado, por isso realizamos seu reembolso. Por SemFila."
                 mailer.sendMail(
                     {
                         to: pedido.user_email,

@@ -83,9 +83,10 @@ app.post("/webhook/pix*", (req, res, next) => {
   }
   if(pix){
     console.log("Foi pago e entrou aqui")
-    for (const order of pix) {
+    console.log(pix.length)
+    for (let i =0; i<pix.length; i++) {
       let aux = {
-        object: order.txid
+        object: pix[i].txid
       }
       req.aux = aux;
       (async () => {

@@ -73,24 +73,27 @@ module.exports = {
       var aux_ticket = {};
       var dataToSend = [];
       var dataToSave = [];
-      
+      var trigger = true;
       var total = 0;
       for (let i = 0; i < pedido.items.length; i++) {
-        await limiter.limit_controller(pedido.items[i]._id).then( async (verify) => {
+         trigger = await limiter.limit_controller(pedido.items[i]._id).then( async (verify) => {
           if(!verify.status && verify.find){ //Caso falhe realizar o processo de estorno e enviar email.
             //Processo de Reembolso.
             let withDrawer_return = await withDrawer.withDrawPedido(pedido);
             console.log(withDrawer_return)
-            return ;
+            return false;
           }else{
             if(!verify.find){ //Caso um dos items não sejam encontrados, então reembolsar.
               let withDrawer_return = await withDrawer.withDrawLostItem(pedido)
               console.log(withDrawer_return)
-              return ;
+              return false;
             }
           }
+          return true
         })
-        
+        if(!trigger){
+          return ;
+        }
         aux_ticket = {
           item: pedido.items[i],
           user_id: pedido.user_id,

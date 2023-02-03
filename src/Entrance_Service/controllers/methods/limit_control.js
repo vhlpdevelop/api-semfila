@@ -4,9 +4,8 @@ const itemsModel= require("../../../models/items.model")
 module.exports = {
     async limit_controller(id){ //Apenas métodos de pagamento.
         try{
-            console.log(id)
             const item = await itemsModel.findById({_id: id})
-            console.log("Testando")
+            c
             if(!item){
                 return { status:false, find:false};
             }

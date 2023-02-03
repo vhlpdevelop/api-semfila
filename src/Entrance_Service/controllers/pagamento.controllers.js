@@ -66,7 +66,6 @@ module.exports = {
   },
   async QrcodeReturner(req, res) {
     //APENAS EMITIR SOCKET
-     console.log("ENTROU AQUI DEUS DO CÉU")
     const io = req.app.get("socketio");
     try {
       const pedido = await pedidosModel.findOne({ txid: req.aux.object });
@@ -77,21 +76,21 @@ module.exports = {
       
       var total = 0;
       for (let i = 0; i < pedido.items.length; i++) {
-        console.log("Aqui")
-        console.log(pedido.items[i]._id)
-        var verify = await limiter.limit_controller(pedido.items[i]._id)
-        if(!verify.status && verify.find){ //Caso falhe realizar o processo de estorno e enviar email.
-          //Processo de Reembolso.
-          let withDrawer_return = await withDrawer.withDrawPedido(pedido);
-          console.log(withDrawer_return)
-          return ;
-        }else{
-          if(!verify.find){ //Caso um dos items não sejam encontrados, então reembolsar.
-            let withDrawer_return = await withDrawer.withDrawLostItem(pedido)
+        await limiter.limit_controller(pedido.items[i]._id).then( async (verify) => {
+          if(!verify.status && verify.find){ //Caso falhe realizar o processo de estorno e enviar email.
+            //Processo de Reembolso.
+            let withDrawer_return = await withDrawer.withDrawPedido(pedido);
             console.log(withDrawer_return)
             return ;
+          }else{
+            if(!verify.find){ //Caso um dos items não sejam encontrados, então reembolsar.
+              let withDrawer_return = await withDrawer.withDrawLostItem(pedido)
+              console.log(withDrawer_return)
+              return ;
+            }
           }
-        }
+        })
+        
         aux_ticket = {
           item: pedido.items[i],
           user_id: pedido.user_id,

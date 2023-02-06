@@ -1,7 +1,7 @@
 const itemsModel = require("../../models/items.model")
 const limitModel = require("../../models/limit.model")
 module.exports = {
-  async switchLimit(req, res) {
+  async switchLimit(req, res) { //Alterar ativo ou desativo
     try {
       if (!req.authenticate) {
         return res.json({
@@ -135,5 +135,60 @@ module.exports = {
         error: e.message,
       });
     }
+  },
+  async fetchHistoricoLimit(req,res){ //Buscar historico de alteração do estoque
+    if (!req.authenticate) {
+      return res.json({
+          success: false,
+          msg: "Usuário não tem permissão."
+      });
+  }
+  try {
+      if (!req.body) {
+          return res.send({
+              success: false,
+              msg: "Erro. 605",
+          });
+      }
+ 
+      var aux_ini = new Date(new Date(req.body.dataIni).toDateString())
+      aux_ini.setUTCHours(0,0,0,0);
+      var dataIni = new Date(aux_ini).toUTCString();
+
+      var aux_fim = new Date(new Date(req.body.dataFim).toDateString())
+      aux_fim.setUTCHours(23,59,59,999);
+      var dataFim = new Date(aux_fim).toUTCString();
+
+      const response = await limitModel.find({
+          item_id: req.body.item_id,
+          createdAt: {
+              $gte: dataIni,
+              $lt: dataFim
+          }
+      })
+      if (response) {
+          return res.send({
+              success: true,
+              obj: response,
+              msg: "Histórico carregado.",
+          });
+
+
+      } else {
+          return res.send({
+              success: false,
+              obj: "",
+              msg: "Falha ao localizar",
+          });
+      }
+  } catch (e) {
+      console.log(e);
+      return res.send({
+          success: false,
+          obj: "",
+          msg: "Erro",
+          error: e.message,
+      });
+  }
   }
 };

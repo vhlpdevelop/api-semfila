@@ -113,7 +113,7 @@ module.exports = {
         let aux_limit ={
           item_id: item._id,
           limit_number: item.limit_number,
-          status:item.status,
+          status:item.limit_switch,
         }
         await limitModel.create(aux_limit)
         return res.send({

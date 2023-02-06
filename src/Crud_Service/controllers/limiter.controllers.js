@@ -104,15 +104,15 @@ module.exports = {
             msg: "Item não encontrado."
           });
         }
-        console.log(req.body)
-        item.limit = item.limit + parseInt(req.body.limit); //ADICIONA OU DIMINUI
-        item.markModified('limit')
+     
+        item.limit_number = item.limit_number + parseInt(req.body.limit); //ADICIONA OU DIMINUI
+        item.markModified('limit_number')
         item.save(); //SALVAR
 
         //Criar no Limit um update.
         let aux_limit ={
           item_id: item._id,
-          limit_number: item.limit,
+          limit_number: item.limit_number,
           status:item.status,
         }
         await limitModel.create(aux_limit)

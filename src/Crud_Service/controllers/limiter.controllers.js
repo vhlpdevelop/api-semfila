@@ -96,15 +96,15 @@ module.exports = {
           msg: "Usuário não tem permissão."
         });
       }
-      if (req.body.item._id && req.body.item.limit < 3000 &&  req.body.item.limit >= 0) {
-        const item = await itemsModel.findById({ _id: req.body.item._id }) //req.body.item = ID.
+      if (req.body._id && req.body.limit < 3000 &&  req.body.limit >= 0) {
+        const item = await itemsModel.findById({ _id: req.body._id }) //req.body.item = ID.
         if (!item) {
           return res.json({
             success: false,
             msg: "Item não encontrado."
           });
         }
-        item.limit = item.limit + req.body.item.limit; //ADICIONA OU DIMINUI
+        item.limit = item.limit + req.body.limit; //ADICIONA OU DIMINUI
         item.markModified('limit')
         item.save(); //SALVAR
 

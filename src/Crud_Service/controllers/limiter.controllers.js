@@ -96,7 +96,7 @@ module.exports = {
           msg: "Usuário não tem permissão."
         });
       }
-      if (req.body._id && req.body.limit < 3000 &&  req.body.limit >= 0) {
+      if (req.body._id && req.body.adicionar < 3000 && req.body.adicionar >=0 &&  req.body.remover >= 0 && req.body.remover < 3000) {
         const item = await itemsModel.findById({ _id: req.body._id }) //req.body.item = ID.
         if (!item) {
           return res.json({

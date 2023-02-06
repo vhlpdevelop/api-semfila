@@ -104,6 +104,7 @@ module.exports = {
             msg: "Item não encontrado."
           });
         }
+        console.log(req.body)
         item.limit = item.limit + parseInt(req.body.limit); //ADICIONA OU DIMINUI
         item.markModified('limit')
         item.save(); //SALVAR

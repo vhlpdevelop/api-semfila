@@ -17,6 +17,7 @@ const mailerconfig = require("../../config/NodeMailer.config");
 const moment = require('moment');
 const limiter = require("./methods/limit_control")
 const withDrawer = require("./methods/withDrawFunction")
+const sendEmailer = require("./methods/sendEmailReembolso")
 function AssimilateTime(time) {
   const d = new Date(time);
   moment.locale("pt-br");
@@ -83,7 +84,7 @@ module.exports = {
           if(!verify.status && verify.find && trigger){ //Caso falhe realizar o processo de estorno e enviar email.
             //Processo de Reembolso.
            
-            await withDrawer.withDrawPedido(pedido, i); //REEMBOLSADOR
+            await withDrawer.withDrawPedido(pedido); //REEMBOLSADOR
    
             trigger =false;
             break;
@@ -645,4 +646,16 @@ module.exports = {
     const dados = req.body;
     console.log(dados);
   },
+  async afterRefund(order){
+    //Verificar pelo pedido o txid e preparar o refundEmail.
+    console.log(order)
+    if(order.devolucoes[0].status === "DEVOLVIDO"){
+      console.log('true');
+      const pedido = await pedidosModel.findOne({txid: order.txid});
+      if(pedido){
+        //Encontrou então enviar email.
+        await sendEmailer(pedido._id, order.devolucoes[0].valor, pedido.user_email)
+      }
+    }
+  }
 };

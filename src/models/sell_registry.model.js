@@ -2,6 +2,7 @@
 const { Schema, model } = require('mongoose');
 const sellRegistry = new Schema({
         user_id: {type:String, required:true},
+        pedido_id: {type:String, required:true},
         user_name: {type: String},
         company_id: {type:String, required:true},
         store_id: {type:String, required: true},
@@ -15,6 +16,7 @@ const sellRegistry = new Schema({
         },
         quantity: {type:String},
         draw: {type:Boolean,default:false},
+        refund: {type:Boolean, default:false},
         createdAt:{ type: Date, default: Date.now }
 });
 

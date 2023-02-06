@@ -469,6 +469,7 @@ module.exports = {
           let objeto_registro = {
             user_id: req.userID,
             user_name: req.userName,
+            pedido_id: qrcode.pedido_id,
             company_id: req.company_id,
             store_id: req.stores[0]._id, //ARRUMAR
             qrcode_id: qrcode._id,

@@ -62,7 +62,7 @@ app.use('/auth', (req, res, next) => LoginServiceProxy(req, res, next));
 app.use('/qrcode', (req, res, next) => QrCodeServiceProxy(req, res, next));
 app.use('/crud', (req, res, next) => CrudServiceProxy(req, res, next));
 app.use('/payment', (req, res, next) => EntranceServiceProxy(req, res, next));
-const { QrcodeReturner, QrCodeReSend } = require ( "./Entrance_Service/controllers/pagamento.controllers");
+const { QrcodeReturner, QrCodeReSend, afterRefund } = require ( "./Entrance_Service/controllers/pagamento.controllers");
 
 app.post("/webhook", (request, response) => {
   // Verifica se a requisição que chegou nesse endpoint foi autorizada
@@ -82,18 +82,17 @@ app.post("/webhook/pix*", (req, res, next) => {
     return res.status(401).send('Invalid client certificate.');
   }
   if(pix){
-    console.log("Foi pago e entrou aqui")
     for (const order of pix) {
       let aux = {
         object: order.txid
       }
       req.aux = aux
-      console.log(pix)
+  
       //Só pode chamar caso for um pagamento.
       if(!order.devolucoes){
         QrcodeReturner(req)
       }
-      
+      afterRefund(order) //Caso for reembolso.
     }
   }
   res.send({ ok: 1 })

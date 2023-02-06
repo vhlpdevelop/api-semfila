@@ -1,8 +1,6 @@
 const { GNRequest } = require("../../config/gerenciaNet.config");
-const mailer = require("../../../modules/NodeMailer.controllers");
-const mailerconfig = require("../../../config/NodeMailer.config");
 module.exports = {
-    async withDrawPedido(pedido) { //Reembolso pelo pedido
+    async withDrawPedido(pedido, valor) { //Reembolso pelo pedido
         try {
             const reqGNAlready = GNRequest({
                 clientID: process.env.GN_CLIENT_ID,
@@ -11,8 +9,7 @@ module.exports = {
 
             const reqGN = await reqGNAlready;
             const cobResponse = await reqGN.get(`/v2/cob/${pedido.txid}`);
-            await reqGN.put(`/v2/pix/${cobResponse.data.pix[0].endToEndId}/devolucao/${pedido.txid}`, { valor: '0.10' }) //ALTERAR DEPOIS
-            return { success: true }
+            await reqGN.put(`/v2/pix/${cobResponse.data.pix[0].endToEndId}/devolucao/${pedido.txid}`, { valor: valor }) //ALTERAR DEPOIS
         } catch (e) {
             console.log(e.message)
             return { success: false, msg: "ocorreu um erro"}

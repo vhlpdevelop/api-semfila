@@ -2,7 +2,7 @@ const sell_registry = require("../../models/sell_registry.model");
 const financialModel = require("../../models/financial.model");
 const drawReqModel = require("../../models/drawReq.model");
 const contractModel = require("../../models/contract.model");
-
+const withdraw_func = require("./methods/withDrawFunction")
 module.exports = {
   async getNFE(req, res) {
     console.log(req.body)
@@ -44,7 +44,7 @@ module.exports = {
     const company = req.company_id; //VAI PRECISAR ALTERAR QUANDO CRIAR A FUNÇÃO DE LOJAS DUPLAS
     const store_id = req.stores[0]._id; //
     try {
-      const response = await sell_registry.find({ store_id: store_id, draw: false });
+      const response = await sell_registry.find({ store_id: store_id, draw: false, refund:false });
       if (response) {
         const financy = await financialModel.findOne({ company_id: company });
         var value = 0;
@@ -342,4 +342,60 @@ module.exports = {
       });
     }
   },
+  async reembolsoAction(req,res){
+    //Realizar reembolso quando a compra está completa. Devido a algum problema do cliente ou algo relacionado.
+    //Somente o USUARIO Mestre pode realizar o pedido de estorno.
+    //Só pode realizar um estorno caso não foi sacado.
+    if (!req.authenticate) { //Somente usuário com permissão
+      return res.json({
+        success: false,
+        msg: "Usuário não tem permissão."
+      });
+    }
+    if(!req.body.sell_registry._id){
+      return res.json({
+        success: false,
+        msg: "Erro 305."
+      });
+    }
+
+    const registry = await sell_registry.findOne({_id:req.body.sell_registry._id, draw:false })
+    if(!registry){
+      return res.json({
+        success: false,
+        msg: "Esta venda já foi sacada."
+      });
+    }
+    //Enviar pedido e o valor para solicitar estorno.
+
+    //
+    try{
+      const response = await withdraw_func.withDrawPedido(registry.pedido_id, parseFloat(registry.total)); //REEMBOLSADOR
+      if(response.success){ //Atualizar sell_registry
+        registry.refund = true;
+        registry.markModified('refund')
+        registry.save();
+  
+        return res.send({
+          success:true,
+          msg: "Reembolso realizado"
+        })
+      }else{
+        return res.send({
+          success:false,
+          msg: response.msg
+        })
+      }
+    }catch(e){
+      console.log(e.message)
+      return res.send({
+        success:false,
+        msg: "Falha ao realizar reembolso",
+      })
+    }
+    
+    //
+    
+   
+}
 };

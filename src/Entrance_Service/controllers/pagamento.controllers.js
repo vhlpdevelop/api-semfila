@@ -649,13 +649,16 @@ module.exports = {
   async afterRefund(order){
     //Verificar pelo pedido o txid e preparar o refundEmail.
     console.log(order)
-    if(order.devolucoes[0].status === "DEVOLVIDO"){
-      console.log('true');
-      const pedido = await pedidosModel.findOne({txid: order.txid});
-      if(pedido){
-        //Encontrou então enviar email.
-        await sendEmailer(pedido._id, order.devolucoes[0].valor, pedido.user_email)
+    if(order.devolucoes){
+      if(order.devolucoes[0].status === "DEVOLVIDO"){
+        console.log('true');
+        const pedido = await pedidosModel.findOne({txid: order.txid});
+        if(pedido){
+          //Encontrou então enviar email.
+          await sendEmailer.refundEmail(pedido._id, order.devolucoes[0].valor, pedido.user_email)
+        }
       }
     }
+    
   }
 };

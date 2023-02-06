@@ -84,7 +84,7 @@ module.exports = {
           if(!verify.status && verify.find && trigger){ //Caso falhe realizar o processo de estorno e enviar email.
             //Processo de Reembolso.
            
-            await withDrawer.withDrawPedido(pedido); //REEMBOLSADOR
+            await withDrawer.withDrawPedido(pedido, i); //REEMBOLSADOR
    
             trigger =false;
             break;

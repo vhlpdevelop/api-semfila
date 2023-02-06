@@ -3,6 +3,9 @@ const mailer = require("../../../modules/NodeMailer.controllers");
 const mailerconfig = require("../../../config/NodeMailer.config");
 module.exports = {
     async refundEmail(pedido, valor, email) { //Reembolso pelo pedido
+        console.log(pedido)
+        console.log(valor)
+        console.log(email)
         try {
             if (pedido.user_email) { //Caso tenha um usuario enviar um email
                 let escopo = "Reembolso efetuado com sucesso."

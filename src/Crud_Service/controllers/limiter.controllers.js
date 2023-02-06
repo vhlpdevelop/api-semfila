@@ -104,8 +104,8 @@ module.exports = {
             msg: "Item não encontrado."
           });
         }
-     
-        item.limit_number = item.limit_number + parseInt(req.body.limit); //ADICIONA OU DIMINUI
+        
+        item.limit_number = (item.limit_number + parseInt(req.body.adicionar)) - parseInt(req.body.remover); 
         item.markModified('limit_number')
         item.save(); //SALVAR
 

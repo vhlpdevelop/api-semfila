@@ -12,6 +12,7 @@ module.exports = {
             const data = await reqGN.put(`/v2/pix/${cobResponse.data.pix[0].endToEndId}/devolucao/${pedido.txid}`, { valor: "0.10" }) //ALTERAR DEPOIS
             console.log(data.data)
         } catch (e) {
+            console.log(e)
             console.log(e.message)
             return { success: false, msg: "ocorreu um erro"}
         }

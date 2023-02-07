@@ -66,7 +66,7 @@ const { QrcodeReturner, QrCodeReSend, afterRefund } = require ( "./Entrance_Serv
 
 app.post("/webhook", (request, response) => {
   // Verifica se a requisição que chegou nesse endpoint foi autorizada
-  console.log("Entrou aqui 1")
+  //console.log("Entrou aqui 1")
   if (request.client.authorized) { 
       response.status(200).end();
   } else {
@@ -75,7 +75,7 @@ app.post("/webhook", (request, response) => {
 });
 
 app.post("/webhook/pix*", (req, res, next) => {
-  console.log("WEB HOOK RECEBIDO ")
+  //console.log("WEB HOOK RECEBIDO ")
   
   const {pix} = req.body
   if (!req.client.authorized) {

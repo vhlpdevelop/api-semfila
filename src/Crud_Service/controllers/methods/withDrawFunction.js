@@ -9,7 +9,8 @@ module.exports = {
             console.log(valor)
             const reqGN = await reqGNAlready;
             const cobResponse = await reqGN.get(`/v2/cob/${pedido.txid}`);
-            await reqGN.put(`/v2/pix/${cobResponse.data.pix[0].endToEndId}/devolucao/${pedido.txid}`, { valor: "0.10" }) //ALTERAR DEPOIS
+            const data = await reqGN.put(`/v2/pix/${cobResponse.data.pix[0].endToEndId}/devolucao/${pedido.txid}`, { valor: "0.10" }) //ALTERAR DEPOIS
+            console.log(data.data)
         } catch (e) {
             console.log(e.message)
             return { success: false, msg: "ocorreu um erro"}

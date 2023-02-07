@@ -2,6 +2,7 @@ const sell_registry = require("../../models/sell_registry.model");
 const financialModel = require("../../models/financial.model");
 const drawReqModel = require("../../models/drawReq.model");
 const contractModel = require("../../models/contract.model");
+const pedidoModel = require("../../models/pedidos.model")
 const withdraw_func = require("./methods/withDrawFunction")
 module.exports = {
   async getNFE(req, res) {
@@ -367,10 +368,17 @@ module.exports = {
       });
     }
     //Enviar pedido e o valor para solicitar estorno.
-
+    const pedido = await pedidoModel.findById({_id: registry.pedido_id})
+    if(!pedido){
+      return res.json({
+        success: false,
+        msg: "Pedido não encontrado."
+      });
+    }
     //
     try{
-      const response = await withdraw_func.withDrawPedido(registry.pedido_id, parseFloat(registry.total)); //REEMBOLSADOR
+      console.log(registry.total)
+      const response = await withdraw_func.withDrawPedido(pedido.txid, parseFloat(registry.total)); //REEMBOLSADOR
       if(response.success){ //Atualizar sell_registry
         registry.refund = true;
         registry.markModified('refund')

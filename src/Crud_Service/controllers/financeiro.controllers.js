@@ -378,7 +378,6 @@ module.exports = {
     }
     //
     try{
-      console.log(registry.total)
       const response = await withdraw_func.withDrawPedido(pedido.txid, parseFloat(registry.total)); //REEMBOLSADOR
       if(response.success){ //Atualizar sell_registry
         registry.refund = true;

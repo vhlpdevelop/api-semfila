@@ -6,9 +6,9 @@ module.exports = {
                 clientID: process.env.GN_CLIENT_ID,
                 clientSecret: process.env.GN_CLIENT_SECRET,
             });
-            console.log(valor)
+            console.log(valor.toFixed(2))
             const reqGN = await reqGNAlready;
-            const cobResponse = await reqGN.get(`/v2/cob/${pedido.txid}`);
+            const cobResponse = await reqGN.get(`/v2/cob/${pedido}`);
             const data = await reqGN.put(`/v2/pix/${cobResponse.data.pix[0].endToEndId}/devolucao/${pedido.txid}`, { valor: "0.10" }) //ALTERAR DEPOIS
             console.log(data.data)
         } catch (e) {

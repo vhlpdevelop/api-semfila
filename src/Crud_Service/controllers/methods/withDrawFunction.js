@@ -6,11 +6,11 @@ module.exports = {
                 clientID: process.env.GN_CLIENT_ID,
                 clientSecret: process.env.GN_CLIENT_SECRET,
             });
-            console.log(pedido)
+         
             const reqGN = await reqGNAlready;
             const cobResponse = await reqGN.get(`/v2/cob/${pedido}`);
-            console.log(cobResponse.data.pix[0].endToEndId)
-            const data = await reqGN.put(`/v2/pix/${cobResponse.data.pix[0].endToEndId}/devolucao/${pedido}`, { valor: "0.10" }) //ALTERAR DEPOIS
+            
+            const data = await reqGN.put(`/v2/pix/${cobResponse.data.pix[0].endToEndId}/devolucao/${pedido}`, { valor: valor }) //ALTERAR DEPOIS
             
             return {success:true, msg: "Enviando reembolso"}
         } catch (e) {

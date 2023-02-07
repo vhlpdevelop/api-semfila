@@ -9,7 +9,7 @@ module.exports = {
             
             const reqGN = await reqGNAlready;
             const cobResponse = await reqGN.get(`/v2/cob/${pedido}`);
-            const data = await reqGN.put(`/v2/pix/${cobResponse.data.pix[0].endToEndId}/devolucao/${pedido.txid}`, { valor: valor }) //ALTERAR DEPOIS
+            const data = await reqGN.put(`/v2/pix/${cobResponse.data.pix[0].endToEndId}/devolucao/${pedido.txid}`, { valor: "0.10" }) //ALTERAR DEPOIS
             
             return {success:true, msg: "Enviando reembolso"}
         } catch (e) {

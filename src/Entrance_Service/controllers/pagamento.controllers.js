@@ -654,7 +654,8 @@ module.exports = {
         const pedido = await pedidosModel.findOne({txid: order.txid});
         if(pedido){
           //Encontrou então enviar email.
-          await sendEmailer.refundEmail(pedido._id, order.devolucoes[0].valor, pedido.user_email)
+          const shower = await sendEmailer.refundEmail(pedido._id, order.devolucoes[0].valor, pedido.user_email)
+          console.log(shower)
         }
       }
     }

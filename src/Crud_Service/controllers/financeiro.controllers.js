@@ -361,6 +361,7 @@ module.exports = {
     }
 
     const registry = await sell_registry.findOne({_id:req.body.sell_registry._id, draw:false, cortesia:false, })
+    console.log(registry)
     if(!registry){
       return res.json({
         success: false,

@@ -461,11 +461,19 @@ module.exports = {
           if (qrcode.quantity === "0") {
             qrcode.state = false;
           }
+          let aux_price = 0;
 
           //REGISTRAR
-          let aux_price = (
-            parseFloat(qrcode.item.price) * parseFloat(itemUpdate.quantity)
-          ).toFixed(2);
+          if(qrcode.item.discount_status){ //Verificador de desconto
+            aux_price = (
+              (parseFloat(qrcode.item.price) - parseFloat(qrcode.item.discount_value)) * parseFloat(itemUpdate.quantity)
+            ).toFixed(2);
+          }else{
+            aux_price = (
+              parseFloat(qrcode.item.price) * parseFloat(itemUpdate.quantity)
+            ).toFixed(2);
+          }
+          
           let objeto_registro = {
             user_id: req.userID,
             user_name: req.userName,

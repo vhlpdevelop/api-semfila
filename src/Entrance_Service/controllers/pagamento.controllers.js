@@ -56,9 +56,7 @@ module.exports = {
         (err, response) => {
           if (!err) {
             console.log("Não enviou");
-          } else {
-            globalUsers.splice(object.index, 1); //remover.
-          } //Faça nada
+          }//Faça nada
         }
       );
     } catch (e) {

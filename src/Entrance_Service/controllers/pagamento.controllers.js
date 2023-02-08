@@ -280,6 +280,7 @@ module.exports = {
     var nome = req.body.itemData.nome;
     var email = req.body.itemData.email;
     var cpf = req.body.itemData.cpf;
+    console.log(req.body.itemData)
     if (req.headers.authorization) {
       //AUTH
       const authHeader = JSON.parse(req.headers.authorization);

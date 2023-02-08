@@ -494,7 +494,7 @@ module.exports = {
       
           const sellRegistry = await sellRegistryModel.create(objeto_registro);
           if (sellRegistry) {
-           console.log(sellRegistry.createdAt)
+         
             const qrcodeUpdater = await QrCodesModel.findByIdAndUpdate(
               qrcode._id,
               qrcode

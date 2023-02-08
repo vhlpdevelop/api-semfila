@@ -1,7 +1,7 @@
 const { GNRequest } = require("../../config/gerenciaNet.config");
 module.exports = {
     async withDrawPedido(pedido, valor) { //Reembolso pelo pedido
-        console.log(valor)
+    
         try {
             const reqGNAlready = GNRequest({
                 clientID: process.env.GN_CLIENT_ID,

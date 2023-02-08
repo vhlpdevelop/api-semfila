@@ -19,6 +19,7 @@ module.exports = {
     //console.log(dataIni)
     const pedidos = await sell_registry.find({
       store_id: req.stores[0]._id,
+      refund:false,
       createdAt: {
         $gte: dataIni,
         $lt: dataFim

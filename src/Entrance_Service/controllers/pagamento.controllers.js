@@ -408,7 +408,7 @@ module.exports = {
             items: items,
             user_id: auth,
             txid: "",
-            price: pag.toString(),
+            price: pag.toString(), //
             store_id: dados.store_id,
             store_name: store.name,
             company_id: dados.company_id,
@@ -437,7 +437,7 @@ module.exports = {
                 nome: nome
               },
               valor: {
-                original: pag.toString() //pag.toString(), //ATUALIZAR DEPOIS PARA pag
+                original: "0.10" //pag.toString(), //ATUALIZAR DEPOIS PARA pag
               },
               chave: "de8d8feb-a41c-47b0-969f-6afa1f35da4f",
               solicitacaoPagador: `SemFila - Pedido N ${pedido._id}`,

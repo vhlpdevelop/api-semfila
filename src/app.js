@@ -130,19 +130,6 @@ io.use((socket, next) => {
   
   next();
 });
-io.sockets.on("updateQrCodeServer", (socket) => {
-  console.log(socket.status)
-  console.log(socket.sessionID)
-  let index = globalUsers.findIndex(function (user) {
-    return user.sessionID === socket.sessionID;
-  });
-  console.log(globalUsers)
-  console.log(index)
-  if(index > -1){
-    console.log("Achou")
-    globalUsers.splice(index, 1);
-  }
-})
 io.sockets.on("connection", (socket) => { //Caso usuario não receba qrcode devera verificar no array
   socket.emit("session", {
     sessionID: socket.sessionID,
@@ -152,6 +139,7 @@ io.sockets.on("connection", (socket) => { //Caso usuario não receba qrcode deve
   let index = globalUsers.findIndex(function (user) {
     return user.sessionID === socket.sessionID;
   });
+
   if(index > -1){
    
    

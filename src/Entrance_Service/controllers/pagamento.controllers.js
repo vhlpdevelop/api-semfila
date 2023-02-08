@@ -326,6 +326,12 @@ module.exports = {
         msg: "CPF vazio."
       })
     }
+    if (email === "") {
+      return res.send({
+        success: false,
+        msg: "Email vazio."
+      })
+    }
     const socketId = req.body.idSocket;
 
     process.stdout.write("\033c");
@@ -447,6 +453,7 @@ module.exports = {
 
             pedido.txid = cobResponse.data.txid;
             pedido.user_email = email
+            console.log(pedido.user_email)
             pedido.devedor = {
               cpf: cpf,
               nome: nome

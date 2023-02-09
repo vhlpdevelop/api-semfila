@@ -149,9 +149,8 @@ module.exports = {
       await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
       /* Enviar Email
       */
-     if(pedido.user_id && !aux_ticket.cortesia){
-      const user_response = await userModel.findById({_id: pedido.user_id})
-      if(user_response){
+     if(pedido.user_email && !aux_ticket.cortesia){
+      
         var aux_items = pedido.items;
         let aux_sender = "";
         
@@ -226,7 +225,7 @@ module.exports = {
         let data_aux = AssimilateTime(pedido.createdAt)
         mailer.sendMail(
           {
-            to: user_response.email,
+            to: pedido.user_email,
             from: mailerconfig.from,
             html: await templater.build_template(
               pedido._id,
@@ -243,7 +242,7 @@ module.exports = {
             }
           }
         );
-      }
+      
       
      }
         
@@ -280,7 +279,6 @@ module.exports = {
     var nome = req.body.itemData.nome;
     var email = req.body.itemData.email;
     var cpf = req.body.itemData.cpf;
-    console.log(req.body.itemData)
     if (req.headers.authorization) {
       //AUTH
       const authHeader = JSON.parse(req.headers.authorization);
@@ -453,7 +451,7 @@ module.exports = {
 
             pedido.txid = cobResponse.data.txid;
             pedido.user_email = email
-            console.log(pedido.user_email)
+  
             pedido.devedor = {
               cpf: cpf,
               nome: nome

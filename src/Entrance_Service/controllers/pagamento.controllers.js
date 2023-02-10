@@ -261,10 +261,17 @@ module.exports = {
             },
             (err, response) => {
               console.log("Entrou aqui dentro")
-              console.log(err)
-              console.log(response)
+              
+              console.log("erro => "+err)
+              console.log("response => "+response)
               if (response === null) {
                 console.log("Deu null")
+              }
+              if(!err){
+                console.log("Entrou aqui 2")
+              }
+              if(err ===null){
+                console.log("entoru aqui 3")
               }
   
               if (!response) {

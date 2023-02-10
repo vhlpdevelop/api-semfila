@@ -259,7 +259,9 @@ module.exports = {
               dataToSend,
             },
             (err, response) => {
-              if (!err) {
+              if (err) {
+                console.log("Aqui")
+                console.log(err)
                 let aux = {
                   sessionID: pedido.socket,
                   dataToSave: dataToSave,

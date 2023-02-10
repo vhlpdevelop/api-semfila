@@ -250,7 +250,6 @@ module.exports = {
 
       //
       if (!aux_ticket.cortesia){
-        console.log(io)
         io.to(pedido.socket)
           .timeout(5000)
           .emit(
@@ -260,28 +259,18 @@ module.exports = {
               dataToSend,
             },
             (err, response) => {
-              console.log("Entrou aqui dentro")
-              
-              console.log("erro => "+err)
-              console.log("response => "+response)
-              if (response === null) {
-                console.log("Deu null")
-              }
-              if(!err){
-                console.log("Entrou aqui 2")
-              }
-              if(err ===null){
-                console.log("entoru aqui 3")
-              }
-  
-              if (!response) {
-                console.log("Aqui")
-                console.log(err)
+              if(err ===null){ //Então gravar no global pois nao enviou
                 let aux = {
                   sessionID: pedido.socket,
                   dataToSave: dataToSave,
                 };
                 globalUsers.push(aux);
+                console.log("Gravou")
+              }
+  
+              if (!response) {
+                
+              
               } else {
                 console.log(response);
               } //Faça nada

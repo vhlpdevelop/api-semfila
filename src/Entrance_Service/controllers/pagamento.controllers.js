@@ -259,6 +259,8 @@ module.exports = {
               dataToSend,
             },
             (err, response) => {
+              console.log(err)
+              console.log(response)
               if (err) {
                 console.log("Aqui")
                 console.log(err)

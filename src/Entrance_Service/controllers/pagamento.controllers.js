@@ -250,9 +250,7 @@ module.exports = {
 
       //
       if (!aux_ticket.cortesia){
-        var otherSocket = io.connected[pedido.socket];
-        console.log(otherSocket)
-        console.log(!!otherSocket && otherSocket.connected)
+        console.log(io)
         io.to(pedido.socket)
           .timeout(5000)
           .emit(
@@ -262,6 +260,7 @@ module.exports = {
               dataToSend,
             },
             (err, response) => {
+              console.log("Entrou aqui dentro")
               console.log(err)
               console.log(response)
               if (response === null) {

@@ -250,7 +250,7 @@ module.exports = {
 
       //
       if (!aux_ticket.cortesia){
-        var otherSocket = io.sockets.connected[pedido.socket];
+        var otherSocket = io.connected[pedido.socket];
         console.log(otherSocket)
         console.log(!!otherSocket && otherSocket.connected)
         io.to(pedido.socket)

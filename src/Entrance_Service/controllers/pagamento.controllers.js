@@ -57,6 +57,7 @@ module.exports = {
           if (!err) {
             console.log("Não enviou");
           } else {
+            console.log(object)
             globalUsers.splice(object.index, 1); //remover.
           } //Faça nada
         }
@@ -77,9 +78,9 @@ module.exports = {
       var trigger = true;
       var total = 0;
       for (let i = 0; i < pedido.items.length; i++) {
-        console.log(pedido.items[i].item_name)
-        console.log("Loop => "+i)
-        let verify = await limiter.limit_controller(pedido.items[i]._id, pedido.items[i].qtd)
+        //console.log(pedido.items[i].item_name)
+        //console.log("Loop => "+i)
+        let verify = await limiter.limit_controller(pedido.items[i]._id, pedido.items[i].qtd) //Verificador para reembolsar
   
           if(!verify.status && verify.find && trigger){ //Caso falhe realizar o processo de estorno e enviar email.
             //Processo de Reembolso.
@@ -304,7 +305,7 @@ module.exports = {
       })
         auth = req.userID
         var alterar_user = await userModel.findById({ _id: auth })
-        console.log(alterar_user)
+        //console.log(alterar_user)
         nome = alterar_user.name;
         cpf = alterar_user.cpf;
         email = alterar_user.email
@@ -501,7 +502,7 @@ module.exports = {
     //console.log("Pix")
     const dados = req.body.itemData;
     //console.log(req.body)
-    console.log(dados);
+    //console.log(dados);
 
     //Primeiro autenticar os dados, verificar items
     try {
@@ -528,7 +529,7 @@ module.exports = {
             obj: null,
           });
         }
-        console.log(userChecker.type)
+        //console.log(userChecker.type)
         if (userChecker.type !== "Owner") {
           return res.send({
             success: false,
@@ -569,7 +570,7 @@ module.exports = {
         }
         //console.log("Flag")
         pag = items.length * 2;
-        console.log(pag);
+        //console.log(pag);
         pag = pag.toFixed(2)
         if (items.length > 0) {
           //Se existir items validados continue

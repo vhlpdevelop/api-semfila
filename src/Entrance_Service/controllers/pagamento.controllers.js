@@ -261,7 +261,11 @@ module.exports = {
             (err, response) => {
               console.log(err)
               console.log(response)
-              if (err) {
+              if(response === null){
+                console.log("Deu null")
+              }
+              
+              if (!response) {
                 console.log("Aqui")
                 console.log(err)
                 let aux = {

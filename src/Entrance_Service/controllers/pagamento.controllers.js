@@ -81,16 +81,16 @@ module.exports = {
         //console.log(pedido.items[i].item_name)
         //console.log("Loop => "+i)
         let verify = await limiter.limit_controller(pedido.items[i]._id, pedido.items[i].qtd) //Verificador para reembolsar
-  
-          if(!verify.status && verify.find && trigger){ //Caso falhe realizar o processo de estorno e enviar email.
-            //Processo de Reembolso.
-           
-            await withDrawer.withDrawPedido(pedido, i); //REEMBOLSADOR
-   
-            trigger =false;
-            break;
-          }     
-        if(trigger) {
+
+        if (!verify.status && verify.find && trigger) { //Caso falhe realizar o processo de estorno e enviar email.
+          //Processo de Reembolso.
+
+          await withDrawer.withDrawPedido(pedido, i); //REEMBOLSADOR
+
+          trigger = false;
+          break;
+        }
+        if (trigger) {
           aux_ticket = {
             item: pedido.items[i],
             user_id: pedido.user_id,
@@ -100,7 +100,7 @@ module.exports = {
             company_id: pedido.company_id,
             store_id: pedido.store_id,
             store_name: pedido.store_name,
-            devedor: { 
+            devedor: {
               nome: pedido.devedor.nome,
               cpf: pedido.devedor.cpf
             },
@@ -109,28 +109,28 @@ module.exports = {
             QrImage: "",
             state: true,
           };
-          
-          total = parseFloat((parseFloat(total)+parseFloat(pedido.items[i].price)).toFixed(2))
-  
+
+          total = parseFloat((parseFloat(total) + parseFloat(pedido.items[i].price)).toFixed(2))
+
           var ticket = await QrCodesModel.create(aux_ticket);
-  
+
           let datatoEncrypt = {
             _id: ticket._id,
             store_id: ticket.store_id,
           };
-  
+
           let texto = Encrypter.encrypt(datatoEncrypt);
           const code = qr.imageSync(texto, {
             type: "png",
             size: 10,
           });
-  
+
           //console.log(code);
           var base64data = Buffer.from(code, "binary").toString("base64");
           //console.log(base64data);
           ticket.QrImage = base64data;
           //console.log(ticket.QrImage);
-  
+
           let object = {
             qrcode: base64data,
             data: ticket,
@@ -143,25 +143,25 @@ module.exports = {
           );
         }
       }
-      if(!trigger){
+      if (!trigger) {
         return "Finalizado.";
       }
       pedido.status = true; //PEDIDO FOI PAGO
       await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
       /* Enviar Email
       */
-     if(pedido.user_email && !aux_ticket.cortesia){
-      
+      if (pedido.user_email && !aux_ticket.cortesia) {
+
         var aux_items = pedido.items;
         let aux_sender = "";
-        
+
         for (let i = 0; i < aux_items.length; i++) {
-          
+
           let cons =
             "<tr style=border-collapse:collapse>" +
             "<td style=padding:0;Margin:0;font-size:xx-small;width:60px;text-align:center>" +
             aux_items[i].item_name +
-            "</td>"+
+            "</td>" +
             "<td style=padding:0;Margin:0;font-size:xx-small;width:60px;text-align:center>" +
             aux_items[i].description +
             "</td>" +
@@ -174,8 +174,8 @@ module.exports = {
             "</tr>";
           let auxiliar =
             "<td align=center style=padding:0;Margin:0;font-size:0>"
-              aux_items[i].item_name
-            "</td>";
+          aux_items[i].item_name
+          "</td>";
           aux_sender += `
           <tr style="border-collapse:collapse"> 
           <td align="left" style="Margin:0;padding-top:5px;padding-bottom:10px;padding-left:20px;padding-right:20px"> 
@@ -221,8 +221,8 @@ module.exports = {
                        </table></td> 
                      </tr> 
                    </table></td>  `;
-        }  
-      
+        }
+
         let data_aux = AssimilateTime(pedido.createdAt)
         mailer.sendMail(
           {
@@ -243,13 +243,16 @@ module.exports = {
             }
           }
         );
-      
-      
-     }
-        
-     
+
+
+      }
+
+
       //
-      if (!aux_ticket.cortesia)
+      if (!aux_ticket.cortesia){
+        var otherSocket = io.sockets.connected[pedido.socket];
+        console.log(otherSocket)
+        console.log(!!otherSocket && otherSocket.connected)
         io.to(pedido.socket)
           .timeout(5000)
           .emit(
@@ -261,10 +264,10 @@ module.exports = {
             (err, response) => {
               console.log(err)
               console.log(response)
-              if(response === null){
+              if (response === null) {
                 console.log("Deu null")
               }
-              
+  
               if (!response) {
                 console.log("Aqui")
                 console.log(err)
@@ -278,6 +281,8 @@ module.exports = {
               } //Faça nada
             }
           );
+      } 
+     
     } catch (e) {
       console.log("Erro ===============");
       console.log(e);
@@ -311,14 +316,14 @@ module.exports = {
         req.userID = decoded.id;
 
       })
-        auth = req.userID
-        var alterar_user = await userModel.findById({ _id: auth })
-        //console.log(alterar_user)
-        nome = alterar_user.name;
-        cpf = alterar_user.cpf;
-        email = alterar_user.email
-        alterar_user = "";
-        
+      auth = req.userID
+      var alterar_user = await userModel.findById({ _id: auth })
+      //console.log(alterar_user)
+      nome = alterar_user.name;
+      cpf = alterar_user.cpf;
+      email = alterar_user.email
+      alterar_user = "";
+
     }
     //Se usuário está autenticado, então.
     if (nome === "") {
@@ -359,11 +364,11 @@ module.exports = {
             _id: dados.cart[i]._id,
           });
           if (itemChecker !== undefined) {
-            if(itemChecker.limit_switch){
-              if(itemChecker.limit_number - dados.cart[i].qtd <0){
+            if (itemChecker.limit_switch) {
+              if (itemChecker.limit_number - dados.cart[i].qtd < 0) {
                 return res.send({
-                  success:false,
-                  msg: itemChecker.item_name+" sobrou apenas: "+itemChecker.limit_number +"un.",
+                  success: false,
+                  msg: itemChecker.item_name + " sobrou apenas: " + itemChecker.limit_number + "un.",
                   obj: itemChecker._id,
                 })
               }
@@ -460,7 +465,7 @@ module.exports = {
 
             pedido.txid = cobResponse.data.txid;
             pedido.user_email = email
-  
+
             pedido.devedor = {
               cpf: cpf,
               nome: nome
@@ -595,13 +600,13 @@ module.exports = {
           };
           const pedido = await pedidosModel.create(object);
           if (pedido) {
-           
+
             //Criar uma req pix
             const reqGNAlready = GNRequest({
               clientID: process.env.GN_CLIENT_ID,
               clientSecret: process.env.GN_CLIENT_SECRET,
             });
-           
+
             const reqGN = await reqGNAlready;
 
             const dataCob = {
@@ -661,19 +666,19 @@ module.exports = {
     const dados = req.body;
     console.log(dados);
   },
-  async afterRefund(order){
+  async afterRefund(order) {
     //Verificar pelo pedido o txid e preparar o refundEmail.
     //console.log(order)
-    if(order.devolucoes){
-      if(order.devolucoes[0].status === "DEVOLVIDO"){
-        const pedido = await pedidosModel.findOne({txid: order.txid});
-        if(pedido){
+    if (order.devolucoes) {
+      if (order.devolucoes[0].status === "DEVOLVIDO") {
+        const pedido = await pedidosModel.findOne({ txid: order.txid });
+        if (pedido) {
           //Encontrou então enviar email.
           await sendEmailer.refundEmail(pedido._id, order.devolucoes[0].valor, pedido.user_email)
-         
+
         }
       }
     }
-    
+
   }
 };

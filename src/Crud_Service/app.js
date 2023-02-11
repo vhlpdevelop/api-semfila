@@ -5,7 +5,6 @@ const helmet = require('helmet')
 const mongoSanitize = require("express-mongo-sanitize")
 require("dotenv").config()
 const app = require("express")();
-app.use(bodyParser.json());
 app.use(cors());
 app.use(helmet());
 app.use(mongoSanitize())

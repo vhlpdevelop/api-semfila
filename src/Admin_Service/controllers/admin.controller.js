@@ -280,7 +280,7 @@ module.exports = {
             return res.send({ obj: null, msg: "Erro ocorrido", error_Msg: e.message, success: false })
         }
     },
-    async authenticateEmpresa(req, res) { //OK
+    async authenticateEmpresa(req, res) { //AUTENTICAR EMPRESA - ENVIAR EMAIL TAMBÉM PARA O USUÁRIO AVISANDO...
         //user_type e company_status
         //VAI VIR USER E COMPANY
         try {

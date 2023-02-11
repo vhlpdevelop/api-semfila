@@ -5,6 +5,6 @@ emailconfig.service = "gmail"
 
 emailconfig.user = "oficial.semfila@gmail.com";
 emailconfig.password = "qbohuqdzlofekdow";
-emailconfig.from= "SemFila" //TESTE
+emailconfig.from= "contato@semfila.tech" //TESTE
 module.exports = emailconfig;
 

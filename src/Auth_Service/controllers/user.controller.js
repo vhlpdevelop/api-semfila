@@ -585,14 +585,11 @@ module.exports = {
 
 
     const user = await userModel.create(user_create);
-    var aux_trigger = false;
     if (user) {
       //Se cadastrou, enviar email de confirmação
-      var email = req.body.email
-    
       mailer.sendMail(
         {
-          to: email,
+          to: req.body.email,
           from: mailerconfig.from,
           template: "templateEmailInviteEmp",
           subject: "Bem-vindo a SemFila - Complete agora seu cadastro",
@@ -600,29 +597,18 @@ module.exports = {
         },
         (err) => {
           if (err) {
-            aux_trigger = false;
             console.log(err);
             return res.send({
               msg: "Não foi possivel gerar o email",
               success: false,
             });
-          }else{
-            aux_trigger = true;
           }
         }
-      )
-      if(aux_trigger){
-        return res.send({
-          success: true,
-          msg: "Um email foi enviado para " + req.body.email,
-        });
-      }else{
-        return res.send({
-          success: false,
-          msg: "Não foi possível enviar o email."
-        });
-      }
-      
+      );
+      return res.send({
+        success: true,
+        msg: "Um email foi enviado para " + req.body.email,
+      });
     } else {
       return res.send({
         success: false,

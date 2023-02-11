@@ -463,7 +463,7 @@ module.exports = {
                 nome: nome
               },
               valor: {
-                original: "0.10" //pag.toString(), //ATUALIZAR DEPOIS PARA pag
+                original: pag.toString() //pag.toString(), //ATUALIZAR DEPOIS PARA pag
               },
               chave: "de8d8feb-a41c-47b0-969f-6afa1f35da4f",
               solicitacaoPagador: `SemFila - Pedido N ${pedido._id}`,

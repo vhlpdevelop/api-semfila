@@ -588,9 +588,11 @@ module.exports = {
     var aux_trigger = false;
     if (user) {
       //Se cadastrou, enviar email de confirmação
+      var email = req.body.email
+      console.log(email)
       mailer.sendMail(
         {
-          to: req.body.email,
+          to: email,
           from: mailerconfig.from,
           template: "templateEmailInviteEmp",
           subject: "Bem-vindo a SemFila - Complete agora seu cadastro",

@@ -585,6 +585,7 @@ module.exports = {
 
 
     const user = await userModel.create(user_create);
+    var aux_trigger = false;
     if (user) {
       //Se cadastrou, enviar email de confirmação
       mailer.sendMail(
@@ -597,18 +598,29 @@ module.exports = {
         },
         (err) => {
           if (err) {
+            aux_trigger = false;
             console.log(err);
             return res.send({
               msg: "Não foi possivel gerar o email",
               success: false,
             });
+          }else{
+            aux_trigger = true;
           }
         }
-      );
-      return res.send({
-        success: true,
-        msg: "Um email foi enviado para " + req.body.email,
-      });
+      )
+      if(aux_trigger){
+        return res.send({
+          success: true,
+          msg: "Um email foi enviado para " + req.body.email,
+        });
+      }else{
+        return res.send({
+          success: false,
+          msg: "Não foi possível enviar o email."
+        });
+      }
+      
     } else {
       return res.send({
         success: false,

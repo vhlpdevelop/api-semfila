@@ -589,7 +589,7 @@ module.exports = {
     if (user) {
       //Se cadastrou, enviar email de confirmação
       var email = req.body.email
-      console.log(email)
+    
       mailer.sendMail(
         {
           to: email,

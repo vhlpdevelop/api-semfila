@@ -339,12 +339,24 @@ module.exports = {
         msg: "Email vazio."
       })
     }
+    if(!req.body.idSocket){
+      return res.send({
+        success: false,
+        msg: "Falha na conexão."
+      })
+    }
     const socketId = req.body.idSocket;
 
     process.stdout.write("\033c");
 
+    
+    if(!req.body.itemData){
+      return res.send({
+        success: false,
+        msg: "Carrinho vazio."
+      })
+    }
     const dados = req.body.itemData;
-
     //Primeiro autenticar os dados, verificar items
     try {
       var items = [];

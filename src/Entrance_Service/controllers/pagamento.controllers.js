@@ -139,6 +139,7 @@ module.exports = {
           );
         }
       }
+      
       if (!trigger) {
         return "Finalizado.";
       }
@@ -150,7 +151,10 @@ module.exports = {
 
         var aux_items = pedido.items;
         let aux_sender = "";
-
+        var store = await storeModel.findById({_id: pedido.store_id})
+        //Adicionar resgate.
+        var url_button = store.store_url+"/"+object.qrcode
+        console.log(url_button)
         for (let i = 0; i < aux_items.length; i++) {
 
           let cons =
@@ -174,7 +178,7 @@ module.exports = {
         aux_items[i].item_name
         "</td>";
           */
-         console.log(aux_items[i].image_url)
+         
           let auxiliar =
             `<td align="center" style="padding:0;Margin:0;font-size:0px"><img class="adapt-img" src="${aux_items[i].image_url}" alt style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="178" height="100"></td>`;
 
@@ -235,7 +239,8 @@ module.exports = {
               data_aux,
               pedido.store_name,
               total,
-              aux_sender
+              aux_sender,
+              url_button
             ),
             subject: "SemFila - Compra realizada com sucesso"
           },

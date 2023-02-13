@@ -314,6 +314,9 @@ module.exports = {
       return res.send({ ok: false });
     }
   },
+  async checkOnline(req,res){
+    return res.send({success:true})
+  },
   async autoLogin(req, res) {
     //console.log(req.userID)
     try {
@@ -389,7 +392,7 @@ module.exports = {
         });
       }
       const datatoken = jwt.sign(
-        { id: user._id, time: Date.now() },
+        { id: user._id, time: Date.now(), email: user.email },
         authConfig.secret,
         {
           expiresIn: "7d",

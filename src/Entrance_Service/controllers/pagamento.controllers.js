@@ -100,10 +100,6 @@ module.exports = {
             company_id: pedido.company_id,
             store_id: pedido.store_id,
             store_name: pedido.store_name,
-            devedor: {
-              nome: pedido.devedor.nome,
-              cpf: pedido.devedor.cpf
-            },
             quantity: pedido.items[i].qtd,
             duration: pedido.items[i].duration,
             QrImage: "",
@@ -285,9 +281,8 @@ module.exports = {
   },
   async payPix(req, res) {
     var auth = "";
-    var nome = req.body.itemData.nome;
     var email = req.body.itemData.email;
-    var cpf = req.body.itemData.cpf;
+
     if (req.headers.authorization) {
       //AUTH
       const authHeader = JSON.parse(req.headers.authorization);
@@ -309,30 +304,13 @@ module.exports = {
         if (err) return res.status(401).send({ error: 'Token inválido', success: false, msg: 'Entre novamente' });
 
         req.userID = decoded.id;
+        req.userEmail = decoded.email
 
       })
       auth = req.userID
-      var alterar_user = await userModel.findById({ _id: auth })
-      //console.log(alterar_user)
-      nome = alterar_user.name;
-      cpf = alterar_user.cpf;
-      email = alterar_user.email
-      alterar_user = "";
-
+      email = req.userEmail
     }
     //Se usuário está autenticado, então.
-    if (nome === "") {
-      return res.send({
-        success: false,
-        msg: "Nome vazio."
-      })
-    }
-    if (cpf === "") {
-      return res.send({
-        success: false,
-        msg: "CPF vazio."
-      })
-    }
     if (email === "") {
       return res.send({
         success: false,
@@ -458,10 +436,6 @@ module.exports = {
               calendario: {
                 expiracao: 3600,
               },
-              devedor: {
-                cpf: cpf,
-                nome: nome
-              },
               valor: {
                 original: pag.toString() //pag.toString(), //ATUALIZAR DEPOIS PARA pag
               },
@@ -473,10 +447,6 @@ module.exports = {
             pedido.txid = cobResponse.data.txid;
             pedido.user_email = email
 
-            pedido.devedor = {
-              cpf: cpf,
-              nome: nome
-            }
             pedido.loc_id = cobResponse.data.loc.id;
             pedido.socket = socketId;
 

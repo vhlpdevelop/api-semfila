@@ -7,10 +7,6 @@ const pedido = new Schema({
   loc_id: {type:String},
   user_id: {type:String},
   user_email: {type:String},
-  devedor: {
-    cpf: {type:String},
-    nome: {type:String}
-  },
   price: {type: String},
   cortesia: {type: Boolean, default: false},
   company_id: {type: String},

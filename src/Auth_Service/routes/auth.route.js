@@ -10,6 +10,7 @@ const limiter = require("../resources/limiter")
 
 router.post('/PasswordReset', user_controller.PasswordReset);
 //USUARIOS EMP
+router.post('/checkOnline', limiter.padrao, middleware, login_controller.checkOnline)
 router.post('/loginEmp', limiter.Login_limiter, login_controller.loginEmp)
 router.post('/registerEmp',limiter.Login_limiter, user_controller.registerUserEmp)
 router.post('/verifyEmailEmp',limiter.Login_limiter, user_controller.VerifyEmailEmp); //cadastrar restante dos dados e verificar email

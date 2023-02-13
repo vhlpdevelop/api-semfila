@@ -560,4 +560,14 @@ module.exports = {
     }
   },
   async deleteQrCode(req, res) { },
+  async recoverQrCode(req,res){ //Recuperar qrcode.
+    if(req.body.qrcode){
+      const qrcode = await QrCodesModel.findById({_id: req.body.qrcode})
+      if(qrcode){
+        return res.send({success:true, msg:"Qrcode localizado", obj:qrcode})
+      }else{
+        return res.send({success:false})
+      }
+    }
+  }
 };

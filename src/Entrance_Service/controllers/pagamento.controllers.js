@@ -176,7 +176,7 @@ module.exports = {
           */
          console.log(aux_items[i].image_url)
           let auxiliar =
-            `<td align="center" style="padding:0;Margin:0;font-size:0px"><img class="adapt-img" src="${aux_items[i].image_url}" alt style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="178"></td>`;
+            `<td align="center" style="padding:0;Margin:0;font-size:0px"><img class="adapt-img" src="${aux_items[i].image_url}" alt style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="178" height="100"></td>`;
 
           aux_sender += `
           <tr style="border-collapse:collapse"> 

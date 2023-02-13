@@ -2,8 +2,20 @@
 
 const itemsModel = require("../../models/items.model");
 const categoryModel = require("../../models/category.model");
-
+const consumablesModel = require("../../models/consumables.model")
 module.exports = {
+  async search(req,res){
+       
+    try{
+        const response = await consumablesModel.find({ name: {$regex: ".*"+req.query.query+".", $options:"i"} })
+        res.send({
+            obj: response
+        })
+    }catch(e){
+        console.log(e.message)
+        return ;
+    }
+},
   async allItems(req, res) {
     try {
       const flag = await allCategoria.find({ idMenu: req.params.idMenu });

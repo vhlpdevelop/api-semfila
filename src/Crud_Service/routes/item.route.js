@@ -5,7 +5,7 @@ const middleware = require("../../middleware/auth.middleware")
 const limiter = require("../resources/limiter")
 
 //router.get('/fetchCategoria',middleware, categoria.fetchCardapio)
-router.post('/fetchSearch', limiter.Search_store, items.search)
+router.get('/fetchSearch', limiter.Search_store, items.search)
 router.post('/updateItem',limiter.padrao,middleware,items.updateItem)
 router.post('/deleteItem', limiter.padrao,middleware, items.deleteItem)
 router.post('/newItem',limiter.padrao, middleware, items.newItem)

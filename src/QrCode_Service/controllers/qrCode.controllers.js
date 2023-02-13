@@ -56,32 +56,32 @@ module.exports = {
               });
             }
             //Enviar Email para usuário.
-            if(QrCode.user_id){
-              const user = await userModel.findById({_id: QrCode.user_id})
-              if(user){
+            if (QrCode.user_id) {
+              const user = await userModel.findById({ _id: QrCode.user_id })
+              if (user) {
                 let valor = (parseFloat(QrCode.item.price) * parseFloat(QrCode.quantity)).toFixed(2)
                 let escopo = "Pedido de reembolso foi solicitado. "
-                let mensagem = "O Reembolso do QRCODE vindo do pedido "+QrCode.pedido_id+" no valor de: R$"+valor+", Foi solicitado. Aguarde 7 dias úteis para o reembolso ser emitido. Agradecemos pela experiência conosco e estamos sempre a sua disposição. Por SemFila."
-                
+                let mensagem = "O Reembolso do QRCODE vindo do pedido " + QrCode.pedido_id + " no valor de: R$" + valor + ", Foi solicitado. Aguarde 7 dias úteis para o reembolso ser emitido. Agradecemos pela experiência conosco e estamos sempre a sua disposição. Por SemFila."
+
                 mailer.sendMail(
-                    {
-                      to: user.email,
-                      from: mailerconfig.from,
-                      template: "EmailTemplateBasic",
-                      subject: "SemFila - Reembolso solicitado.",
-                      context: { escopo, mensagem },
-                    },
-                    (err) => {
-                      if (err) {
-                        console.log(err);
-                        return res.send({
-                          msg: "Não foi possivel gerar o email!",
-                          success: false,
-                        });
-                      }
+                  {
+                    to: user.email,
+                    from: mailerconfig.from,
+                    template: "EmailTemplateBasic",
+                    subject: "SemFila - Reembolso solicitado.",
+                    context: { escopo, mensagem },
+                  },
+                  (err) => {
+                    if (err) {
+                      console.log(err);
+                      return res.send({
+                        msg: "Não foi possivel gerar o email!",
+                        success: false,
+                      });
                     }
-                  );
-                  
+                  }
+                );
+
               }
             }
 
@@ -116,15 +116,15 @@ module.exports = {
     }
   },
   async refreshSingleQrCode(req, res) {
-    
+
     const id = req.body.id;
     if (id) {
       try {
         const QrCode = await QrCodesModel.findById(id);
-        
+
         if (QrCode) {
           if (QrCode.state) {
-            var trigger=false;
+            var trigger = false;
             if (QrCode.quantity > 0) {
               //A PARTIR DAQUI É CHECAGEM DE DATAS (PROMOÇÃO E SE PASSOU DE 6 MESES.)
               if (!QrCode.item.promotion) {
@@ -140,7 +140,7 @@ module.exports = {
                 } else {
                   trigger = false;
                 }
-              }else{ //Checar se estiver em promoção mas invalidou.
+              } else { //Checar se estiver em promoção mas invalidou.
                 var d = new Date(QrCode.createdAt);
                 var seconds = d.getTime() / 1000;
                 var expire =
@@ -354,7 +354,7 @@ module.exports = {
               var expire = seconds + 6 * 730 * 3600;
               var date_expire = new Date(expire * 1000);
               //checagem de 6 meses
-              if (date_expire>Date.now()) { //Pode utilizar
+              if (date_expire > Date.now()) { //Pode utilizar
                 return res.send({
                   obj: QrCode,
                   success: true,
@@ -367,7 +367,7 @@ module.exports = {
                   msg: "QrCode está Expirado",
                 });
               }
-            }else{
+            } else {
               var d = new Date(QrCode.createdAt);
               var seconds = d.getTime() / 1000;
               var expire =
@@ -375,13 +375,13 @@ module.exports = {
                 parseFloat(QrCode.item.promotion_duration) * 24 * 3600;
               var date_expire = new Date(expire * 1000)
               console.log(date_expire)
-              if(date_expire > d){ //Pode utilizar
+              if (date_expire > d) { //Pode utilizar
                 return res.send({
                   obj: QrCode,
                   success: true,
                   msg: "QrCode Encontrado",
                 });
-              }else{ //Expirou
+              } else { //Expirou
                 return res.send({
                   obj: null,
                   success: false,
@@ -389,8 +389,8 @@ module.exports = {
                 });
               }
             }
-            
-            
+
+
           } else {
             return res.send({
               obj: null,
@@ -421,7 +421,7 @@ module.exports = {
   },
   async updateQrCode(req, res) {
     const itemUpdate = req.body;
-   
+
     //Buscar qrcode para validar
     try {
       //Verificar primeiro se QrCode é dessa loja mesmo.
@@ -436,44 +436,44 @@ module.exports = {
       const qrcode = await QrCodesModel.findById(itemUpdate._id);
       if (qrcode) {
         //Caso existe verificar store_id e quantidade pedida
-        if(qrcode.withdraw){ //Caso o QrCode foi solicitado para reembolso.
+        if (qrcode.withdraw) { //Caso o QrCode foi solicitado para reembolso.
           return res.send({
             obj: null,
             success: false,
             msg: "QrCode em processo de Reembolso.",
           });
         }
-        
+
         if (qrcode.quantity >= itemUpdate.quantity && itemUpdate.quantity > 0) {
           //Verificar se é maior q 0
 
           //ALTERAR QRCODE E SALVAR NO REGISTRO
           qrcode.quantity = qrcode.quantity - itemUpdate.quantity;
-          if(qrcode.quantity < 0){//Nunca se sabe
+          if (qrcode.quantity < 0) {//Nunca se sabe
             console.log("Flag 2")
-          return res.send({
-            obj: null,
-            success: false,
-            msg: "Erro 712 - Qtd negativa.",
-          });
-          } 
-          
+            return res.send({
+              obj: null,
+              success: false,
+              msg: "Erro 712 - Qtd negativa.",
+            });
+          }
+
           if (qrcode.quantity === "0") {
             qrcode.state = false;
           }
           let aux_price = 0;
 
           //REGISTRAR
-          if(qrcode.item.discount_status){ //Verificador de desconto
+          if (qrcode.item.discount_status) { //Verificador de desconto
             aux_price = (
               (parseFloat(qrcode.item.price) - parseFloat(qrcode.item.discount_value)) * parseFloat(itemUpdate.quantity)
             ).toFixed(2);
-          }else{
+          } else {
             aux_price = (
               parseFloat(qrcode.item.price) * parseFloat(itemUpdate.quantity)
             ).toFixed(2);
           }
-          
+
           let objeto_registro = {
             user_id: req.userID,
             user_name: req.userName,
@@ -491,15 +491,15 @@ module.exports = {
             quantity: itemUpdate.quantity,
             total: aux_price,
           };
-      
+
           const sellRegistry = await sellRegistryModel.create(objeto_registro);
           if (sellRegistry) {
-         
+
             const qrcodeUpdater = await QrCodesModel.findByIdAndUpdate(
               qrcode._id,
               qrcode
             );
-           
+
             if (qrcodeUpdater) {
               //console.log("Foi");
               return res.send({
@@ -542,7 +542,7 @@ module.exports = {
           });
         }
       } else {
-        
+
         return res.send({
           obj: null,
           success: false,
@@ -560,14 +560,20 @@ module.exports = {
     }
   },
   async deleteQrCode(req, res) { },
-  async recoverQrCode(req,res){ //Recuperar qrcode.
-    if(req.body.qrcode){
-      const qrcode = await QrCodesModel.findById({_id: req.body.qrcode})
-      if(qrcode){
-        return res.send({success:true, msg:"Qrcode localizado", obj:qrcode})
-      }else{
-        return res.send({success:false})
+  async recoverQrCode(req, res) { //Recuperar qrcode.
+    if (req.body.qrcode) {
+      try {
+        const qrcode = await QrCodesModel.findById({ _id: req.body.qrcode })
+        if (qrcode) {
+          return res.send({ success: true, msg: "Qrcode localizado", obj: qrcode })
+        } else {
+          return res.send({ success: false })
+        }
+      } catch (e) {
+        console.log(e)
+        return res.send({ success: false, error: true })
       }
+
     }
   }
 };

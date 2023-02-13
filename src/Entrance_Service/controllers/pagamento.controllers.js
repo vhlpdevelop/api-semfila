@@ -168,10 +168,16 @@ module.exports = {
             aux_items[i].price +
             "</td> " +
             "</tr>";
+          /*
           let auxiliar =
-            "<td align=center style=padding:0;Margin:0;font-size:0>"
-          aux_items[i].item_name
+          "<td align=center style=padding:0;Margin:0;font-size:0>"
+        aux_items[i].item_name
+        "</td>";
+          */
+          let auxiliar =
+            `<td align="center" style="padding:0;Margin:0;font-size:0px"><img class="adapt-img" src="${aux_items[i].image_url}" alt style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="178">`
           "</td>";
+
           aux_sender += `
           <tr style="border-collapse:collapse"> 
           <td align="left" style="Margin:0;padding-top:5px;padding-bottom:10px;padding-left:20px;padding-right:20px"> 
@@ -245,7 +251,7 @@ module.exports = {
 
 
       //
-      if (!aux_ticket.cortesia){
+      if (!aux_ticket.cortesia) {
         io.to(pedido.socket)
           .timeout(5000)
           .emit(
@@ -255,7 +261,7 @@ module.exports = {
               dataToSend,
             },
             (err, response) => {
-              if(err ===null){ //Então gravar no global pois nao enviou
+              if (err === null) { //Então gravar no global pois nao enviou
                 let aux = {
                   sessionID: pedido.socket,
                   dataToSave: dataToSave,
@@ -263,17 +269,17 @@ module.exports = {
                 globalUsers.push(aux);
                 console.log("Gravou")
               }
-  
+
               if (!response) {
-                
-              
+
+
               } else {
                 console.log(response);
               } //Faça nada
             }
           );
-      } 
-     
+      }
+
     } catch (e) {
       console.log("Erro ===============");
       console.log(e);
@@ -307,7 +313,6 @@ module.exports = {
         req.userEmail = decoded.email
 
       })
-      console.log(req.userEmail)
       auth = req.userID
       email = req.userEmail
     }
@@ -318,7 +323,7 @@ module.exports = {
         msg: "Email vazio."
       })
     }
-    if(!req.body.idSocket){
+    if (!req.body.idSocket) {
       return res.send({
         success: false,
         msg: "Falha na conexão."
@@ -328,8 +333,8 @@ module.exports = {
 
     process.stdout.write("\033c");
 
-    
-    if(!req.body.itemData){
+
+    if (!req.body.itemData) {
       return res.send({
         success: false,
         msg: "Carrinho vazio."

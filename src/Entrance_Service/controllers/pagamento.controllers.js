@@ -307,6 +307,7 @@ module.exports = {
         req.userEmail = decoded.email
 
       })
+      console.log(req.userEmail)
       auth = req.userID
       email = req.userEmail
     }

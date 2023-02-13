@@ -153,7 +153,7 @@ module.exports = {
         let aux_sender = "";
         var store = await storeModel.findById({_id: pedido.store_id})
         //Adicionar resgate.
-        var url_button = store.store_url+"-"+object.qrcode
+        var url_button = store.store_url+"-"+base64data
         console.log(url_button)
         for (let i = 0; i < aux_items.length; i++) {
 

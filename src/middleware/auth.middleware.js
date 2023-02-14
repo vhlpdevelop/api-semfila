@@ -26,6 +26,7 @@ module.exports = (req, res, next) => {
         req.userName = decoded.user_name
         req.stores= decoded.stores
         res.header("Access-Control-Allow-Origin", "*");
+        console.log("Passou por tudo")
         return next();
     })
 

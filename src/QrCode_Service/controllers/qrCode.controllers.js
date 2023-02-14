@@ -510,29 +510,12 @@ module.exports = {
 
             if (qrcodeUpdater) { //Puxar o pedido e enviar uma atualização pro usuario.
               io.to(pedido.socket)
-          .timeout(5000)
+          .timeout(8000)
           .emit(
-            "qrcodeGet",
+            "updateQrCode",
             {
               //realizar um callback
-              dataToSend,
-            },
-            (err, response) => {
-              if (err === null) { //Então gravar no global pois nao enviou
-                let aux = {
-                  sessionID: pedido.socket,
-                  dataToSave: dataToSave,
-                };
-                globalUsers.push(aux);
-                console.log("Gravou")
-              }
-
-              if (!response) {
-
-
-              } else {
-                console.log(response);
-              } //Faça nada
+              qrcode,
             }
           );
 

@@ -9,6 +9,7 @@ const path = require('path');
 const bodyParser = require("body-parser");
 const db = require("./config/db");
 const cors = require("cors");
+const middleware = require("./middleware/auth.middleware")
 
 const helmet = require('helmet')
 const mongoSanitize = require("express-mongo-sanitize")
@@ -157,6 +158,6 @@ io.sockets.on("connection", (socket) => { //Caso usuario não receba qrcode deve
 app.set("socketio", io);
 
 app.post('/updateQrcode', function(req,res){
-  return res.send( updateQrCode(req,res)) //Vai funcionar? nao sei
+  return res.send( middleware, updateQrCode(req,res)) //Vai funcionar? nao sei
 });
 //

@@ -422,6 +422,7 @@ module.exports = {
   },
   async updateQrCode(req) {
     const itemUpdate = req.body;
+    itemUpdate.quantity = 1;
     //Buscar qrcode para validar
     try {
       //Verificar primeiro se QrCode é dessa loja mesmo.

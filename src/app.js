@@ -161,6 +161,7 @@ app.set("socketio", io);
 app.post('/updateQrcode',async (req,res,next) => {
   middleware(req,res,next)
 }, async (req,res)=>{
+  console.log("Aqui")
   return res.send(updateQrCode(req))
 });
 //

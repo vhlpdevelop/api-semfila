@@ -563,7 +563,7 @@ module.exports = {
   async recoverQrCode(req, res) { //Recuperar qrcode.
     if (req.body.qrcode) {
       try {
-        const qrcode = await QrCodesModel.findById({ _id: req.body.qrcode })
+        const qrcode = await QrCodesModel.findOne({ _id: req.body.qrcode, state:true, withdraw:false})
         if (qrcode) {
           return res.send({ success: true, msg: "Qrcode localizado", obj: qrcode })
         } else {

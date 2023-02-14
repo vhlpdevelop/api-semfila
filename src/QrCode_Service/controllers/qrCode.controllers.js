@@ -437,9 +437,9 @@ module.exports = {
       const qrcode = await QrCodesModel.findById(itemUpdate._id);
       if (qrcode) {
         const io = req.app.get("socketio");
-        const pedido = await pedidosModel.findById({_id: qrcode.pedido_id})
-        if(!pedido){
-          return res.send({success:false, msg:"Compra não encontrada"})    
+        const pedido = await pedidosModel.findById({ _id: qrcode.pedido_id })
+        if (!pedido) {
+          return res.send({ success: false, msg: "Compra não encontrada" })
         }
         //Caso existe verificar store_id e quantidade pedida
         if (qrcode.withdraw) { //Caso o QrCode foi solicitado para reembolso.
@@ -508,16 +508,16 @@ module.exports = {
 
             if (qrcodeUpdater) { //Puxar o pedido e enviar uma atualização pro usuario.
               io.to(pedido.socket)
-          .timeout(8000)
-          .emit(
-            "updateQrCode",
-            {
-              //realizar um callback
-              qrcode,
-            }
-          );
+                .timeout(8000)
+                .emit(
+                  "updateQrCode",
+                  {
+                    //realizar um callback
+                    qrcode,
+                  }
+                );
 
-             
+
               return {
                 obj: qrcode,
                 success: true,
@@ -579,7 +579,7 @@ module.exports = {
   async recoverQrCode(req, res) { //Recuperar qrcode.
     if (req.body.qrcode) {
       try {
-        const qrcode = await QrCodesModel.findOne({ _id: req.body.qrcode, state:true, withdraw:false})
+        const qrcode = await QrCodesModel.findOne({ _id: req.body.qrcode, state: true, withdraw: false })
         if (qrcode) {
           return res.send({ success: true, msg: "Qrcode localizado", obj: qrcode })
         } else {

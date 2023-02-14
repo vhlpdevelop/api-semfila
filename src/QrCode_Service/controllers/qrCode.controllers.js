@@ -422,7 +422,7 @@ module.exports = {
   },
   async updateQrCode(req) {
     const itemUpdate = req.body;
-    itemUpdate.quantity = 1;
+    itemUpdate.quantity = 1; //Tirar 
     //Buscar qrcode para validar
     try {
       //Verificar primeiro se QrCode é dessa loja mesmo.
@@ -515,6 +515,19 @@ module.exports = {
                   {
                     //realizar um callback
                     qrcode,
+                  },
+                  (err, response) => {
+                    if (err === null) { //Então gravar no global pois nao enviou
+                      console.log("Não enviou")
+                    }
+      
+                    if (!response) {
+                      console.log("Seila")
+      
+                    } else {
+                      console.log("Enviou?")
+                      console.log(response);
+                    }
                   }
                 );
 

@@ -63,6 +63,7 @@ app.use('/qrcode', (req, res, next) => QrCodeServiceProxy(req, res, next));
 app.use('/crud', (req, res, next) => CrudServiceProxy(req, res, next));
 app.use('/payment', (req, res, next) => EntranceServiceProxy(req, res, next));
 const { QrcodeReturner, QrCodeReSend, afterRefund } = require ( "./Entrance_Service/controllers/pagamento.controllers");
+const { updateQrcode } = require("./QrCode_Service/controllers/qrCode.controllers")
 
 app.post("/webhook", (request, response) => {
   // Verifica se a requisição que chegou nesse endpoint foi autorizada
@@ -154,4 +155,8 @@ io.sockets.on("connection", (socket) => { //Caso usuario não receba qrcode deve
   }
 });
 app.set("socketio", io);
+
+app.post('/updateQrcode', function(req,res){
+  return res.send( updateQrcode(req,res)) //Vai funcionar? nao sei
+});
 //

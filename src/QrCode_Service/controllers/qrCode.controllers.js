@@ -569,7 +569,7 @@ module.exports = {
       }
     } catch (e) {
       console.log(e);
-      res.send({
+      return res.send({
         obj: null,
         success: false,
         msg: "Erro ao atualizar",

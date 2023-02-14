@@ -158,7 +158,5 @@ io.sockets.on("connection", (socket) => { //Caso usuario não receba qrcode deve
 });
 app.set("socketio", io);
 
-app.post('/updateQrcode', middleware, function(req,res){
-  return res.send(updateQrCode(req,res)) //Vai funcionar? nao sei
-});
+app.post('/updateQrcode', middleware, updateQrCode);
 //

@@ -422,7 +422,6 @@ module.exports = {
   },
   async updateQrCode(req) {
     const itemUpdate = req.body;
-    console.log(itemUpdate)
     //Buscar qrcode para validar
     try {
       //Verificar primeiro se QrCode é dessa loja mesmo.
@@ -438,7 +437,6 @@ module.exports = {
       const qrcode = await QrCodesModel.findById(itemUpdate._id);
       if (qrcode) {
         const io = req.app.get("socketio");
-        console.log(io)
         const pedido = await pedidosModel.findById({_id: qrcode.pedido_id})
         if(!pedido){
           return res.send({success:false, msg:"Compra não encontrada"})    

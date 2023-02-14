@@ -162,6 +162,6 @@ app.post('/updateQrcode', async (req,res,next) => {
     middleware(req,res,next)
     var retorno = await updateQrCode(req)
     console.log(retorno)
-    res.send(retorno)
+    return res.send(retorno)
 });
 //

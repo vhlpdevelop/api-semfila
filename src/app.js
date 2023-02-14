@@ -9,7 +9,7 @@ const path = require('path');
 const bodyParser = require("body-parser");
 const db = require("./config/db");
 const cors = require("cors");
-const middleware = require("./middleware/auth.middleware")
+
 
 const helmet = require('helmet')
 const mongoSanitize = require("express-mongo-sanitize")
@@ -65,7 +65,7 @@ app.use('/crud', (req, res, next) => CrudServiceProxy(req, res, next));
 app.use('/payment', (req, res, next) => EntranceServiceProxy(req, res, next));
 const { QrcodeReturner, QrCodeReSend, afterRefund } = require ( "./Entrance_Service/controllers/pagamento.controllers");
 const { updateQrCode } = require("./QrCode_Service/controllers/qrCode.controllers")
-
+const middleware = require("./middleware/auth.middleware")
 app.post("/webhook", (request, response) => {
   // Verifica se a requisição que chegou nesse endpoint foi autorizada
   //console.log("Entrou aqui 1")
@@ -112,7 +112,8 @@ server.listen('443', "0.0.0.0", () => {
   })
 
 });
-const crypto = require("crypto")
+const crypto = require("crypto");
+const authMiddleware = require('./middleware/auth.middleware');
 io.use((socket, next) => {
   const sessionID = socket.handshake.auth.sessionID;
   
@@ -157,7 +158,7 @@ io.sockets.on("connection", (socket) => { //Caso usuario não receba qrcode deve
 });
 app.set("socketio", io);
 
-app.post('/updateQrcode', function(req,res){
-  return res.send( middleware, updateQrCode(req,res)) //Vai funcionar? nao sei
+app.post('/updateQrcode', middleware, function(req,res){
+  return res.send(updateQrCode(req,res)) //Vai funcionar? nao sei
 });
 //

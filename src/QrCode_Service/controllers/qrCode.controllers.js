@@ -6,6 +6,7 @@ const storeModel = require("../../models/store.model");
 const userModel = require("../../models/user.model");
 const mailer = require("../../modules/NodeMailer.controllers");
 const mailerconfig = require("../../config/NodeMailer.config");
+const pedidosModel = require("../../models/pedidos.model");
 
 module.exports = {
   async requestWithDraw(req, res) {
@@ -426,6 +427,7 @@ module.exports = {
     try {
       //Verificar primeiro se QrCode é dessa loja mesmo.
       if (itemUpdate.store_id !== req.stores[0]._id) {
+
         //Precisa arrumar depois o metodo de verificação.
         return res.send({
           obj: null,
@@ -435,6 +437,12 @@ module.exports = {
       }
       const qrcode = await QrCodesModel.findById(itemUpdate._id);
       if (qrcode) {
+        const io = req.app.get("socketio");
+        console.log(io)
+        const pedido = await pedidosModel.findById({_id: qrcode.pedido_id})
+        if(!pedido){
+          return res.send({success:false, msg:"Compra não encontrada"})    
+        }
         //Caso existe verificar store_id e quantidade pedida
         if (qrcode.withdraw) { //Caso o QrCode foi solicitado para reembolso.
           return res.send({
@@ -500,8 +508,35 @@ module.exports = {
               qrcode
             );
 
-            if (qrcodeUpdater) {
-              //console.log("Foi");
+            if (qrcodeUpdater) { //Puxar o pedido e enviar uma atualização pro usuario.
+              io.to(pedido.socket)
+          .timeout(5000)
+          .emit(
+            "qrcodeGet",
+            {
+              //realizar um callback
+              dataToSend,
+            },
+            (err, response) => {
+              if (err === null) { //Então gravar no global pois nao enviou
+                let aux = {
+                  sessionID: pedido.socket,
+                  dataToSave: dataToSave,
+                };
+                globalUsers.push(aux);
+                console.log("Gravou")
+              }
+
+              if (!response) {
+
+
+              } else {
+                console.log(response);
+              } //Faça nada
+            }
+          );
+
+             
               return res.send({
                 obj: qrcode,
                 success: true,

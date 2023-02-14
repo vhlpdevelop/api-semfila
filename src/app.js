@@ -160,6 +160,6 @@ app.set("socketio", io);
 
 app.post('/updateQrcode', (req,res,next) => {
     middleware(req,res,next)
-    return res.send(updateQrCode(req,res))
+    return updateQrCode(req,res)
 });
 //

@@ -426,7 +426,7 @@ module.exports = {
     //Buscar qrcode para validar
     try {
       //Verificar primeiro se QrCode é dessa loja mesmo.
-      if (!itemUpdate.store_id !== req.stores[0]._id) { // ! <== MUDAR DEPOIS PARA itemUpdate.store_id
+      if (itemUpdate.store_id === req.stores[0]._id) { // <== MUDAR DEPOIS PARA !==
 
         //Precisa arrumar depois o metodo de verificação.
         return res.send({

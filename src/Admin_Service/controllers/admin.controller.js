@@ -9,9 +9,10 @@ const user_storeModel = require("../../models/user_store.model");
 const qrCodeModel = require("../../models/qrCode.model");
 const { GNRequest } = require("../config/gerenciaNet.config");
 const reportModel = require("../../models/report.model")
-const mailer = require("../modules/NodeMailer.controllers");
-const mailerconfig = require("../config/NodeMailer.config");
+const mailer = require("../../modules/NodeMailer.controllers");
+const mailerconfig = require("../../config/NodeMailer.config");
 const authConfig = require("../config/auth");
+const template_function = require("./methods/template_function")
 const jwt = require("jsonwebtoken");
 
 module.exports = {
@@ -307,7 +308,22 @@ module.exports = {
 
             if (!update_company)
                 return res.send({ msg: "Não foi possivel atualizar", success: false })
-            //RETORNO
+           
+
+            //Enviar email.
+            mailer.sendMail(
+                {
+                    to: user.email,
+                    from: mailerconfig.from,
+                    html: await template_function("Sua empresa foi autenticada e está pronta para começar. Em caso de dúvida por favor entre em contato conosco pelo email contato@semfila.tech . Obrigado e boas vendas", "Clique para Começar!", "https://www.semfila.tech"),
+                    subject: "SemFila - Sua empresa foi autenticada"
+                },
+                (err) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                }
+            );
             return res.send({ success: true, msg: "Empresa autenticada" })
         } catch (e) {
             console.log(e)

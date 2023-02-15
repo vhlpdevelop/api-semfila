@@ -10,10 +10,6 @@ const sellRegistry = new Schema({
         item: {type:Object},
         cortesia: {type: Boolean,default:false},
         total: {type: String},
-        devedor: { //Novo
-                cpf: {type:String},
-                nome: {type:String}
-        },
         quantity: {type:String},
         draw: {type:Boolean,default:false},
         refund: {type:Boolean, default:false},

@@ -226,13 +226,21 @@ module.exports = {
         ]
       }
       if (userStore.type === 'Func') {
+        for(let i=0; i<response.profile.length; i++){ //NOVO
+          rotas.push(response.profile[i]);
+          if(response.profile[i].title !== "Leitor QR CODE")
+          obj_builder_two.push(response.profile[i].title)
+        } //Fim novo
          obj_builder_one = [{ title: "QR CODE" }, {title: "Minha Conta"}]
         obj_builder_two = [{ title: "QR CODE" }, {title: "Minha Conta"}]
+        
+        /* antigo removido
         rotas.push({
-          title: "Leitor QR CODE",
-          path: "/qrcode",
-          icon: "mdi-qrcode-scan",
+          title: "Minha Conta",
+          path: "/conta",
+          icon: "mdi-account",
         });
+        */
         rotas.push({
           title: "Minha Conta",
           path: "/conta",
@@ -414,6 +422,7 @@ module.exports = {
     }
   },
   async updateProfile(req,res){
+    console.log(req.body)
     try{
       if(req.body.profile){
         //Construindo profile

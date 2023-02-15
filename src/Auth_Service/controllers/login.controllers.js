@@ -422,7 +422,7 @@ module.exports = {
     }
   },
   async updateProfile(req,res){
-    console.log(req.body)
+   
     try{
       if(req.body.profile){
         //Construindo profile
@@ -474,7 +474,7 @@ module.exports = {
           )
         }
         const updateUser = await User_model.findByIdAndUpdate({_id: req.body.user_id}, {profile: profile, config_profile: profile_save})
-        console.log(updateUser)
+        
         if(updateUser){
           return res.send({success:true, msg:"Permissões atualizadas."})
         }else{

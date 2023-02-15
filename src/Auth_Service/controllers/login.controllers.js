@@ -9,6 +9,7 @@ const Admin = require("../../models/adminUser.model");
 const QrcodesModel = require("../../models/qrCode.model")
 const authConfig = require("../../config/auth");
 const jwt = require("jsonwebtoken");
+
 function validateEmail(email) {
   var re =
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -412,4 +413,70 @@ module.exports = {
       });
     }
   },
+  async updateProfile(req,res){
+    try{
+      if(req.body.profile){
+        //Construindo profile
+        const profile_save = req.body.profile;
+        const profile = [];
+        if(profile_save.cardapio){
+          profile.push(
+            {
+              title: "Cardapio",
+              path: "/cardapio",
+              icon: "mdi-folder-text-outline",
+            }
+          )
+        }
+        if(profile_save.financeiro){
+          profile.push(
+            {
+              title: "Financeiro",
+              path: "/financeiro",
+              icon: "mdi-finance",
+            }
+          )
+        }
+        if(profile_save.leitor){
+          profile.push(
+            {
+              title: "Leitor QR CODE",
+              path: "/qrcode",
+              icon: "mdi-qrcode-scan",
+            }
+          )
+        }
+        if(profile_save.limitador){
+          profile.push(
+            {
+              title: "Limitador",
+          path: "/limitador",
+          icon: "mdi-contrast",
+            }
+          )
+        }
+        if(profile_save.logistica){
+          profile.push(
+            {
+              title: "Logistica",
+          path: "/logistica",
+          icon: "mdi-table-cog",
+            }
+          )
+        }
+        const updateUser = await User_model.findByIdAndUpdate({_id: req.body.user_id}, {profile: profile, config_profile: profile_save})
+        console.log(updateUser)
+        if(updateUser){
+          return res.send({success:true, msg:"Permissões atualizadas."})
+        }else{
+          return res.send({success:false, msg:"Não foi possível atualizar."})
+        }
+
+
+      }
+    }catch(e){
+      console.log(e)
+      return res.send({success:false, msg:"Não foi possível atualizar, erro."})
+    }
+  }
 };

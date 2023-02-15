@@ -23,6 +23,7 @@ router.post('/InviteUserEmp',limiter.padrao, auth_owner,user_controller.InviteUs
 router.post('/VerifyTokenFunc', limiter.padrao,user_controller.VerifyTokenFunc);
 router.post('/registerUserEmpFunc', limiter.Login_limiter,user_controller.registerUserEmpFunc);
 router.post('/removeFunc',limiter.padrao,auth_owner, user_controller.removeFunc);
+router.post('/updateProfile', limiter.padrao, auth_owner, login_controller.updateProfile);
 router.get('/getUsers',limiter.padrao, auth_owner,user_controller.allUsers)
 //
 

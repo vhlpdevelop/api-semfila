@@ -9,7 +9,7 @@ const User = new Schema({
   phone: {type:String},
   cpf: {type:String},
   profile: { type: Array, default: []},
-  config_profile: {type:Object},
+  config_profile: {type:Object}, //Novo
   type_status: {type:Boolean}, //Caso seja um emp e esteja Validado
   password: { type: String, required: true, select: false },
   pss_ResetToken: {type: String, select:false},

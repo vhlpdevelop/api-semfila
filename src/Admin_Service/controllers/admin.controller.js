@@ -340,7 +340,7 @@ module.exports = {
             const draw_req = await drawReq_model.findOne({ company_id: req.body.company_id })
             if (!draw_req)
                 return res.send({ msg: "DrawReq não localizado", success: false })
-
+            console.log(draw_req)
             //Se chegou aqui até entao autentique
             financeiro.draw = true; //Pode realizar saque novamente
             draw_req.status = true;//Marcar como sacado

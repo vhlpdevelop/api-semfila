@@ -337,7 +337,7 @@ module.exports = {
             const financeiro = await financeiro_model.findOne({ company_id: req.body.company_id })
             if (!financeiro)
                 return res.send({ msg: "financeiro não localizada", success: false })
-            const draw_req = await drawReq_model.findOne({ company_id: req.body.company_id })
+            const draw_req = await drawReq_model.findById({ _id: req.body.draw_id })
             if (!draw_req)
                 return res.send({ msg: "DrawReq não localizado", success: false })
             console.log(draw_req)

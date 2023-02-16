@@ -345,15 +345,10 @@ module.exports = {
             financeiro.draw = true; //Pode realizar saque novamente
             draw_req.status = true;//Marcar como sacado
 
-            const update_financeiro = await financeiro_model.findByIdAndUpdate({ _id: financeiro._id }, financeiro);
-
-            if (!update_financeiro)
-                return res.send({ msg: "Não foi possivel atualizar Financeiro", success: false })
-
-            const update_drawReq = await drawReq_model.findByIdAndUpdate({ _id: draw_req._id }, draw_req);
-            console.log(update_drawReq)
-            if (!update_drawReq)
-                return res.send({ msg: "Não foi possivel atualizar drawreq", success: false })
+            financeiro.markModified('draw')
+            financeiro.save();
+            draw_req.markModified('status')
+            draw_req.save();
             //RETORNO
             return res.send({ success: true, msg: "Saque autenticado" })
         } catch (e) {

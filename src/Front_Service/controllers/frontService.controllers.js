@@ -136,6 +136,7 @@ module.exports = {
     async fetchPedido(req,res){
       try{
         const pedido_id = req.body.pedido_id;
+        console.log(pedido_id)
         const pedido = await pedido_model.findById({_id: pedido_id});
         if(pedido){//Localizou o pedido então buscar os QRCODES.
           if(pedido.status){ //Está pago então buscar.

@@ -1,5 +1,6 @@
 const storeModel = require("../../models/store.model");
 const userModel = require("../../models/user.model")
+const pedido_model = require("../../models/user.model")
 const menuModel = require("../../models/menu.model")
 const menu_category_model = require("../../models/menu_category.model");
 const itemsModel = require("../../models/items.model");
@@ -132,6 +133,22 @@ module.exports = {
         });
       }
     },
-  
+    async fetchPedido(req,res){
+      try{
+        const pedido_id = req.body.pedido_id;
+        const pedido = await pedido_model.findById({_id: pedido_id});
+        if(pedido){//Localizou o pedido então buscar os QRCODES.
+          if(pedido.status){ //Está pago então buscar.
+            const qrcodes = await qrcode_model.find({pedido_id: pedido._id})
+            if(qrcodes){
+              return res.send({success:true, msg:"QRCODE carregado.", obj:qrcodes})
+            }
+          }
+        }
+      }catch(e){
+        console.log(e)
+        return res.send({success:false, msg: "Ocorreu um erro- 504"})
+      }
+    }
     
 }

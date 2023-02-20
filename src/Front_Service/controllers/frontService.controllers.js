@@ -144,8 +144,13 @@ module.exports = {
           if(pedido.status){ //Está pago então buscar.
             const qrcodes = await qrcode_model.find({pedido_id: pedido._id})
             if(qrcodes){
-              console.log(qrcodes)
-              return res.send({success:true, msg:"QRCODE carregado.", obj:qrcodes})
+              if(qrcodes.length > 0){
+                return res.send({success:true, msg:"QRCODE carregado.", obj:qrcodes})
+              }else{
+                return res.send({success:false, msg:"Não existe QRCODES nesse pedido."})
+              }
+         
+            
             }
           }else{
             return res.send({success:false, msg:"Pedido não foi pago."})

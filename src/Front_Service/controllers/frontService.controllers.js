@@ -153,7 +153,7 @@ module.exports = {
             
             }
           }else{
-            return res.send({success:false, msg:"Pedido não foi pago."})
+            return res.send({success:false, msg:"Aguardando pagamento."})
           }
         }else{
           return res.send({success:false, msg:"Pedido não encontrado"})

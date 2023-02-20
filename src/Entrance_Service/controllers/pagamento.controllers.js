@@ -327,12 +327,7 @@ module.exports = {
         msg: "Email vazio."
       })
     }
-    if (!req.body.idSocket) {
-      return res.send({
-        success: false,
-        msg: "Falha na conexão."
-      })
-    }
+    
     const socketId = req.body.idSocket;
 
     process.stdout.write("\033c");

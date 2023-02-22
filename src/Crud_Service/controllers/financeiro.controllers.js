@@ -50,7 +50,6 @@ module.exports = {
       if (response) {
         const financy = await financialModel.findOne({ company_id: company });
         var value = 0;
-        console.log(financy.draw)
         if (financy) {
           if (financy.draw === true) {
             //Trazer dados do contrato.
@@ -145,8 +144,6 @@ module.exports = {
                 });
               }
             }
-
-
           } else {
             console.log(financy)
             return res.send({
@@ -155,12 +152,14 @@ module.exports = {
             });
           }
 
+        } else {
+          console.log("Aqui")
+          return res.send({
+            success: false,
+            msg: "Não encontramos o seu financeiro"
+          })
         }
-        console.log("Aqui")
-        return res.send({
-          success: false,
-          msg: "Não encontramos o seu financeiro"
-        })
+
       } else {
         return res.send({
           success: false,

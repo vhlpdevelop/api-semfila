@@ -50,6 +50,7 @@ module.exports = {
       if (response) {
         const financy = await financialModel.findOne({ company_id: company });
         var value = 0;
+        console.log(financy)
         if (financy) {
           if (financy.draw === true) {
             //Trazer dados do contrato.

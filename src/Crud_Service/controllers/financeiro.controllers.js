@@ -147,6 +147,7 @@ module.exports = {
 
 
           }
+          console.log(financy)
         return res.send({
           success: false,
           msg: "SemFila está verificando seu Ultimo Saque.",

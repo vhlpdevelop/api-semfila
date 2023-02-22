@@ -52,7 +52,9 @@ module.exports = {
         var value = 0;
         console.log(financy)
         if (financy) {
+          console.log("Entrou aqui")
           if (financy.draw === true) {
+            console.log("Entrou aqui também")
             //Trazer dados do contrato.
             const contract = await contractModel.findById({ _id: financy.contract_id })
 

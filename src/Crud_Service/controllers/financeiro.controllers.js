@@ -50,7 +50,8 @@ module.exports = {
       if (response) {
         const financy = await financialModel.findOne({ company_id: company });
         var value = 0;
-        if (financy)
+        console.log(financy.draw)
+        if (financy){
           if (financy.draw) {
             //Trazer dados do contrato.
             const contract = await contractModel.findById({_id: financy.contract_id})
@@ -152,6 +153,12 @@ module.exports = {
           success: false,
           msg: "SemFila está verificando seu Ultimo Saque.",
         });
+        }
+          console.log("Aqui")
+          return res.send({
+            success:false,
+            msg: "Não encontramos o seu financeiro"
+          })
       } else {
         return res.send({
           success: false,

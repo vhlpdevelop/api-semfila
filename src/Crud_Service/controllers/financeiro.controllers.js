@@ -50,11 +50,11 @@ module.exports = {
       if (response) {
         const financy = await financialModel.findOne({ company_id: company });
         var value = 0;
-        console.log(financy)
+  
         if (financy) {
-          console.log("Entrou aqui")
+  
           if (financy.draw === true) {
-            console.log("Entrou aqui também")
+  
             //Trazer dados do contrato.
             const contract = await contractModel.findById({ _id: financy.contract_id })
 
@@ -65,12 +65,12 @@ module.exports = {
             //Verificar se a data do proximo saque está liberada.
             let aux_date = new Date(financy.next_draw)
             let now = new Date(Date.now())
-            console.log(response.length)
+      
             if (now > aux_date) {
-              console.log("Aqui")
+         
               for (let i = 0; i < response.length; i++) {
                 if (!response[i].cortesia) {
-                  console.log("Aqui também")
+           
                   value = parseFloat(value) + parseFloat(response[i].total);
                   response[i].draw = true;
                   await sell_registry.findByIdAndUpdate(
@@ -80,7 +80,7 @@ module.exports = {
                 }
               }
 
-              console.log(value)
+        
               if (value > 0) {
                 //Utilizar o contrato para conta.
                 var tax = parseFloat(contract.tax) / 100;
@@ -106,11 +106,11 @@ module.exports = {
                   company_id: req.company_id,
                   status: false,
                 };
-                console.log(aux_draw)
+       
                 const drawRequest = await drawReqModel.create(aux_draw);
                 
                 if (drawRequest) {
-                  console.log("Criando...")
+                
                   financy.draw = false;
                   financy.last_draw = Date.now();
                   if (financy.draw_type === 'week') {
@@ -149,9 +149,11 @@ module.exports = {
                   msg: "Valor de saque está em Zero.",
                 });
               }
+            }else{
+              return res.send({success:false, msg:"Aguarde o tempo para o proximo saque"})
             }
           } else {
-            console.log(financy)
+     
             return res.send({
               success: false,
               msg: "SemFila está verificando seu Ultimo Saque.",
@@ -159,7 +161,7 @@ module.exports = {
           }
 
         } else {
-          console.log("Aqui")
+ 
           return res.send({
             success: false,
             msg: "Não encontramos o seu financeiro"

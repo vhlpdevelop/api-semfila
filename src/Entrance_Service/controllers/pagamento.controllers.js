@@ -801,7 +801,7 @@ module.exports = {
             const reqGN = await reqGNAlready; //OPTIONS
             
             //expire_at
-            var today = new Date.now()
+            var today = new Date(Date.now())
             today.setDate(today.getDate() + 1)
             var todayDate = new Date(today).toISOString().slice(0, 10);
             var body = {

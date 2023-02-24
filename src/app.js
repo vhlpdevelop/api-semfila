@@ -66,7 +66,15 @@ app.use('/payment', (req, res, next) => EntranceServiceProxy(req, res, next));
 const { QrcodeReturner, QrCodeReSend, afterRefund } = require ( "./Entrance_Service/controllers/pagamento.controllers");
 const { updateQrCode } = require("./QrCode_Service/controllers/qrCode.controllers")
 const middleware = require("./middleware/auth.middleware")
-app.post("/webhook", (request, response) => {
+
+//Cartão de crédito
+//Recebendo notificações.
+app.post("/notification_bill", (request, response)=> {
+  console.log(request);
+});
+
+//Pix
+app.post("/webhook", (request, response) => { 
   // Verifica se a requisição que chegou nesse endpoint foi autorizada
   //console.log("Entrou aqui 1")
   if (request.client.authorized) { 
@@ -99,6 +107,7 @@ app.post("/webhook/pix*", (req, res, next) => {
   }
   res.send({ ok: 1 })
 });
+//PIX
 const io = require("socket.io")(server, {
   cors: {
     origins: [],

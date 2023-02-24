@@ -418,6 +418,7 @@ module.exports = {
             user_id: auth,
             txid: "",
             price: pag.toString(), //
+            payment: "pix",
             store_id: dados.store_id,
             store_name: store.name,
             company_id: dados.company_id,
@@ -644,9 +645,221 @@ module.exports = {
     }
   },
   async payCreditCard(req, res) {
-    console.log("Credit Card");
-    const dados = req.body;
-    console.log(dados);
+    var auth = "";
+    var email = req.body.itemData.email;
+
+    if (req.headers.authorization) {
+      //AUTH
+      const authHeader = JSON.parse(req.headers.authorization);
+      //console.log(authHeader)
+      if (!authHeader)
+        return res.status(401).send({ msg: "Autenticação invalida!", error: 'Token não foi informado', success: false });
+
+      const parts = authHeader.split(' ');
+
+      if (!parts.length === 2)
+        return res.status(401).send({ error: 'Token error', success: false, msg: 'Entre novamente' });
+
+      const [scheme, token] = parts;
+
+      if (!/^Bearer$/i.test(scheme))
+        return res.status(401).send({ error: 'Token formato inválido', success: false, msg: 'Entre novamente' });
+
+      jwt.verify(token, authConfig.secret, (err, decoded) => {
+        if (err) return res.status(401).send({ error: 'Token inválido', success: false, msg: 'Entre novamente' });
+
+        req.userID = decoded.id;
+        req.userEmail = decoded.email
+
+      })
+      auth = req.userID
+      email = req.userEmail
+    }
+    //Se usuário está autenticado, então.
+    if (email === "") {
+      return res.send({
+        success: false,
+        msg: "Por favor, insira seu email."
+      })
+    }
+    
+    const socketId = req.body.idSocket;
+
+    process.stdout.write("\033c");
+
+
+    if (!req.body.itemData) {
+      return res.send({
+        success: false,
+        msg: "Carrinho vazio."
+      })
+    }
+    const dados = req.body.itemData;
+    //Primeiro autenticar os dados, verificar items
+    try {
+      var items = [];
+      var items_second = [];
+      var pag = 0;
+      var pag_second = 0;
+      var desconto = 0;
+      //VERIFICAR SE STORE EXISTE PRIMEIRO
+      let store = await storeModel.findById(dados.store_id);
+
+      if (store._id !== undefined) {
+        for (let i = 0; i < dados.cart.length; i++) {
+          let itemChecker = await itemsModel.findById({
+            _id: dados.cart[i]._id,
+          });
+          if (itemChecker !== undefined) {
+            if (itemChecker.limit_switch) {
+              if (itemChecker.limit_number - dados.cart[i].qtd < 0) {
+                return res.send({
+                  success: false,
+                  msg: itemChecker.item_name + " sobrou apenas: " + itemChecker.limit_number + "un.",
+                  obj: itemChecker._id,
+                })
+              }
+            }
+            //Este item existe. Guardar ele em uma variavel diferente para não haver discrepancias nos dados.
+            itemChecker.qtd = dados.cart[i].qtd;
+
+            var duration = 0;
+            if (itemChecker.promotion) {
+              //Se ele estiver em uma promoção, tem tempo de vida
+              duration = parseFloat(itemChecker.promotion_duration) * 24;
+            } else {
+              itemChecker.duration = 4380;
+            }
+            pag_second = parseFloat(itemChecker.price).toFixed(2)
+            if (itemChecker.discount_status) {
+              desconto =
+                (parseFloat(desconto) +
+                  parseFloat(itemChecker.discount_value)) *
+                dados.cart[i].qtd;
+              desconto = desconto.toFixed(2);
+              pag_second = pag_second - desconto;
+            }
+            pag = pag + itemChecker.price * dados.cart[i].qtd;
+            let aux_value = parseInt(pag_second.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')) // 25.00 => 2500
+            console.log(aux_value)
+            items_second.push( {
+              name: itemChecker.item_name,
+              value: aux_value,
+              amount: dados.cart[i].qtd
+            }
+            )
+            let aux_pusher = {
+              _id: itemChecker._id,
+              item_name: itemChecker.item_name,
+              description: itemChecker.description,
+              type: itemChecker.type,
+              image_url: itemChecker.image_url,
+              price: itemChecker.price,
+              ncm: itemChecker.ncm,
+              icms: itemChecker.icms,
+              qtd: dados.cart[i].qtd,
+              category_id: itemChecker.category_id,
+              company_id: itemChecker.company_id,
+              promotion: itemChecker.promotion,
+              discount_status: itemChecker.discount_status,
+              discount_value: itemChecker.discount_value,
+              promotion_duration: itemChecker.promotion_duration,
+              duration: duration,
+              destaques: itemChecker.destaques,
+            };
+            items.push(aux_pusher);
+          }
+        }
+
+        pag = pag.toFixed(2);
+        pag = parseFloat(pag) - parseFloat(desconto);
+        pag = pag.toFixed(2);
+        //console.log(dados);
+
+        if (items.length > 0) {
+          //Se existir items validados continue
+          //CRIAR UM PEDIDO COM OS ITEMS
+          let object = {
+            items: items,
+            user_id: auth,
+            txid: "",
+            price: pag.toString(), //
+            payment: "credit_card",
+            store_id: dados.store_id,
+            store_name: store.name,
+            company_id: dados.company_id,
+          };
+          const pedido = await pedidosModel.create(object);
+
+          if (pedido) {
+            //Criar um link de pagamento.
+            const reqGNAlready = GNRequest({
+              clientID: process.env.GN_CLIENT_ID,
+              clientSecret: process.env.GN_CLIENT_SECRET,
+            });
+         
+            const reqGN = await reqGNAlready; //OPTIONS
+            
+            //expire_at
+            var today = new Date.now()
+            today.setDate(today.getDate() + 1)
+            var todayDate = new Date(today).toISOString().slice(0, 10);
+            var body = {
+              items: items_second,
+              metadata : {
+                custom_id: pedido._id,
+                notification_url: "https://api-semfila.api-semfila.online/notification_bill"
+              },
+              settings: {
+                message: "Obrigado por comprar com a SemFila, seu número do pedido é "+pedido_id+" .Assim que realizar o pagamento, volte para o cardapio e aguarde a chegada no seu email (caixa spam).",
+                payment_method: "credit_card",
+                request_delivery_address: false,
+                expire_at: todayDate
+              }
+            }
+            const cobResponse = await reqGN.post("/v1/charge/one-step/link", body);
+            console.log(cobResponse)
+            //Atualizar pedido.
+            if(cobResponse.code === 200){
+              pedido.charge_id = cobResponse.data.charge_id
+              return res.send({
+                success: true,
+                msg: "Transferindo para o pagamento",
+                url: cobResponse.data.payment_url
+              });
+            }else{
+              return res.send({
+                success: false,
+                msg: "Não foi possivel gerar pagamento.",
+                
+              });
+            }
+        
+          }
+
+        } else {
+          //Retorne, carrinho está vazio ou os itens não existem
+          return res.send({
+            success: false,
+            msg: "Itens no carrinho não existentes",
+            obj: null,
+          });
+        }
+      } else {
+        return res.send({
+          success: false,
+          msg: "Loja não existe",
+          obj: null,
+        });
+      }
+    } catch (e) {
+      //console.log(e);
+      return res.send({
+        success: false,
+        msg: "Ops, ocorreu um erro",
+        obj: null,
+      });
+    }
   },
   async afterRefund(order) {
     //Verificar pelo pedido o txid e preparar o refundEmail.

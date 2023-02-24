@@ -257,7 +257,7 @@ module.exports = {
         },
         authConfig.secret,
         {
-          expiresIn: "6 hour",
+          expiresIn: "12 hour",
         }
       );
 

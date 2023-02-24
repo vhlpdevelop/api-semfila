@@ -853,7 +853,7 @@ module.exports = {
         });
       }
     } catch (e) {
-      //console.log(e);
+      console.log(e);
       return res.send({
         success: false,
         msg: "Ops, ocorreu um erro",

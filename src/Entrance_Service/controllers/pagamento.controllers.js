@@ -2,7 +2,7 @@ const userModel = require("../../models/user.model");
 const pedidosModel = require("../../models/pedidos.model");
 const authConfig = require("../config/auth");
 const jwt = require("jsonwebtoken");
-const { GNRequest } = require("../config/gerenciaNet.config");
+const { GNRequest, GNRequestCredit } = require("../config/gerenciaNet.config");
 const itemsModel = require("../../models/items.model");
 const templater = require("./methods/template_function");
 

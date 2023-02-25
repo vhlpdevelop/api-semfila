@@ -793,7 +793,7 @@ module.exports = {
 
           if (pedido) {
             //Criar um link de pagamento.
-            const reqGNAlready = GNRequest({
+            const reqGNAlready = GNRequestCredit({
               clientID: process.env.GN_CLIENT_ID,
               clientSecret: process.env.GN_CLIENT_SECRET,
             });

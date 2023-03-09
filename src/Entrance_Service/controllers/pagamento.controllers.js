@@ -804,7 +804,7 @@ module.exports = {
             }
             console.log(options)
             var gerencianet = new Gerencianet(options); //OPTIONS
-            console.log(reqGN)
+            console.log(gerencianet)
 
             //expire_at
             var today = new Date(Date.now())

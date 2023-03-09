@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const { GNRequest } = require("../config/gerenciaNet.config");
 const itemsModel = require("../../models/items.model");
 const templater = require("./methods/template_function");
-var Gerencianet = require('gn-api-sdk-node');
+const Gerencianet = require('gn-api-sdk-node');
 const QrCodesModel = require("../../models/qrCode.model");
 const storeModel = require("../../models/store.model");
 
@@ -802,9 +802,7 @@ module.exports = {
               client_secret: process.env.GN_CLIENT_SECRET,
               sandbox: false,
             }
-            console.log(options)
-            var gerencianet = new Gerencianet(options); //OPTIONS
-            console.log(gerencianet)
+
 
             //expire_at
             var today = new Date(Date.now())
@@ -823,11 +821,18 @@ module.exports = {
                 expire_at: todayDate
               }
             }
-            gerencianet
-              .oneStepLink({}, body)
-              .then(console.log)
-              .catch(console.log)
-              .done(console.log);
+            //OPTIONS
+            let params = {
+              id: 0,
+            }
+            const gerencianet = new Gerencianet(options);
+            gerencianet.createOneStepLink(params, body)
+              .then((resposta) => {
+                console.log(resposta)
+              })
+              .catch((error) => {
+                console.log(error)
+              })
             const cobResponse = {
               code: 200
             }

@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "allowJs": true,
+        "noImplicitAny": true,
+        "sourceMap": true,
+        "outDir": "../dst/",
+        "target": "ESNEXT",
+        "typeRoots": [
+            "../../typings",
+            "../../node_modules/@types"
+        ]
+    },
+    "lib": [
+        "es2016"
+    ],
+    "exclude": [
+        "../../node_modules",
+        "../../typings"
+    ]
+}

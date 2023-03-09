@@ -824,7 +824,7 @@ module.exports = {
               }
             }
             gerencianet
-              .createCharge({}, body)
+              .oneStepLink({}, body)
               .then(console.log)
               .catch(console.log)
               .done(console.log);

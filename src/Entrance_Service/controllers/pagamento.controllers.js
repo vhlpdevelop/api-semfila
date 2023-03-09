@@ -140,7 +140,7 @@ module.exports = {
           );
         }
       }
-      
+
       if (!trigger) {
         return "Finalizado.";
       }
@@ -152,9 +152,9 @@ module.exports = {
 
         var aux_items = pedido.items;
         let aux_sender = "";
-        var store = await storeModel.findById({_id: pedido.store_id})
+        var store = await storeModel.findById({ _id: pedido.store_id })
         //Adicionar resgate.
-        var url_button = store.store_url+"-"+ticket._id
+        var url_button = store.store_url + "-" + ticket._id
         for (let i = 0; i < aux_items.length; i++) {
 
           let cons =
@@ -178,7 +178,7 @@ module.exports = {
         aux_items[i].item_name
         "</td>";
           */
-         
+
           let auxiliar =
             `<td align="center" style="padding:0;Margin:0;font-size:0px"><img class="adapt-img" src="${aux_items[i].image_url}" alt style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="178" height="100"></td>`;
 
@@ -328,7 +328,7 @@ module.exports = {
         msg: "Email vazio."
       })
     }
-    
+
     const socketId = req.body.idSocket;
 
     process.stdout.write("\033c");
@@ -684,7 +684,7 @@ module.exports = {
         msg: "Por favor, insira seu email."
       })
     }
-    
+
     const socketId = req.body.idSocket;
 
     process.stdout.write("\033c");
@@ -744,7 +744,7 @@ module.exports = {
             pag = pag + itemChecker.price * dados.cart[i].qtd;
             let aux_value = parseInt(pag_second.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')) // 25.00 => 2500
             console.log(aux_value)
-            items_second.push( {
+            items_second.push({
               name: itemChecker.item_name,
               value: aux_value,
               amount: dados.cart[i].qtd
@@ -797,7 +797,7 @@ module.exports = {
             //Criar um link de pagamento.
 
             var options = {
-              
+
               client_id: process.env.GN_CLIENT_ID,
               client_secret: process.env.GN_CLIENT_SECRET,
               sandbox: false,
@@ -812,37 +812,41 @@ module.exports = {
             var todayDate = new Date(today).toISOString().slice(0, 10);
             var body = {
               items: items_second,
-              metadata : {
+              metadata: {
                 custom_id: pedido._id,
                 notification_url: "https://api-semfila.api-semfila.online/notification_bill"
               },
               settings: {
-                message: "Obrigado por comprar com a SemFila, seu número do pedido é "+pedido._id+" .Assim que realizar o pagamento, volte para o cardapio e aguarde a chegada no seu email (caixa spam).",
+                message: "Obrigado por comprar com a SemFila, seu número do pedido é " + pedido._id + " .Assim que realizar o pagamento, volte para o cardapio e aguarde a chegada no seu email (caixa spam).",
                 payment_method: "credit_card",
                 request_delivery_address: false,
                 expire_at: todayDate
               }
             }
-            gerencianet.oneStepLink({}, body).then(console.log).catch(console.log).done();
+            gerencianet
+              .createCharge({}, body)
+              .then(console.log)
+              .catch(console.log)
+              .done(console.log);
             const cobResponse = {
               code: 200
             }
             //Atualizar pedido.
-            if(cobResponse.code === 200){
+            if (cobResponse.code === 200) {
               pedido.charge_id = cobResponse.data.charge_id
               return res.send({
                 success: true,
                 msg: "Transferindo para o pagamento",
                 url: cobResponse.data.payment_url
               });
-            }else{
+            } else {
               return res.send({
                 success: false,
                 msg: "Não foi possivel gerar pagamento.",
-                
+
               });
             }
-        
+
           }
 
         } else {

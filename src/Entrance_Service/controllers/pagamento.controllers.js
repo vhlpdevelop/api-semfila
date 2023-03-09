@@ -2,10 +2,10 @@ const userModel = require("../../models/user.model");
 const pedidosModel = require("../../models/pedidos.model");
 const authConfig = require("../config/auth");
 const jwt = require("jsonwebtoken");
-const { GNRequest, GNRequestCredit } = require("../config/gerenciaNet.config");
+const { GNRequest } = require("../config/gerenciaNet.config");
 const itemsModel = require("../../models/items.model");
 const templater = require("./methods/template_function");
-const Gerencianet = require('gn-api-sdk-node')
+var Gerencianet = require('gn-api-sdk-node');
 const QrCodesModel = require("../../models/qrCode.model");
 const storeModel = require("../../models/store.model");
 
@@ -800,7 +800,7 @@ module.exports = {
               
               client_id: process.env.GN_CLIENT_ID,
               client_secret: process.env.GN_CLIENT_SECRET,
-              sandbox: true,
+              sandbox: false,
             }
             console.log(options)
             var gerencianet = new Gerencianet(options); //OPTIONS
@@ -823,7 +823,7 @@ module.exports = {
                 expire_at: todayDate
               }
             }
-            gerencianet.createCharge({}, body).then(console.log).catch(console.log).done();
+            gerencianet.oneStepLink({}, body).then(console.log).catch(console.log).done();
             const cobResponse = {
               code: 200
             }

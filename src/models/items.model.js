@@ -17,6 +17,7 @@ const item = new Schema({
   limit_number: {type:Number, default: 0},
   limit_switch: {type:Boolean, default: false},
   promotion_duration: {type:String},
+  trava: {type:Boolean, default:true},
   destaques: {type:Boolean},
   createdAt:{ type: Date, default: Date.now },
   

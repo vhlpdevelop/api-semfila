@@ -30,6 +30,7 @@
     "express-http-proxy": "^1.6.3",
     "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^6.7.0",
+    "gn-api-sdk-node": "^3.0.3",
     "helmet": "^6.0.1",
     "jsonwebtoken": "^9.0.0",
     "moment": "^2.29.4",

@@ -84,6 +84,7 @@ module.exports = {
           discount_status: newItem.discount,
           discount_value: aux_price_discount,
           promotion_duration: newItem.promotion_duration,
+          trava: newItem.trava,
           destaques: newItem.destaque,
         };
         const item = await itemsModel.create(dataSAVE);

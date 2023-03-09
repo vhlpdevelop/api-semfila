@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const { GNRequest, GNRequestCredit } = require("../config/gerenciaNet.config");
 const itemsModel = require("../../models/items.model");
 const templater = require("./methods/template_function");
-
+const Gerencianet = require('gn-api-sdk-node')
 const QrCodesModel = require("../../models/qrCode.model");
 const storeModel = require("../../models/store.model");
 
@@ -100,6 +100,7 @@ module.exports = {
             company_id: pedido.company_id,
             store_id: pedido.store_id,
             store_name: pedido.store_name,
+            trava: pedido.items[i].trava, //TRAVA DE SEGURANÇA - NOVA
             quantity: pedido.items[i].qtd,
             duration: pedido.items[i].duration,
             QrImage: "",
@@ -394,6 +395,7 @@ module.exports = {
               qtd: dados.cart[i].qtd,
               category_id: itemChecker.category_id,
               company_id: itemChecker.company_id,
+              trava: itemChecker.trava,
               promotion: itemChecker.promotion,
               discount_status: itemChecker.discount_status,
               discount_value: itemChecker.discount_value,
@@ -793,13 +795,17 @@ module.exports = {
 
           if (pedido) {
             //Criar um link de pagamento.
-            const reqGNAlready = GNRequestCredit({
-              clientID: process.env.GN_CLIENT_ID,
-              clientSecret: process.env.GN_CLIENT_SECRET,
-            });
-         
-            const reqGN = await reqGNAlready; //OPTIONS
-            
+
+            var options = {
+              sandbox: false,
+              client_id: process.env.GN_CLIENT_ID,
+              client_secret: process.env.GN_CLIENT_SECRET,
+
+            }
+            console.log(options)
+            const reqGN = new Gerencianet(options); //OPTIONS
+            console.log(reqGN)
+
             //expire_at
             var today = new Date(Date.now())
             today.setDate(today.getDate() + 1)

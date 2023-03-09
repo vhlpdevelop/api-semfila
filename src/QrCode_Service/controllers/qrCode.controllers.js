@@ -346,7 +346,7 @@ module.exports = {
           });
         }
         if (QrCode) { //Verificar se qrcode esta expirado ou não
-          if (QrCode.state) {
+          if (QrCode.state || !QrCode.trava) {
             console.log(QrCode.item.promotion)
             if (!QrCode.item.promotion) {
               //SE NAO ESTIVER, SOMAR COM 6 MESES
@@ -422,7 +422,6 @@ module.exports = {
   },
   async updateQrCode(req) {
     const itemUpdate = req.body;
-    console.log(req.body)
     //Buscar qrcode para validar
     try {
       //Verificar primeiro se QrCode é dessa loja mesmo.
@@ -457,7 +456,7 @@ module.exports = {
           //ALTERAR QRCODE E SALVAR NO REGISTRO
           qrcode.quantity = qrcode.quantity - itemUpdate.quantity;
           if (qrcode.quantity < 0) {//Nunca se sabe
-            console.log("Flag 2")
+            
             return res.send({
               obj: null,
               success: false,

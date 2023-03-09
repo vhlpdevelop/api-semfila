@@ -75,20 +75,8 @@ const GNRequest = async (credentials) => {
     }
   });
 }
-const GNRequestCredit = async (credentials) => {
-  const authResponse = await authenticate(credentials);
-  const accessToken = authResponse.data?.access_token;
 
-  return axios.create({
-    baseURL: process.env.GN_ENDPOINTCREDIT,
-    httpsAgent: agent,
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
-    }
-  });
-}
 
 module.exports = {
-  GNRequest, GNRequestCredit, createWebhook
+  GNRequest, createWebhook
 }

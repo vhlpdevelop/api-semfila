@@ -823,7 +823,7 @@ module.exports = {
                 expire_at: todayDate
               }
             }
-            const cobResponse = await reqGN.post("/v1/charge/one-step/link/", body);
+            const cobResponse = await reqGN.oneStepLink(body);
             console.log(cobResponse)
             //Atualizar pedido.
             if(cobResponse.code === 200){

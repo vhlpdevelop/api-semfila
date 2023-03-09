@@ -797,13 +797,13 @@ module.exports = {
             //Criar um link de pagamento.
 
             var options = {
-              sandbox: false,
+              
               client_id: process.env.GN_CLIENT_ID,
               client_secret: process.env.GN_CLIENT_SECRET,
-
+              sandbox: true,
             }
             console.log(options)
-            const reqGN = new Gerencianet(options); //OPTIONS
+            var gerencianet = new Gerencianet(options); //OPTIONS
             console.log(reqGN)
 
             //expire_at
@@ -823,8 +823,10 @@ module.exports = {
                 expire_at: todayDate
               }
             }
-            const cobResponse = await reqGN.oneStepLink(body);
-            console.log(cobResponse)
+            gerencianet.createCharge({}, body).then(console.log).catch(console.log).done();
+            const cobResponse = {
+              code: 200
+            }
             //Atualizar pedido.
             if(cobResponse.code === 200){
               pedido.charge_id = cobResponse.data.charge_id

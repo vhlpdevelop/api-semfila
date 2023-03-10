@@ -81,7 +81,7 @@ module.exports = {
     
     
     try {
-      //console.log(req.stores[0])
+      console.log(req.stores)
       let aux_menu = req.stores[0]
       console.log("STORE ===>")
       console.log(aux_menu)

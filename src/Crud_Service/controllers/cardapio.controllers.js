@@ -83,8 +83,9 @@ module.exports = {
     try {
       //console.log(req.stores[0])
       let aux_menu = req.stores[0]
-      //console.log("STORE ===>")
-      //console.log(aux_menu)
+      console.log("STORE ===>")
+      console.log(aux_menu)
+      
       const menu = await menuModel.findOne({store_id : aux_menu._id})
       if(!menu){
         return res.send({msg:"Cardapio vazio" ,success:true});

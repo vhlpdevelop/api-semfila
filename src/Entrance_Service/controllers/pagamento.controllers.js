@@ -827,7 +827,7 @@ module.exports = {
             }
             var cobResponse = '';
             const gerencianet = new Gerencianet(options);
-            gerencianet.createOneStepLink(params, body)
+            await gerencianet.createOneStepLink(params, body)
               .then((resposta) => {
                 if (resposta.code === 200) {
                   cobResponse = resposta

@@ -70,11 +70,9 @@ const middleware = require("./middleware/auth.middleware")
 //Cartão de crédito
 //Recebendo notificações.
 app.post("/notification_bill", (request, response)=> {
-  console.log(request);
-  console.log("body=>")
-  console.log(request.body)
-  console.log("Outra tentiva =>")
-  console.log(request.res)
+  console.log(request.body) //REALIZAR GET SOB O NOTIFICATION TOKEN
+  response.status(200).end();
+  response.send({ ok: 1 })
 });
 
 //Pix

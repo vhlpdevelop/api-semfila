@@ -825,17 +825,21 @@ module.exports = {
             let params = {
               id: 0,
             }
+            var cobResponse = '';
             const gerencianet = new Gerencianet(options);
             gerencianet.createOneStepLink(params, body)
               .then((resposta) => {
-                console.log(resposta)
+                if (resposta.code === 200) {
+                  cobResponse = resposta
+                }
               })
               .catch((error) => {
                 console.log(error)
               })
-            const cobResponse = {
-              code: 200
-            }
+            console.log(cobResponse)
+            console.log("Resposta =>")
+            console.log(cobResponse.code)
+            console.log(cobResponse.data)
             //Atualizar pedido.
             if (cobResponse.code === 200) {
               pedido.charge_id = cobResponse.data.charge_id

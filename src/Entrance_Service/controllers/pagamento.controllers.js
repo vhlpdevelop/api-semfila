@@ -815,7 +815,7 @@ module.exports = {
                 notification_url: "https://api-semfila.api-semfila.online/notification_bill"
               },
               settings: {
-                message: `Obrigado por comprar com a SemFila, seu número do pedido é ${pedido._id}. Assim que realizar o pagamento, volte para o cardapio e aguarde a chegada no seu email.`,
+                message: `Obrigado por comprar com a SemFila, seu número do pedido é ${pedido._id}.`,
                 payment_method: "credit_card",
                 request_delivery_address: false,
                 expire_at: todayDate

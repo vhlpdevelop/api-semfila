@@ -71,6 +71,10 @@ const middleware = require("./middleware/auth.middleware")
 //Recebendo notificações.
 app.post("/notification_bill", (request, response)=> {
   console.log(request);
+  console.log("body=>")
+  console.log(request.body)
+  console.log("Outra tentiva =>")
+  console.log(request.res)
 });
 
 //Pix

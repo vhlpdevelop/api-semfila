@@ -743,7 +743,7 @@ module.exports = {
             }
             pag = pag + itemChecker.price * dados.cart[i].qtd;
             let aux_value = parseInt(pag_second.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')) // 25.00 => 2500
-            console.log(aux_value)
+            //console.log(aux_value)
             items_second.push({
               name: itemChecker.item_name,
               value: aux_value,
@@ -843,6 +843,8 @@ module.exports = {
             //Atualizar pedido.
             if (cobResponse.code === 200) {
               pedido.charge_id = cobResponse.data.charge_id
+              pedido.markModified('charge_id')
+              pedido.save();
               return res.send({
                 success: true,
                 msg: "Transferindo para o pagamento",

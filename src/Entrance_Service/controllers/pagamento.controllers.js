@@ -38,17 +38,16 @@ module.exports = {
         client_secret: process.env.GN_CLIENT_SECRET_DEV,
         sandbox: true,
       }
-      var gerencianet = new Gerencianet(options);
+      const gerencianet = new Gerencianet(options);
       var status = '';
-      await gerencianet
-        .getNotification(params)
+      await gerencianet.getNotification(params)
         .then((resposta) => {
+          if (resposta.code === 200) {
           for(let i =0; i<resposta.data.length; i++){
             console.log(resposta.data[i].status)
           }
           status = resposta.data[resposta.data.length-1].status
-          
-          console.log(resposta.data[resposta.data.length-1].status)
+          }
         })
         .catch(console.log)
         .done();

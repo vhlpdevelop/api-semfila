@@ -40,7 +40,7 @@ module.exports = {
       }
       var gerencianet = new Gerencianet(options);
       var status = '';
-      gerencianet
+      await gerencianet
         .getNotification(params)
         .then((resposta) => {
           for(let i =0; i<resposta.data.length; i++){

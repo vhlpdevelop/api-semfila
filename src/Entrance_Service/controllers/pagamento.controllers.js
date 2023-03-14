@@ -26,6 +26,43 @@ function AssimilateTime(time) {
 }
 
 module.exports = {
+  async notifications_api(notification, io) {
+    //Checar notification status.
+    try {
+      var params = {
+        token: notification
+      }
+      var options = {
+
+        client_id: process.env.GN_CLIENT_ID,
+        client_secret: process.env.GN_CLIENT_SECRET,
+        sandbox: false,
+      }
+      var gerencianet = new Gerencianet(options);
+
+      gerencianet
+        .getNotification(params)
+        .then(console.log)
+        .catch(console.log)
+        .done();
+      /*
+      pagamentos ->
+      new -> nao faça nada
+      waiting -> apenas não faça nada
+      paid -> liberar pedido
+      unpaid -> não liberar pedido
+      refunded -> alterar pedido
+      contested -> cancelar qrcode gerado e alterar no pedido
+      canceled -> cancelar qrcode gerado pelo pedido.
+      settled -> foi liberada manualmente entao liberar pedido
+     link -> faça nada
+      expired -> expirou o pagamento
+      */
+    } catch (e) {
+
+    }
+
+  },
   async QrCodeReSend(object, io) {
     //RENVIAR QRCODE CASO USUÁRIO NÃO RECEBA
 
@@ -836,10 +873,6 @@ module.exports = {
               .catch((error) => {
                 console.log(error)
               })
-            console.log(cobResponse)
-            console.log("Resposta =>")
-            console.log(cobResponse.code)
-            console.log(cobResponse.data)
             //Atualizar pedido.
             if (cobResponse.code === 200) {
               pedido.charge_id = cobResponse.data.charge_id

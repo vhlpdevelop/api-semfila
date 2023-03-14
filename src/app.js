@@ -63,7 +63,7 @@ app.use('/auth', (req, res, next) => LoginServiceProxy(req, res, next));
 app.use('/qrcode', (req, res, next) => QrCodeServiceProxy(req, res, next));
 app.use('/crud', (req, res, next) => CrudServiceProxy(req, res, next));
 app.use('/payment', (req, res, next) => EntranceServiceProxy(req, res, next));
-const { QrcodeReturner, QrCodeReSend, afterRefund } = require ( "./Entrance_Service/controllers/pagamento.controllers");
+const { QrcodeReturner, QrCodeReSend, afterRefund, notifications_api } = require ( "./Entrance_Service/controllers/pagamento.controllers");
 const { updateQrCode } = require("./QrCode_Service/controllers/qrCode.controllers")
 const middleware = require("./middleware/auth.middleware")
 
@@ -71,8 +71,10 @@ const middleware = require("./middleware/auth.middleware")
 //Recebendo notificações.
 app.post("/notification_bill", (request, response)=> {
   console.log(request.body) //REALIZAR GET SOB O NOTIFICATION TOKEN
+  //METODO PARA ATENDER A NOTIFICAÇÃO
+  notifications_api(request.body.notification, io)
   response.status(200).end();
-  response.send({ ok: 1 })
+
 });
 
 //Pix

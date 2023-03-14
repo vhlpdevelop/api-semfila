@@ -39,17 +39,20 @@ module.exports = {
         sandbox: true,
       }
       var gerencianet = new Gerencianet(options);
-
+      var status = '';
       gerencianet
         .getNotification(params)
         .then((resposta) => {
           for(let i =0; i<resposta.data.length; i++){
             console.log(resposta.data[i].status)
           }
+          status = resposta.data[resposta.data.length-1].status
+          
+          console.log(resposta.data[resposta.data.length-1].status)
         })
         .catch(console.log)
         .done();
-      /*
+        /*
       pagamentos ->
       new -> nao faça nada
       waiting -> apenas não faça nada
@@ -62,8 +65,32 @@ module.exports = {
      link -> faça nada
       expired -> expirou o pagamento
       */
+      if(status === 'paid'){
+        console.log('Pago')
+      }
+      if(status === 'unpaid'){
+        console.log('nao pago')
+      }
+      if(status === 'refunded'){
+        console.log('estornado')
+      }
+      if(status === 'contested'){
+        console.log('contestado')
+      }
+      if(status === 'canceled'){
+        console.log('cancelado')
+      }
+      if(status === 'settled'){
+        console.log('confirmado manualmente')
+      }
+      if(status === 'expired'){
+        console.log('expirado')
+      }
+      
     } catch (e) {
-
+      console.log('Ocorreu um erro')
+      console.log(e)
+      console.log(e.message)
     }
 
   },

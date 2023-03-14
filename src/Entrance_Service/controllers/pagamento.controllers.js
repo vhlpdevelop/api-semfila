@@ -42,7 +42,11 @@ module.exports = {
 
       gerencianet
         .getNotification(params)
-        .then(console.log)
+        .then((resposta) => {
+          for(let i =0; i<resposta.data.length; i++){
+            console.log(resposta.data[i].status)
+          }
+        })
         .catch(console.log)
         .done();
       /*

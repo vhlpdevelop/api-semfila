@@ -43,49 +43,50 @@ module.exports = {
       await gerencianet.getNotification(params)
         .then((resposta) => {
           if (resposta.code === 200) {
-          for(let i =0; i<resposta.data.length; i++){
-            console.log(resposta.data[i].status)
-          }
-          status = resposta.data[resposta.data.length-1].status
+            for (let i = 0; i < resposta.data.length; i++) {
+              console.log(resposta.data[i].status)
+            }
+            status = resposta.data[resposta.data.length - 1].status
           }
         })
-        .catch(console.log)
-        .done();
-        /*
-      pagamentos ->
-      new -> nao faça nada
-      waiting -> apenas não faça nada
-      paid -> liberar pedido
-      unpaid -> não liberar pedido
-      refunded -> alterar pedido
-      contested -> cancelar qrcode gerado e alterar no pedido
-      canceled -> cancelar qrcode gerado pelo pedido.
-      settled -> foi liberada manualmente entao liberar pedido
-     link -> faça nada
-      expired -> expirou o pagamento
-      */
-      if(status === 'paid'){
+        .catch((error) => {
+          console.log(error)
+        })
+      /*
+    pagamentos ->
+    new -> nao faça nada
+    waiting -> apenas não faça nada
+    paid -> liberar pedido
+    unpaid -> não liberar pedido
+    refunded -> alterar pedido
+    contested -> cancelar qrcode gerado e alterar no pedido
+    canceled -> cancelar qrcode gerado pelo pedido.
+    settled -> foi liberada manualmente entao liberar pedido
+   link -> faça nada
+    expired -> expirou o pagamento
+    */
+      if (status === 'paid') {
         console.log('Pago')
       }
-      if(status === 'unpaid'){
+      if (status === 'unpaid') {
         console.log('nao pago')
       }
-      if(status === 'refunded'){
+      if (status === 'refunded') {
         console.log('estornado')
       }
-      if(status === 'contested'){
+      if (status === 'contested') {
         console.log('contestado')
       }
-      if(status === 'canceled'){
+      if (status === 'canceled') {
         console.log('cancelado')
       }
-      if(status === 'settled'){
+      if (status === 'settled') {
         console.log('confirmado manualmente')
       }
-      if(status === 'expired'){
+      if (status === 'expired') {
         console.log('expirado')
       }
-      
+
     } catch (e) {
       console.log('Ocorreu um erro')
       console.log(e)

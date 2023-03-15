@@ -27,6 +27,16 @@ db.on("open", () => {
 db.on("error", (err) => {
   console.log(err);
 });
-
+const setCache = function (req, res, next){
+  const period = 60*2;
+  if(req.method == "POST"  || req.method == "GET"){
+    res.set("Cache-control", `public, max-age=${period}`);
+  }else{
+    res.set("Cache-control", `no-store`);
+  }
+  next();
+}
+app.use(setCache)
 const front = require('./routes/frontService.route')
 app.use("/", front)
+

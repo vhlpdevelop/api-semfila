@@ -40,12 +40,14 @@ module.exports = {
       }
       const gerencianet = new Gerencianet(options);
       var status = '';
+      var custom_id = '';
       await gerencianet.getNotification(params)
         .then((resposta) => {
           if (resposta.code === 200) {
             for (let i = 0; i < resposta.data.length; i++) {
               console.log(resposta.data[i].status)
             }
+            custom_id = resposta.data[resposta.data.length-1].custom_id
             status = resposta.data[resposta.data.length - 1].status
           }
         })
@@ -65,6 +67,7 @@ module.exports = {
    link -> faça nada
     expired -> expirou o pagamento
     */
+   console.log(custom_id) //ID DO PEDIDO GUARDADO.
       if (status === 'paid') {
         console.log('Pago')
       }

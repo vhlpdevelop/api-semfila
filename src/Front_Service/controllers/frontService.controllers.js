@@ -23,7 +23,7 @@ module.exports = {
     },
     async ratingCardapio(req,res){ //Adicionar voto
         try{
-          console.log(req.body)
+          //console.log(req.body)
           const user = await userModel.findById( {_id:req.userID})
           if(!user){
             return res.send({success:false, message:"Usuário não encontrado"})
@@ -137,10 +137,10 @@ module.exports = {
     async fetchPedido(req,res){
       try{
         const pedido_id = req.body.pedido_id;
-        console.log(pedido_id)
+        //console.log(pedido_id)
         const pedido = await pedido_model.findById({_id: pedido_id});
         if(pedido){//Localizou o pedido então buscar os QRCODES.
-          console.log("Encontrou")
+          //console.log("Encontrou")
           if(pedido.status){ //Está pago então buscar.
             const qrcodes = await qrcode_model.find({pedido_id: pedido._id})
             if(qrcodes){

@@ -16,7 +16,7 @@ const qrcode = new Schema({
     cpf: {type:String},
     nome: {type:String}
   },
-  state: {type:Boolean},
+  state: {type:Boolean, default:true},
   cortesia: {type:Boolean, default:false},
   createdAt:{ type: Date, default: Date.now }
 },{collection: 'Qrcode'});

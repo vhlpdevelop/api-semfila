@@ -2,6 +2,29 @@
 const mailer = require("../../../modules/NodeMailer.controllers");
 const mailerconfig = require("../../../config/NodeMailer.config");
 module.exports = {
+    async emailSend(email, escopo, mensagem, subject){
+        try {
+            mailer.sendMail(
+                {
+                    to: email,
+                    from: mailerconfig.from,
+                    template: "EmailTemplateBasic",
+                    subject: `SemFila - ${subject}`,
+                    context: { escopo, mensagem },
+                },
+                (err) => {
+                    if (err) {
+                        console.log(err);
+                        return { success: false, msg: err.message }
+                    }
+                }
+            );
+        return { success: true }
+    } catch (e) {
+        console.log(e.message)
+        return { success: false, msg: "ocorreu um erro"}
+    }
+    },
     async refundEmail(pedido, valor, email) { //Reembolso pelo pedido
         try {
                 let escopo = "Reembolso efetuado com sucesso."

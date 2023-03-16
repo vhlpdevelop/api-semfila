@@ -17,7 +17,9 @@ const mailerconfig = require("../../config/NodeMailer.config");
 const moment = require('moment');
 const limiter = require("./methods/limit_control")
 const withDrawer = require("./methods/withDrawFunction")
-const sendEmailer = require("./methods/sendEmailReembolso")
+const sendEmailer = require("./methods/sendEmailReembolso");
+const sell_registryModel = require("../../models/sell_registry.model");
+
 function AssimilateTime(time) {
   const d = new Date(time);
   moment.locale("pt-br");
@@ -54,40 +56,429 @@ module.exports = {
         .catch((error) => {
           console.log(error)
         })
-      /*
-    pagamentos ->
-    new -> nao faça nada
-    waiting -> apenas não faça nada
-    paid -> liberar pedido
-    unpaid -> não liberar pedido
-    refunded -> alterar pedido
-    contested -> cancelar qrcode gerado e alterar no pedido
-    canceled -> cancelar qrcode gerado pelo pedido.
-    settled -> foi liberada manualmente entao liberar pedido
-   link -> faça nada
-    expired -> expirou o pagamento
-    */
-   console.log(custom_id) //ID DO PEDIDO GUARDADO.
+      console.log(custom_id) //ID DO PEDIDO GUARDADO.
       if (status === 'paid') {
         console.log('Pago')
+        //Caso pago então -> criar qrcode através do pedido usando custom_id
+        //enviar ao email que foi pago e chegou
+        //Enviar pelo IO o qrcode caso não chegar colocar na fila.
+        
+        //VERIFICANDO PEDIDO
+        try {
+          const pedido = await pedidosModel.findById({ _id: custom_id });
+          if (!pedido) return false;
+          var aux_ticket = {};
+          var dataToSend = [];
+          var dataToSave = [];
+          var trigger = true;
+          var total = 0;
+          for (let i = 0; i < pedido.items.length; i++) {
+            //console.log(pedido.items[i].item_name)
+            //console.log("Loop => "+i)
+            let verify = await limiter.limit_controller(pedido.items[i]._id, pedido.items[i].qtd) //Verificador para reembolsar
+    
+            if (!verify.status && verify.find && trigger) { //Caso falhe realizar o processo de estorno e enviar email.
+              //Processo de Reembolso.
+    
+              await withDrawer.withDrawPedido(pedido, i); //REEMBOLSADOR
+    
+              trigger = false;
+              break;
+            }
+            if (trigger) {
+              aux_ticket = {
+                item: pedido.items[i],
+                user_id: pedido.user_id,
+                user_email: pedido.user_email,
+                pedido_id: pedido._id,
+                cortesia: pedido.cortesia,
+                company_id: pedido.company_id,
+                store_id: pedido.store_id,
+                store_name: pedido.store_name,
+                trava: pedido.items[i].trava, //TRAVA DE SEGURANÇA - NOVA
+                quantity: pedido.items[i].qtd,
+                duration: pedido.items[i].duration,
+                QrImage: "",
+                state: true,
+              };
+    
+              total = parseFloat((parseFloat(total) + parseFloat(pedido.items[i].price)).toFixed(2))
+    
+              var ticket = await QrCodesModel.create(aux_ticket);
+    
+              let datatoEncrypt = {
+                _id: ticket._id,
+                store_id: ticket.store_id,
+              };
+    
+              let texto = Encrypter.encrypt(datatoEncrypt);
+              const code = qr.imageSync(texto, {
+                type: "png",
+                size: 10,
+              });
+    
+              //console.log(code);
+              var base64data = Buffer.from(code, "binary").toString("base64");
+              //console.log(base64data);
+              ticket.QrImage = base64data;
+              //console.log(ticket.QrImage);
+    
+              let object = {
+                qrcode: base64data,
+                data: ticket,
+              };
+              dataToSend.push(object);
+              dataToSave.push(ticket._id)
+              let updater = await QrCodesModel.findByIdAndUpdate(
+                { _id: ticket._id },
+                ticket
+              );
+            }
+          }
+    
+          if (!trigger) {
+            return "Finalizado.";
+          }
+          pedido.transaction_status = "PAID"
+          pedido.status = true; //PEDIDO FOI PAGO
+          await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
+          /* Enviar Email
+          */
+          if (pedido.user_email && !aux_ticket.cortesia) {
+    
+            var aux_items = pedido.items;
+            let aux_sender = "";
+            var store = await storeModel.findById({ _id: pedido.store_id })
+            //Adicionar resgate.
+            var url_button = store.store_url + "-" + ticket._id
+            for (let i = 0; i < aux_items.length; i++) {
+    
+              let cons =
+                "<tr style=border-collapse:collapse>" +
+                "<td style=padding:0;Margin:0;font-size:xx-small;width:60px;text-align:center>" +
+                aux_items[i].item_name +
+                "</td>" +
+                "<td style=padding:0;Margin:0;font-size:xx-small;width:60px;text-align:center>" +
+                aux_items[i].description +
+                "</td>" +
+                "<td style=padding:0;Margin:0;width:100px;text-align:center>" +
+                aux_items[i].qtd +
+                "</td>" +
+                "<td style=padding:0;Margin:0;width:60px;text-align:center>R$" +
+                aux_items[i].price +
+                "</td> " +
+                "</tr>";
+              /*
+              let auxiliar =
+              "<td align=center style=padding:0;Margin:0;font-size:0>"
+            aux_items[i].item_name
+            "</td>";
+              */
+    
+              let auxiliar =
+                `<td align="center" style="padding:0;Margin:0;font-size:0px"><img class="adapt-img" src="${aux_items[i].image_url}" alt style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="178" height="100"></td>`;
+    
+              aux_sender += `
+              <tr style="border-collapse:collapse"> 
+              <td align="left" style="Margin:0;padding-top:5px;padding-bottom:10px;padding-left:20px;padding-right:20px"> 
+              <!--[if mso]><table style="width:560px" cellpadding="0" cellspacing="0"><tr><td style="width:178px" valign="top"><![endif]--> 
+              <table class="es-left" cellspacing="0" cellpadding="0" align="left" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left"> 
+                <tr style="border-collapse:collapse"> 
+                 <td class="es-m-p0r es-m-p20b" valign="top" align="center" style="padding:0;Margin:0;width:178px"> 
+                  <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
+                    <tr style="border-collapse:collapse"> 
+                     ${auxiliar}
+                    </tr> 
+                  </table></td> 
+                </tr> 
+              </table> 
+              <!--[if mso]></td><td style="width:20px"></td><td style="width:362px" valign="top"><![endif]--> 
+              <table cellspacing="0" cellpadding="0" align="right" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
+                <tr style="border-collapse:collapse"> 
+                 <td align="left" style="padding:0;Margin:0;width:362px"> 
+                  <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
+                    <tr style="border-collapse:collapse"> 
+                     <td align="left" style="padding:0;Margin:0"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px"><br></p> 
+                      <table style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%" class="cke_show_border" cellspacing="1" cellpadding="1" border="0" role="presentation"> 
+                        ${cons}
+                      </table><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px"><br></p></td> 
+                    </tr> 
+                  </table></td> 
+                </tr> 
+              </table>
+              </tr>
+              <td align="left" style="padding:0;Margin:0;padding-left:20px;padding-right:20px"> 
+                       <table width="100%" cellspacing="0" cellpadding="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
+                         <tr style="border-collapse:collapse"> 
+                          <td valign="top" align="center" style="padding:0;Margin:0;width:560px"> 
+                           <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
+                             <tr style="border-collapse:collapse"> 
+                              <td align="center" style="padding:0;Margin:0;padding-bottom:10px;font-size:0"> 
+                               <table width="100%" height="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
+                                 <tr style="border-collapse:collapse"> 
+                                  <td style="padding:0;Margin:0;border-bottom:1px solid #EFEFEF;background:#FFFFFF none repeat scroll 0% 0%;height:1px;width:100%;margin:0px"></td> 
+                                 </tr> 
+                               </table></td> 
+                             </tr> 
+                           </table></td> 
+                         </tr> 
+                       </table></td>  `;
+            }
+    
+            let data_aux = AssimilateTime(pedido.createdAt)
+            mailer.sendMail(
+              {
+                to: pedido.user_email,
+                from: mailerconfig.from,
+                html: await templater.build_template(
+                  pedido._id,
+                  data_aux,
+                  pedido.store_name,
+                  total,
+                  aux_sender,
+                  url_button
+                ),
+                subject: "SemFila - Compra realizada com sucesso"
+              },
+              (err) => {
+                if (err) {
+                  console.log(err);
+                }
+              }
+            );
+    
+    
+          }
+    
+    
+          //
+          if (!aux_ticket.cortesia) {
+            io.to(pedido.socket)
+              .timeout(5000)
+              .emit(
+                "qrcodeGet",
+                {
+                  //realizar um callback
+                  dataToSend,
+                },
+                (err, response) => {
+                  if (err === null) { //Então gravar no global pois nao enviou
+                    let aux = {
+                      sessionID: pedido.socket,
+                      dataToSave: dataToSave,
+                    };
+                    globalUsers.push(aux);
+                    console.log("Gravou")
+                  }
+    
+                  if (!response) {
+    
+    
+                  } else {
+                    console.log(response);
+                  } //Faça nada
+                }
+              );
+          }
+    
+        } catch (e) {
+          console.log("Erro =============== paid");
+          console.log(e);
+        }
       }
       if (status === 'unpaid') {
-        console.log('nao pago')
+        console.log('nao pago') 
+        //Cancelar o pedido e enviar email ao usuário.
+
+        try{
+          const pedido = await pedidosModel.findById({ _id: custom_id})
+          if(!pedido) throw new Error("Custom ID EMPTY")
+          pedido.transaction_status = "Credit UNPAID"
+          pedido.markModified("transaction_status")
+          await pedido.save();
+          let mensagem = "Sua operadora recusou o pagamento, por favor verifique com seu banco."
+          let escopo = "Pagamento não foi autorizado";
+          let subject = "Pagamento não autorizado";
+          await sendEmailer.emailSend(pedido.user_email, escopo, mensagem, subject)
+        }catch(e){
+          console.log("Erro =============== unpaid");
+          console.log(e);
+        }
       }
       if (status === 'refunded') {
         console.log('estornado')
+        //Cancelar pedido, buscar registro de venda e marcar como estornado.
+        try{
+          const pedido = await pedidosModel.findById({ _id: custom_id})
+          if(!pedido) throw new Error("Custom ID EMPTY")
+          pedido.transaction_status = "Credit REFUNDED"
+          pedido.markModified("transaction_status")
+          await pedido.save();
+ 
+          //Procurar pelos qrcodes e alterar também registro de venda.
+          const qrcodes = await QrCodesModel.find({pedido_id: pedido._id})
+          if(qrcodes){
+            //Caso tenha entao desativar e procurar por registros de venda
+            for(let i =0; i<qrcodes.length;i++){
+              qrcodes[i].state = false;
+              qrcodes[i].withdraw = true;
+              qrcodes[i].trava = true;
+            }
+            const sellRegistry = await sell_registryModel.find({pedido_id:pedido._id})
+            if(sellRegistry){
+              for(let i =0; i<sellRegistry.length;i++){
+                sellRegistry[i].refund = true;
+                sellRegistry[i].payment = "Credito Estornado"
+              }
+            }
+          }
+
+          let mensagem = "Sua operadora estornou o pagamento, por favor verifique com seu banco."
+          let escopo = "Pagamento foi estornado";
+          let subject = "Pagamento estornado";
+          await sendEmailer.emailSend(pedido.user_email, escopo, mensagem, subject)
+        }catch(e){
+          console.log("Erro =============== unpaid");
+          console.log(e);
+        }
       }
-      if (status === 'contested') {
+      if (status === 'contested') { //CHARGEBACK
         console.log('contestado')
+        //Cancelar pedido, buscar registro de venda e marcar como contestado.
+        try{
+          const pedido = await pedidosModel.findById({ _id: custom_id})
+          if(!pedido) throw new Error("Custom ID EMPTY")
+          pedido.transaction_status = "Credito contestado"
+          pedido.markModified("transaction_status")
+          await pedido.save();
+ 
+          //Procurar pelos qrcodes e alterar também registro de venda.
+          const qrcodes = await QrCodesModel.find({pedido_id: pedido._id})
+          if(qrcodes){
+            //Caso tenha entao desativar e procurar por registros de venda
+            for(let i =0; i<qrcodes.length;i++){
+              qrcodes[i].state = false;
+              qrcodes[i].withdraw = true;
+              qrcodes[i].trava = true;
+            }
+            const sellRegistry = await sell_registryModel.find({pedido_id:pedido._id})
+            if(sellRegistry){
+              for(let i =0; i<sellRegistry.length;i++){
+                sellRegistry[i].refund = true;
+                sellRegistry[i].payment = "Credito contestado"
+              }
+            }
+          }
+
+          let mensagem = "Sua operadora contestou o pagamento. Por isso estamos desativando seu pedido e qrcodes. Por favor verifique com seu banco."
+          let escopo = "Pagamento foi contestado";
+          let subject = "Pagamento contestado";
+          await sendEmailer.emailSend(pedido.user_email, escopo, mensagem, subject)
+        }catch(e){
+          console.log("Erro =============== contested");
+          console.log(e);
+        }
+      }
+      if (status === 'unpaid') {
+        console.log('nao pago') 
+        //Cancelar o pedido e enviar email ao usuário.
+
+        try{
+          const pedido = await pedidosModel.findById({ _id: custom_id})
+          if(!pedido) throw new Error("Custom ID EMPTY")
+          pedido.transaction_status = "Credito não pago"
+          pedido.markModified("transaction_status")
+          await pedido.save();
+          let mensagem = "Sua operadora recusou o pagamento, por favor verifique com seu banco."
+          let escopo = "Pagamento não foi autorizado";
+          let subject = "Pagamento não autorizado";
+          await sendEmailer.emailSend(pedido.user_email, escopo, mensagem, subject)
+        }catch(e){
+          console.log("Erro =============== unpaid");
+          console.log(e);
+        }
+      }
+      if (status === 'refunded') {
+        console.log('estornado')
+        //Cancelar pedido, buscar registro de venda e marcar como estornado.
+        try{
+          const pedido = await pedidosModel.findById({ _id: custom_id})
+          if(!pedido) throw new Error("Custom ID EMPTY")
+          pedido.transaction_status = "Credito estornado"
+          pedido.markModified("transaction_status")
+          await pedido.save();
+ 
+          //Procurar pelos qrcodes e alterar também registro de venda.
+          const qrcodes = await QrCodesModel.find({pedido_id: pedido._id})
+          if(qrcodes){
+            //Caso tenha entao desativar e procurar por registros de venda
+            for(let i =0; i<qrcodes.length;i++){
+              qrcodes[i].state = false;
+              qrcodes[i].withdraw = true;
+              qrcodes[i].trava = true;
+            }
+            const sellRegistry = await sell_registryModel.find({pedido_id:pedido._id})
+            if(sellRegistry){
+              for(let i =0; i<sellRegistry.length;i++){
+                sellRegistry[i].refund = true;
+                sellRegistry[i].payment = "Credito Estornado"
+              }
+            }
+          }
+
+          let mensagem = "Sua operadora estornou o pagamento, por favor verifique com seu banco."
+          let escopo = "Pagamento foi estornado";
+          let subject = "Pagamento estornado";
+          await sendEmailer.emailSend(pedido.user_email, escopo, mensagem, subject)
+        }catch(e){
+          console.log("Erro =============== refunded");
+          console.log(e);
+        }
       }
       if (status === 'canceled') {
         console.log('cancelado')
+        //Cancelar pedido, buscar registro de venda e marcar como cancelado.
+        try{
+          const pedido = await pedidosModel.findById({ _id: custom_id})
+          if(!pedido) throw new Error("Custom ID EMPTY")
+          pedido.transaction_status = "Credito cancelado"
+          pedido.markModified("transaction_status")
+          await pedido.save();
+ 
+          //Procurar pelos qrcodes e alterar também registro de venda.
+          const qrcodes = await QrCodesModel.find({pedido_id: pedido._id})
+          if(qrcodes){
+            //Caso tenha entao desativar e procurar por registros de venda
+            for(let i =0; i<qrcodes.length;i++){
+              qrcodes[i].state = false;
+              qrcodes[i].withdraw = true;
+              qrcodes[i].trava = true;
+            }
+            const sellRegistry = await sell_registryModel.find({pedido_id:pedido._id})
+            if(sellRegistry){
+              for(let i =0; i<sellRegistry.length;i++){
+                sellRegistry[i].refund = true;
+                sellRegistry[i].payment = "Credito cancelado"
+              }
+            }
+          }
+
+          let mensagem = "Seu pagamento foi cancelado, por favor verifique com seu banco."
+          let escopo = "Pagamento foi cancelado";
+          let subject = "Pagamento cancelado";
+          await sendEmailer.emailSend(pedido.user_email, escopo, mensagem, subject)
+        }catch(e){
+          console.log("Erro =============== cancelado");
+          console.log(e);
+        }
       }
       if (status === 'settled') {
         console.log('confirmado manualmente')
       }
       if (status === 'expired') {
         console.log('expirado')
+        console.log(custom_id)
+        //Cancelar pedido.
       }
 
     } catch (e) {
@@ -215,6 +606,7 @@ module.exports = {
       if (!trigger) {
         return "Finalizado.";
       }
+      pedido.transaction_status = "PIX"
       pedido.status = true; //PEDIDO FOI PAGO
       await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
       /* Enviar Email

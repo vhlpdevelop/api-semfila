@@ -165,7 +165,7 @@ io.sockets.on("connection", (socket) => { //Caso usuario não receba qrcode deve
       sessionID: globalUsers[index].sessionID,
       dataToSave: globalUsers[index].dataToSave
     }
-    console.log("Enviou qrcode")
+    //console.log("Enviou qrcode")
     QrCodeReSend(aux,io)
   }
 });

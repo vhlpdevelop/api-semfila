@@ -14,6 +14,7 @@ const pedido = new Schema({
   company_id: {type: String},
   store_id: {type:String},
   store_name: {type:String},
+  transaction_status: {type:String, default: "new"},
   createdAt:{ type: Date, default: Date.now }
 });
 

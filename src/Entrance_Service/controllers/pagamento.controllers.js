@@ -57,7 +57,7 @@ module.exports = {
           console.log(error)
         })
       console.log(custom_id) //ID DO PEDIDO GUARDADO.
-      if (status === 'paid') {
+      if (status === 'paid' || status === 'approved') {
         console.log('Pago')
         //Caso pago então -> criar qrcode através do pedido usando custom_id
         //enviar ao email que foi pago e chegou

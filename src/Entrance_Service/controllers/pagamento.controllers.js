@@ -295,6 +295,7 @@ module.exports = {
           if(!pedido) throw new Error("Custom ID EMPTY")
           pedido.transaction_status = "Credit UNPAID"
           pedido.markModified("transaction_status")
+          console.log(pedido)
           await pedido.save();
           let mensagem = "Sua operadora recusou o pagamento, por favor verifique com seu banco."
           let escopo = "Pagamento não foi autorizado";

@@ -50,7 +50,7 @@ module.exports = {
               console.log(resposta.data[i].status)
             }
             custom_id = resposta.data[resposta.data.length-1].custom_id
-            status = resposta.data[resposta.data.length - 1].status
+            status = resposta.data[resposta.data.length - 1].status.current
           }
         })
         .catch((error) => {

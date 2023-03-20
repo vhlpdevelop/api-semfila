@@ -1113,7 +1113,7 @@ module.exports = {
   async payCreditCard(req, res) {
     var auth = "";
     var email = req.body.itemData.email;
-
+    console.log(email)
     if (req.headers.authorization) {
       //AUTH
       const authHeader = JSON.parse(req.headers.authorization);
@@ -1247,6 +1247,7 @@ module.exports = {
           //CRIAR UM PEDIDO COM OS ITEMS
           let object = {
             items: items,
+            user_email: email,
             user_id: auth,
             txid: "",
             price: pag.toString(), //

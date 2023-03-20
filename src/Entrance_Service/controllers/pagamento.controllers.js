@@ -1248,6 +1248,7 @@ module.exports = {
           let object = {
             items: items,
             user_email: email,
+            socket: socketId,
             user_id: auth,
             txid: "",
             price: pag.toString(), //

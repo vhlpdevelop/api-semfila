@@ -139,7 +139,7 @@ module.exports = {
           if (!trigger) {
             return "Finalizado.";
           }
-          pedido.transaction_status = "PAID"
+          pedido.transaction_status = "Credito pago"
           pedido.status = true; //PEDIDO FOI PAGO
           await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
           /* Enviar Email
@@ -283,26 +283,6 @@ module.exports = {
     
         } catch (e) {
           console.log("Erro =============== paid");
-          console.log(e);
-        }
-      }
-      if (status === 'unpaid') {
-        console.log('nao pago') 
-        //Cancelar o pedido e enviar email ao usuário.
-
-        try{
-          const pedido = await pedidosModel.findById({ _id: custom_id})
-          if(!pedido) throw new Error("Custom ID EMPTY")
-          pedido.transaction_status = "Credit UNPAID"
-          pedido.markModified("transaction_status")
-          console.log(pedido)
-          await pedido.save();
-          let mensagem = "Sua operadora recusou o pagamento, por favor verifique com seu banco."
-          let escopo = "Pagamento não foi autorizado";
-          let subject = "Pagamento não autorizado";
-          await sendEmailer.emailSend(pedido.user_email, escopo, mensagem, subject)
-        }catch(e){
-          console.log("Erro =============== unpaid");
           console.log(e);
         }
       }
@@ -1310,7 +1290,8 @@ module.exports = {
               return res.send({
                 success: true,
                 msg: "Transferindo para o pagamento",
-                url: cobResponse.data.payment_url
+                url: cobResponse.data.payment_url,
+                obj_pedido: pedido._id
               });
             } else {
               return res.send({

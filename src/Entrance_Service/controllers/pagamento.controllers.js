@@ -292,7 +292,7 @@ module.exports = {
         try{
           const pedido = await pedidosModel.findById({ _id: custom_id})
           if(!pedido) throw new Error("Custom ID EMPTY")
-          pedido.transaction_status = "Credit REFUNDED"
+          pedido.transaction_status = "Credito Estornado"
           pedido.markModified("transaction_status")
           await pedido.save();
  
@@ -379,43 +379,6 @@ module.exports = {
           console.log(e);
         }
       }
-      if (status === 'refunded') {
-        console.log('estornado')
-        //Cancelar pedido, buscar registro de venda e marcar como estornado.
-        try{
-          const pedido = await pedidosModel.findById({ _id: custom_id})
-          if(!pedido) throw new Error("Custom ID EMPTY")
-          pedido.transaction_status = "Credito estornado"
-          pedido.markModified("transaction_status")
-          await pedido.save();
- 
-          //Procurar pelos qrcodes e alterar também registro de venda.
-          const qrcodes = await QrCodesModel.find({pedido_id: pedido._id})
-          if(qrcodes){
-            //Caso tenha entao desativar e procurar por registros de venda
-            for(let i =0; i<qrcodes.length;i++){
-              qrcodes[i].state = false;
-              qrcodes[i].withdraw = true;
-              qrcodes[i].trava = true;
-            }
-            const sellRegistry = await sell_registryModel.find({pedido_id:pedido._id})
-            if(sellRegistry){
-              for(let i =0; i<sellRegistry.length;i++){
-                sellRegistry[i].refund = true;
-                sellRegistry[i].payment = "Credito Estornado"
-              }
-            }
-          }
-
-          let mensagem = "Sua operadora estornou o pagamento, por favor verifique com seu banco."
-          let escopo = "Pagamento foi estornado";
-          let subject = "Pagamento estornado";
-          await sendEmailer.emailSend(pedido.user_email, escopo, mensagem, subject)
-        }catch(e){
-          console.log("Erro =============== refunded");
-          console.log(e);
-        }
-      }
       if (status === 'canceled') {
         console.log('cancelado')
         //Cancelar pedido, buscar registro de venda e marcar como cancelado.
@@ -459,7 +422,16 @@ module.exports = {
       if (status === 'expired') {
         console.log('expirado')
         console.log(custom_id)
-        //Cancelar pedido.
+        try{
+          const pedido = await pedidosModel.findById({ _id: custom_id})
+          if(!pedido) throw new Error("Custom ID EMPTY")
+          pedido.transaction_status = "Pagamento expirado"
+          pedido.markModified("transaction_status")
+          await pedido.save();
+        }catch(e){
+          console.log("Erro =============== cancelado");
+          console.log(e);
+        }
       }
 
     } catch (e) {

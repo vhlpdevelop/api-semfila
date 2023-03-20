@@ -149,10 +149,11 @@ module.exports = {
               }else{
                 return res.send({success:false, msg:"Não existe QRCODES nesse pedido."})
               }
-         
-            
             }
           }else{
+            if(pedido.transaction_status !== 'new'){
+              return res.send({success: false, msg: `Pedido: ${pedido.transaction_status}`})
+            }
             return res.send({success:false, msg:"Aguardando pagamento."})
           }
         }else{

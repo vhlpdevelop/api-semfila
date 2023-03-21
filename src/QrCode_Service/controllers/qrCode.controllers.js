@@ -485,6 +485,7 @@ module.exports = {
             user_name: req.userName,
             user_email: qrcode.user_email,
             pedido_id: qrcode.pedido_id,
+            payment: pedido.payment, //Identificador de pagamento
             company_id: req.company_id,
             store_id: req.stores[0]._id, //ARRUMAR
             qrcode_id: qrcode._id,

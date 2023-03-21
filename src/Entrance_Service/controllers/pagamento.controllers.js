@@ -308,7 +308,7 @@ module.exports = {
             const sellRegistry = await sell_registryModel.find({pedido_id:pedido._id})
             if(sellRegistry){
               for(let i =0; i<sellRegistry.length;i++){
-                sellRegistry[i].refund = true;
+                sellRegistry[i].refund = false;
                 sellRegistry[i].payment = "Credito Estornado"
               }
             }
@@ -345,7 +345,7 @@ module.exports = {
             const sellRegistry = await sell_registryModel.find({pedido_id:pedido._id})
             if(sellRegistry){
               for(let i =0; i<sellRegistry.length;i++){
-                sellRegistry[i].refund = true;
+                sellRegistry[i].refund = false;
                 sellRegistry[i].payment = "Credito contestado"
               }
             }
@@ -1195,6 +1195,13 @@ module.exports = {
         //console.log(dados);
 
         if (items.length > 0) {
+          //Verificar se existe um pedido com o mesmo email e o mesmo valor, caso sim diminua em 1 centavo.
+          const pedidoChecker = await pedidosModel.findOne({price: pag.toString(), user_email: email});
+          if(pedidoChecker){
+            pag = parseFloat(pag) - 0.01
+            pag = pag.toFixed(2)
+          }
+
           //Se existir items validados continue
           //CRIAR UM PEDIDO COM OS ITEMS
           let object = {

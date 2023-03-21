@@ -3,7 +3,11 @@ const financialModel = require("../../models/financial.model");
 const drawReqModel = require("../../models/drawReq.model");
 const contractModel = require("../../models/contract.model");
 const pedidoModel = require("../../models/pedidos.model")
-const withdraw_func = require("./methods/withDrawFunction")
+const withdraw_func = require("./methods/withDrawFunction");
+const qrCodeModel = require("../../models/qrCode.model");
+const mailer = require("../../modules/NodeMailer.controllers");
+const mailerconfig = require("../../config/NodeMailer.config");
+const userModel = require("../../models/user.model");
 module.exports = {
   async getNFE(req, res) {
     console.log(req.body)
@@ -50,11 +54,11 @@ module.exports = {
       if (response) {
         const financy = await financialModel.findOne({ company_id: company });
         var value = 0;
-  
+
         if (financy) {
-  
+
           if (financy.draw === true) {
-  
+
             //Trazer dados do contrato.
             const contract = await contractModel.findById({ _id: financy.contract_id })
 
@@ -65,12 +69,12 @@ module.exports = {
             //Verificar se a data do proximo saque está liberada.
             let aux_date = new Date(financy.next_draw)
             let now = new Date(Date.now())
-      
+
             if (now > aux_date) {
-         
+
               for (let i = 0; i < response.length; i++) {
                 if (!response[i].cortesia) {
-           
+
                   value = parseFloat(value) + parseFloat(response[i].total);
                   response[i].draw = true;
                   await sell_registry.findByIdAndUpdate(
@@ -80,7 +84,7 @@ module.exports = {
                 }
               }
 
-        
+
               if (value > 0) {
                 //Utilizar o contrato para conta.
                 var tax = parseFloat(contract.tax) / 100;
@@ -97,7 +101,7 @@ module.exports = {
                   value = (parseFloat(value) - parseFloat(value) * tax_week).toFixed(2);
                 }
 
-                
+
                 let aux_draw = {
                   user_id: req.userID,
                   value: value,
@@ -106,11 +110,11 @@ module.exports = {
                   company_id: req.company_id,
                   status: false,
                 };
-       
+
                 const drawRequest = await drawReqModel.create(aux_draw);
-                
+
                 if (drawRequest) {
-                
+
                   financy.draw = false;
                   financy.last_draw = Date.now();
                   if (financy.draw_type === 'week') {
@@ -149,11 +153,11 @@ module.exports = {
                   msg: "Valor de saque está em Zero.",
                 });
               }
-            }else{
-              return res.send({success:false, msg:"Aguarde o tempo para o proximo saque"})
+            } else {
+              return res.send({ success: false, msg: "Aguarde o tempo para o proximo saque" })
             }
           } else {
-     
+
             return res.send({
               success: false,
               msg: "SemFila está verificando seu Ultimo Saque.",
@@ -161,7 +165,7 @@ module.exports = {
           }
 
         } else {
- 
+
           return res.send({
             success: false,
             msg: "Não encontramos o seu financeiro"
@@ -396,22 +400,65 @@ module.exports = {
     }
     //
     try {
-      const response = await withdraw_func.withDrawPedido(pedido.txid, parseFloat(registry.total)); //REEMBOLSADOR
-      if (response.success) { //Atualizar sell_registry
-        registry.refund = true;
-        registry.markModified('refund')
-        registry.save();
+      if (pedido.payment !== 'pix') {
+        const response = await withdraw_func.withDrawPedido(pedido.txid, parseFloat(registry.total)); //REEMBOLSADOR
+        if (response.success) { //Atualizar sell_registry
+          registry.refund = true;
+          registry.markModified('refund')
+          registry.save();
 
-        return res.send({
-          success: true,
-          msg: "Reembolso realizado"
-        })
-      } else {
-        return res.send({
-          success: false,
-          msg: response.msg
-        })
+          return res.send({
+            success: true,
+            msg: "Reembolso realizado"
+          })
+        } else {
+          return res.send({
+            success: false,
+            msg: response.msg
+          })
+        }
+      } else { //É Cartão, então crie um pedido de reembolso padrão.
+
+        const qrcode = await qrCodeModel.findById({ _id: registry.qrcode_id });
+        if (qrcode) {
+          registry.refund = true;
+          registry.markModified('refund')
+          registry.save();
+          qrcode.withdraw = true
+          qrcode.markModified('withdraw')
+          await qrcode.save();
+          const user = await userModel.findById({ _id: QrCode.user_id })
+
+          if (user) {
+
+            let valor = (parseFloat(qrcode.item.price) * parseFloat(qrcode.quantity)).toFixed(2)
+            let escopo = "Pedido de reembolso foi solicitado. "
+            let mensagem = "O Reembolso do QRCODE vindo do pedido " + qrcode.pedido_id + " no valor de: R$" + valor + ", Foi solicitado. Aguarde 7 dias úteis para o reembolso ser emitido. Agradecemos pela experiência conosco e estamos sempre a sua disposição. Por SemFila."
+
+            mailer.sendMail(
+              {
+                to: user.email,
+                from: mailerconfig.from,
+                template: "EmailTemplateBasic",
+                subject: "SemFila - Reembolso solicitado.",
+                context: { escopo, mensagem },
+              },
+              (err) => {
+                if (err) {
+                  console.log(err);
+                  return res.send({
+                    msg: "Não foi possivel gerar o email!",
+                    success: false,
+                  });
+                }
+              }
+            );
+
+          }
+        }
+
       }
+
     } catch (e) {
       console.log(e.message)
       return res.send({

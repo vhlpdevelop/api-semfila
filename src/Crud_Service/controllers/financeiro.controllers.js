@@ -383,7 +383,7 @@ module.exports = {
     }
 
     const registry = await sell_registry.findOne({ _id: req.body.sell_registry._id, draw: false, cortesia: false, refund: false })
-    console.log(registry)
+
     if (!registry) {
       return res.json({
         success: false,
@@ -400,7 +400,7 @@ module.exports = {
     }
     //
     try {
-      console.log(pedido.payment)
+      
       if (pedido.payment === 'pix') {
         const response = await withdraw_func.withDrawPedido(pedido.txid, parseFloat(registry.total)); //REEMBOLSADOR
         if (response.success) { //Atualizar sell_registry
@@ -428,7 +428,7 @@ module.exports = {
           qrcode.withdraw = true
           qrcode.markModified('withdraw')
           await qrcode.save();
-          const user = await userModel.findById({ _id: QrCode.user_id })
+          const user = await userModel.findById({ _id: qrcode.user_id })
 
           if (user) {
 

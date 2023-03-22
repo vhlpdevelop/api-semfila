@@ -455,6 +455,15 @@ module.exports = {
             );
 
           }
+          return res.send({
+            success: true,
+            msg: "Reembolso realizado"
+          })
+        }else{
+          return res.send({
+            success: false,
+            msg: "Nao foi possivel encontrar o qrcode para reembolsar"
+          })
         }
         }
         

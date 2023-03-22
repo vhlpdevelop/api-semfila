@@ -400,7 +400,7 @@ module.exports = {
     }
     //
     try {
-      if (pedido.payment !== 'pix') {
+      if (pedido.payment === 'pix') {
         const response = await withdraw_func.withDrawPedido(pedido.txid, parseFloat(registry.total)); //REEMBOLSADOR
         if (response.success) { //Atualizar sell_registry
           registry.refund = true;
@@ -418,8 +418,8 @@ module.exports = {
           })
         }
       } else { //É Cartão, então crie um pedido de reembolso padrão.
-
-        const qrcode = await qrCodeModel.findById({ _id: registry.qrcode_id });
+        if(pedido.payment === 'credit-card'){
+          const qrcode = await qrCodeModel.findById({ _id: registry.qrcode_id });
         if (qrcode) {
           registry.refund = true;
           registry.markModified('refund')
@@ -456,6 +456,8 @@ module.exports = {
 
           }
         }
+        }
+        
 
       }
 

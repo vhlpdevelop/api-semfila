@@ -400,6 +400,7 @@ module.exports = {
     }
     //
     try {
+      console.log(pedido.payment)
       if (pedido.payment === 'pix') {
         const response = await withdraw_func.withDrawPedido(pedido.txid, parseFloat(registry.total)); //REEMBOLSADOR
         if (response.success) { //Atualizar sell_registry
@@ -418,7 +419,7 @@ module.exports = {
           })
         }
       } else { //É Cartão, então crie um pedido de reembolso padrão.
-        if(pedido.payment === 'credit-card'){
+        if(pedido.payment === 'credit_card'){
           const qrcode = await qrCodeModel.findById({ _id: registry.qrcode_id });
         if (qrcode) {
           registry.refund = true;

@@ -1065,7 +1065,7 @@ module.exports = {
   async payCreditCard(req, res) {
     var auth = "";
     var email = req.body.itemData.email;
-    console.log(email)
+  
     if (req.headers.authorization) {
       //AUTH
       const authHeader = JSON.parse(req.headers.authorization);
@@ -1198,6 +1198,7 @@ module.exports = {
           //Verificar se existe um pedido com o mesmo email e o mesmo valor, caso sim diminua em 1 centavo.
           const pedidoChecker = await pedidosModel.findOne({price: pag.toString(), user_email: email});
           if(pedidoChecker){
+            console.log("Aqui pedido foi o mesmo e o valor foi reduzido")
             pag = parseFloat(pag) - 0.01
             pag = pag.toFixed(2)
           }

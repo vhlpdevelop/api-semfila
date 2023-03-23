@@ -1158,7 +1158,7 @@ module.exports = {
               pag_second = pag_second - desconto;
             }
             pag = pag + itemChecker.price * dados.cart[i].qtd;
-            console.log(pag_second)
+        
             let aux_value = parseInt(pag_second.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')) // 25.00 => 2500
             //console.log(aux_value)
             items_second.push({
@@ -1197,21 +1197,21 @@ module.exports = {
 
         if (items.length > 0) {
           //Verificar se existe um pedido com o mesmo email e o mesmo valor, caso sim diminua em 1 centavo.
-          const pedidoChecker = await pedidosModel.findOne({price: pag.toString(), user_email: email, payment: "credit_card"});
+          const pedidoChecker = await pedidosModel.findOne({price: pag.toString(), user_email: email, transaction_status:"Credito pago"}); //Caso seja pago entao busque
           if(pedidoChecker){
             //Reconstrua os valores.
             var valor = 0;
             for(let i = 0; i< items_second.length; i++){
               valor = parseFloat(items_second[i].value) / 100; //2500 => 25.00
               valor = valor - 0.01 //25.00 => 24.99
-              console.log(valor)
+             
               valor = valor.toString()
               let aux_value = parseInt(valor.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')) //24.99 => 2499
-              console.log(aux_value)
+       
               items_second[i].value = aux_value
             }
 
-            console.log("Aqui pedido foi o mesmo e o valor foi reduzido")
+            
             pag = parseFloat(pag) - 0.01
             
           }

@@ -38,7 +38,7 @@ module.exports = {
 
         client_id: process.env.GN_CLIENT_ID,
         client_secret: process.env.GN_CLIENT_SECRET,
-        sandbox: true,
+        sandbox: false,
       }
       const gerencianet = new Gerencianet(options);
       var status = '';
@@ -1239,7 +1239,7 @@ module.exports = {
 
               client_id: process.env.GN_CLIENT_ID,
               client_secret: process.env.GN_CLIENT_SECRET,
-              sandbox: true,
+              sandbox: false,
             }
 
 

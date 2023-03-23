@@ -1158,6 +1158,7 @@ module.exports = {
               pag_second = pag_second - desconto;
             }
             pag = pag + itemChecker.price * dados.cart[i].qtd;
+            console.log(pag_second)
             let aux_value = parseInt(pag_second.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')) // 25.00 => 2500
             //console.log(aux_value)
             items_second.push({
@@ -1204,6 +1205,7 @@ module.exports = {
               valor = parseFloat(items_second[i].value) / 100; //2500 => 25.00
               valor = valor - 0.01 //25.00 => 24.99
               console.log(valor)
+              valor = valor.toString()
               let aux_value = parseInt(valor.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')) //24.99 => 2499
               console.log(aux_value)
               items_second[i].value = aux_value

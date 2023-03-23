@@ -1199,9 +1199,11 @@ module.exports = {
           const pedidoChecker = await pedidosModel.findOne({price: pag.toString(), user_email: email, payment: "credit_card"});
           if(pedidoChecker){
             //Reconstrua os valores.
+            var valor = 0;
             for(let i = 0; i< items_second.length; i++){
-              let valor = parseFloat(items_second[i].value) / 100; //2500 => 25.00
+              valor = parseFloat(items_second[i].value) / 100; //2500 => 25.00
               valor = valor - 0.01 //25.00 => 24.99
+              console.log(valor)
               let aux_value = parseInt(valor.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')) //24.99 => 2499
               console.log(aux_value)
               items_second[i].value = aux_value

@@ -1122,7 +1122,7 @@ module.exports = {
       var desconto = 0;
       //VERIFICAR SE STORE EXISTE PRIMEIRO
       let store = await storeModel.findById(dados.store_id);
-      
+
       if (store._id !== undefined) {
         for (let i = 0; i < dados.cart.length; i++) {
           let itemChecker = await itemsModel.findById({
@@ -1158,14 +1158,8 @@ module.exports = {
               pag_second = pag_second - desconto;
             }
             pag = pag + itemChecker.price * dados.cart[i].qtd;
-            let pedidoChecker = await pedidosModel.findOne({price: pag.toString(), user_email: email, payment: "credit_card"});
-            if(pedidoChecker){
-              console.log("Aqui pedido foi o mesmo e o valor foi reduzido")
-              pag = parseFloat(pag) - 0.01
-              pag_second = pag_second - 0.01
-            }
             let aux_value = parseInt(pag_second.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')) // 25.00 => 2500
-            console.log(aux_value)
+            //console.log(aux_value)
             items_second.push({
               name: itemChecker.item_name,
               value: aux_value,
@@ -1202,7 +1196,21 @@ module.exports = {
 
         if (items.length > 0) {
           //Verificar se existe um pedido com o mesmo email e o mesmo valor, caso sim diminua em 1 centavo.
-          
+          const pedidoChecker = await pedidosModel.findOne({price: pag.toString(), user_email: email, payment: "credit_card"});
+          if(pedidoChecker){
+            //Reconstrua os valores.
+            for(let i = 0; i< items_second.length; i++){
+              let valor = parseFloat(items_second[i].value) / 100; //2500 => 25.00
+              valor = valor - 0.01 //25.00 => 24.99
+              let aux_value = parseInt(valor.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')) //24.99 => 2499
+              console.log(aux_value)
+              items_second[i].value = aux_value
+            }
+
+            console.log("Aqui pedido foi o mesmo e o valor foi reduzido")
+            pag = parseFloat(pag) - 0.01
+            
+          }
           console.log(pag)
           //Se existir items validados continue
           //CRIAR UM PEDIDO COM OS ITEMS

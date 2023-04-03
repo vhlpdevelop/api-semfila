@@ -11,6 +11,8 @@ router.post('/getNFE',limiter.padrao, auth_owner, financeiro.getNFE)
 router.post('/fetchFinanceiroToday',limiter.padrao,auth_owner, financeiro.fetchFinanceiroToday)
 router.post('/fetchFinanceiro',limiter.padrao,auth_owner, financeiro.fetchFinanceiro)
 router.post('/reembolsoAction', limiter.padrao, auth_owner, financeiro.reembolsoAction)
+router.post('/dataFinanceiro', limiter.padrao, auth_owner, financeiro.dataFinanceiro)
 router.get('/withdrawRequest',limiter.padrao, auth_owner, financeiro.withdrawRequest)
+
 
 module.exports = router;

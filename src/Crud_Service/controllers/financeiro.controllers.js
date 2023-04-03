@@ -2,6 +2,7 @@ const sell_registry = require("../../models/sell_registry.model");
 const financialModel = require("../../models/financial.model");
 const drawReqModel = require("../../models/drawReq.model");
 const contractModel = require("../../models/contract.model");
+const storeModel = require("../../models/store.model")
 const pedidoModel = require("../../models/pedidos.model")
 const withdraw_func = require("./methods/withDrawFunction");
 const qrCodeModel = require("../../models/qrCode.model");
@@ -482,5 +483,43 @@ module.exports = {
     //
 
 
+  },
+  async dataFinanceiro(req,res){
+    if (!req.authenticate) {
+
+      return res.json({
+        success: false,
+        msg: "Usuário não tem permissão."
+      });
+    }
+    const store_id = req.stores[0]._id;
+    try{
+      const ID_company = await storeModel.findById({_id: store_id})
+      if(ID_company){
+        const financy = await financialModel.findOne({ company_id: ID_company.company_id });
+      if (!financy)
+        return res.send({
+          success: false,
+          msg: "Não encontramos os dados da loja",
+        });
+        const contract = await contractModel.findById({ _id: financy.contract_id })
+        if (contract) {
+          return res.send({
+            success: true,
+            finance: financy,
+            contract: contract,
+            msg: "Dados localizados",
+          });
+        }else{
+          return res.status(400).send({success:false, msg:"Não foi possível localizar os dados"})
+        }
+      }else{
+        return res.status(400).send({success:false, msg:"Não foi possível localizar os dados"})
+      }
+      
+
+    }catch(e){
+      return res.status(404).send({success:false, msg:"Ocorreu um erro ao localizar os dados."})
+    }
   }
 };

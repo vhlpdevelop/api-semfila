@@ -56,16 +56,19 @@ module.exports = {
         }
     },
     async ratings(req,res){
+      console.log("Aqui")
       try{
         const menu = await menuModel.findOne({
           store_id: req.stores[0]._id
         });
         if(menu){
+          
           return res.send({success: true, rating:menu.ratings})
         }else{
           return res.send({success:false})
         }
       }catch(e){
+        console.log(e)
         return res.status(404).send({success:false})
       }
     },

@@ -555,6 +555,12 @@ module.exports = {
       return;
     }
     //Ver se email ja está em uso
+    if(!validateEmail(req.body.email)){
+      return res.send({
+        success: false,
+        msg: "Email inválido."
+      });
+    }
     const user_find = await userModel.findOne({ email: req.body.email })
     if (user_find)
       return res.send({

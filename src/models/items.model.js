@@ -9,6 +9,7 @@ const item = new Schema({
   status: {type:Boolean},
   ncm: {type:String, default: ''},
   icms: {type:String}, default: '',
+  custo: {type:String, default: '0'},
   category_id: {type: String},
   company_id:{type:String, required: true},
   promotion: {type:Boolean},

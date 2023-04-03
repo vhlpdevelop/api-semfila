@@ -9,9 +9,10 @@ const report = require("../controllers/report.controllers")
 router.get('/getStore/:id',limiter.getStore,frontService.getStore)
 router.get('/fetchSearch', limiter.Search_store, frontService.search)
 router.post('/fetchPedido', limiter.padrao, frontService.fetchPedido)
+
+router.post('/ratings', limiter.padrao, auth_owner, frontService.ratings)
 router.use(middleware)
 router.post('/menuRating', limiter.padrao, frontService.ratingCardapio)
 router.post('/reportCardapio', limiter.report, report.reportCardapio)
 
-router.post('/ratings', limiter.padrao, auth_owner, frontService.ratings)
 module.exports = router;

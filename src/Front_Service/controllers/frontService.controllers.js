@@ -55,6 +55,20 @@ module.exports = {
           return res.send({success:false, message:'Ocorreu um erro', error:e.message})
         }
     },
+    async ratings(req,res){
+      try{
+        const menu = await menuModel.findOne({
+          store_id: req.stores[0]._id
+        });
+        if(menu){
+          return res.send({success: true, rating:menu.ratings})
+        }else{
+          return res.send({success:false})
+        }
+      }catch(e){
+        return res.status(404).send({success:false})
+      }
+    },
     async getStore(req, res) { //TRAZER CARDAPIO
     
       try {

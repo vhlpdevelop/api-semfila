@@ -3,7 +3,7 @@ const globalUsers = require("./resources/traficBus");
 const {createWebhook} = require('./config/gerenciaNet.config')
 const Server = require("./server")
 const server = new Server()
-console.log(server)
+
 const { QrcodeReturner, QrCodeReSend, afterRefund, notifications_api } = require ( "./Entrance_Service/controllers/pagamento.controllers");
 const { updateQrCode } = require("./QrCode_Service/controllers/qrCode.controllers")
 const middleware = require("./middleware/auth.middleware")
@@ -17,6 +17,9 @@ server.getApp().post("/notification_bill", (request, response)=> {
   response.status(200).end();
 
 });
+
+console.log(server.getApp())
+console.log(server.getServer())
 
 //Pix
 server.getApp().post("/webhook", (request, response) => { 

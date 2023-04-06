@@ -483,10 +483,15 @@ module.exports = {
   },
   async QrcodeReturner(req, res) {
     //APENAS EMITIR SOCKET
+    console.log("Chegou aqui")
     const io = req.app.get("socketio");
     try {
+      console.log("tentando procurar pedido")
+      console.log(req.aux)
+      console.log(req.aux.object)
       const pedido = await pedidosModel.findOne({ txid: req.aux.object });
       if (!pedido) console.log("FALHOU");
+      console.log(pedido)
       var aux_ticket = {};
       var dataToSend = [];
       var dataToSave = [];
@@ -561,7 +566,9 @@ module.exports = {
       }
       pedido.transaction_status = "PIX"
       pedido.status = true; //PEDIDO FOI PAGO
+      console.log("Atualizando pedido")
       await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
+      console.log("pedido atualizado")
       /* Enviar Email
       */
       if (pedido.user_email && !aux_ticket.cortesia) {

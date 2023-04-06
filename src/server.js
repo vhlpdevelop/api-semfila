@@ -41,12 +41,13 @@ class Server {
         this.QrCodeServiceProxy = httpProxy('http://localhost:' + QRCODE_PORT);
         this.CrudServiceProxy = httpProxy('http://localhost:' + CRUD_PORT);
         this.EntranceServiceProxy = httpProxy('http://localhost:' + ENTRANCE_PORT);
-        this.app.use('/admin', (req, res, next) => AdminServiceProxy(req, res, next));
-        this.app.use('/frontService', (req, res, next) => FrontServiceProxy(req, res, next));
-        this.app.use('/auth', (req, res, next) => LoginServiceProxy(req, res, next));
-        this.app.use('/qrcode', (req, res, next) => QrCodeServiceProxy(req, res, next));
-        this.app.use('/crud', (req, res, next) => CrudServiceProxy(req, res, next));
-        this.app.use('/payment', (req, res, next) => EntranceServiceProxy(req, res, next));
+        this.app.use('/admin', (req, res, next) => this.AdminServiceProxy(req, res, next));
+        this.app.use('/frontService', (req, res, next) => this.FrontServiceProxy(req, res, next));
+        this.app.use('/auth', (req, res, next) => this.LoginServiceProxy(req, res, next));
+        this.app.use('/qrcode', (req, res, next) => this.QrCodeServiceProxy(req, res, next));
+        this.app.use('/crud', (req, res, next) => this.CrudServiceProxy(req, res, next));
+        this.app.use('/payment', (req, res, next) => this.EntranceServiceProxy(req, res, next));
+        console.log("Inicializado")
     }
 
     getApp(){

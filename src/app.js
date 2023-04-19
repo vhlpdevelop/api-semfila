@@ -50,7 +50,8 @@ const setCache = function (req, res, next) {
 }
 
 app.use(cors({
-  origin: 'https://semfila.app'
+  origin: []
+  //origin: 'https://semfila.app'
 }));
 app.use(helmet());
 app.use(mongoSanitize())
@@ -61,7 +62,8 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '15mb' }));
 var server = require("https").createServer(httpsOptions, app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: 'https://semfila.app',
+    origin: []
+    //origin: 'https://semfila.app',
   },
 });
 

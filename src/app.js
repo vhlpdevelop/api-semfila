@@ -61,7 +61,7 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '15mb' }));
 var server = require("https").createServer(httpsOptions, app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: 'https://semfila.app/',
+    origin: 'https://semfila.app',
   },
 });
 

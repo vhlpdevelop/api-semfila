@@ -2,7 +2,7 @@ require("dotenv").config()
 const express = require('express');
 const httpProxy = require('express-http-proxy');
 const app = express();
-const db = require("./config/db");
+const db = require("./config/db"); //NÃO REMOVA DE HIPÓTESE ALGUMA
 const globalUsers = require("./resources/traficBus");
 const { createWebhook } = require('./config/gerenciaNet.config')
 const fs = require("fs");
@@ -49,7 +49,9 @@ const setCache = function (req, res, next) {
   next();
 }
 
-app.use(cors());
+app.use(cors({
+  origin: 'https://semfila.app'
+}));
 app.use(helmet());
 app.use(mongoSanitize())
 app.disable('x-powered-by')
@@ -59,7 +61,7 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '15mb' }));
 var server = require("https").createServer(httpsOptions, app);
 const io = require("socket.io")(server, {
   cors: {
-    origins: [],
+    origin: 'https://semfila.app/',
   },
 });
 

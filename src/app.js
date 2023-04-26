@@ -1,4 +1,5 @@
 require("dotenv").config()
+const stripe = require('stripe')(process.env.STRIPE_CLIENT_SECRET);
 const express = require('express');
 const httpProxy = require('express-http-proxy');
 const app = express();
@@ -53,6 +54,27 @@ app.use(cors());
 app.use(helmet());
 app.use(mongoSanitize())
 app.disable('x-powered-by')
+
+//WEBHOOK STRIPE
+
+app.post('/stripeWebhook', express.raw({type: 'application/json'}), (request, response) => {
+  const sig = request.headers['stripe-signature'];
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+  } catch (err) {
+    response.status(400).send(`Webhook Error: ${err.message}`);
+    return;
+  }
+  console.log(`Unhandled event type ${event.type}`);
+
+  // Return a 200 response to acknowledge receipt of the event
+  response.send();
+});
+
+
 app.use(bodyParser.json({ limit: '15mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '15mb' }));
 

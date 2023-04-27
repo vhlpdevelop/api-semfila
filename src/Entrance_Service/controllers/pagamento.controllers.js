@@ -8,7 +8,7 @@ const templater = require("./methods/template_function");
 const Gerencianet = require('gn-api-sdk-node');
 const QrCodesModel = require("../../models/qrCode.model");
 const storeModel = require("../../models/store.model");
-
+const stripe = require('stripe')(process.env.STRIPE_CLIENT_SECRET)
 const Encrypter = require("./methods/Encrypter");
 const qr = require("qr-image");
 const globalUsers = require("../../resources/traficBus");
@@ -1240,55 +1240,29 @@ module.exports = {
           if (pedido) {
             //Criar um link de pagamento.
 
-            var options = {
-
-              client_id: process.env.GN_CLIENT_ID,
-              client_secret: process.env.GN_CLIENT_SECRET,
-              sandbox: false,
-            }
-
-
-            //expire_at
-            var today = new Date(Date.now())
-            today.setDate(today.getDate() + 1)
-            var todayDate = new Date(today).toISOString().slice(0, 10);
-            var body = {
-              items: items_second,
-              metadata: {
-                custom_id: pedido._id,
-                notification_url: "https://api-semfila.api-semfila.online/notification_bill"
-              },
-              settings: {
-                message: `Obrigado por comprar com a SemFila, seu número do pedido é ${pedido._id}.`,
-                payment_method: "credit_card",
-                request_delivery_address: false,
-                expire_at: todayDate
-              }
-            }
-            //OPTIONS
-            let params = {
-              id: 0,
-            }
-            var cobResponse = '';
-            const gerencianet = new Gerencianet(options);
-            await gerencianet.createOneStepLink(params, body)
-              .then((resposta) => {
-                if (resposta.code === 200) {
-                  cobResponse = resposta
-                }
+         
+            try{
+              let aux_value = parseInt(object.price.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''))
+              const payment_intent = await stripe.paymentIntents.create({
+                amount: aux_value,
+                currency: 'brl',
+                description: `Pagamento do pedido ${pedido._id} SemFila`,
+                automatic_payment_methods: {enabled: true},
               })
-              .catch((error) => {
-                console.log(error)
-              })
+              console.log(payment_intent)
+
+            }catch(e){
+              console.log('error =', e)
+            }
             //Atualizar pedido.
             if (cobResponse.code === 200) {
-              pedido.charge_id = cobResponse.data.charge_id
+              pedido.charge_id = payment_intent.id
               pedido.markModified('charge_id')
               pedido.save();
               return res.send({
                 success: true,
                 msg: "Transferindo para o pagamento",
-                url: cobResponse.data.payment_url,
+                url: payment_intent.client_secret,
                 obj_pedido: pedido._id
               });
             } else {

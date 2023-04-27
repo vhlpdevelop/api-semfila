@@ -1,5 +1,5 @@
 //const menuModel = require("../models/menu.model");
-
+const stripe = require('stripe')(process.env.STRIPE_CLIENT_SECRET)
 const itemsModel = require("../../models/items.model");
 const categoryModel = require("../../models/category.model");
 const consumablesModel = require("../../models/consumables.model")
@@ -90,11 +90,35 @@ module.exports = {
         const item = await itemsModel.create(dataSAVE);
         //console.log(item);
         if (item) {
-          return res.send({
-            success: true,
-            msg: "Produto criado com sucesso",
-            obj: item,
-          });
+          //Enviar ao stripe
+          const product = await stripe.products.create({
+            name: newItem.item.item_name,
+            id: item._id
+          })
+          console.log(product)
+          if(product){
+            //Criar preço
+            let aux_value = parseInt(aux_price.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')) //transformador de int
+            console.log(aux_value)
+            const price = await stripe.prices.create({
+              unit_amount: aux_value,
+              currency: 'brl',
+              product: product.id,
+            });
+            console.log(price)
+            if(price){ //Atualizar item
+              item.id_pag = price.id
+              var update_item = await itemsModel.findByIdAndUpdate(item._id, item)
+              if(update_item){
+                return res.send({
+                  success: true,
+                  msg: "Produto criado com sucesso",
+                  obj: item,
+                });
+              }
+            }
+          }
+         
         } else {
           console.log("Falha ao criar Item 2");
         }

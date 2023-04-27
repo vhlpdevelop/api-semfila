@@ -2,6 +2,7 @@
 const { Schema, model } = require('mongoose');
 const item = new Schema({
   item_name: { type: String},
+  id_pag: {type:String, default: ''},
   description: { type:String},
   type: { type:String},
   image_url: {type:String},

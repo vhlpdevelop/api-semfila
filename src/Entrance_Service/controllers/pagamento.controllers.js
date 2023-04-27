@@ -1240,10 +1240,10 @@ module.exports = {
           if (pedido) {
             //Criar um link de pagamento.
 
-         
+            const payment_intent = ''
             try{
               let aux_value = parseInt(object.price.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''))
-              const payment_intent = await stripe.paymentIntents.create({
+              payment_intent = await stripe.paymentIntents.create({
                 amount: aux_value,
                 currency: 'brl',
                 description: `Pagamento do pedido ${pedido._id} SemFila`,
@@ -1255,7 +1255,7 @@ module.exports = {
               console.log('error =', e)
             }
             //Atualizar pedido.
-            if (cobResponse.code === 200) {
+            if (payment_intent) {
               pedido.charge_id = payment_intent.id
               pedido.markModified('charge_id')
               pedido.save();

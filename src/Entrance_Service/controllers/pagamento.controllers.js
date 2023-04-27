@@ -1240,10 +1240,10 @@ module.exports = {
           if (pedido) {
             //Criar um link de pagamento.
 
-            
+            var payment_intent=''
             try{
               let aux_value = parseInt(object.price.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''))
-              const payment_intent = await stripe.paymentIntents.create({
+              payment_intent = await stripe.paymentIntents.create({
                 amount: aux_value,
                 currency: 'brl',
                 description: `Pagamento do pedido ${pedido._id} SemFila`,

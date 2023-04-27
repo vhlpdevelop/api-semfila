@@ -1240,10 +1240,10 @@ module.exports = {
           if (pedido) {
             //Criar um link de pagamento.
 
-            const payment_intent = ''
+            
             try{
               let aux_value = parseInt(object.price.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''))
-              payment_intent = await stripe.paymentIntents.create({
+              const payment_intent = await stripe.paymentIntents.create({
                 amount: aux_value,
                 currency: 'brl',
                 description: `Pagamento do pedido ${pedido._id} SemFila`,
@@ -1253,6 +1253,11 @@ module.exports = {
 
             }catch(e){
               console.log('error =', e)
+              return res.send({
+                success: false,
+                msg: "Não foi possivel gerar pagamento.",
+
+              });
             }
             //Atualizar pedido.
             if (payment_intent) {

@@ -93,6 +93,9 @@ module.exports = {
           //Enviar ao stripe
           const product = await stripe.products.create({
             name: newItem.item.item_name,
+            active: newItem.item.status,
+            description: newItem.item.description,
+            images: [newItem.item.image_url],
             id: item._id
           })
           console.log(product)

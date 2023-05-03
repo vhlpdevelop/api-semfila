@@ -1304,6 +1304,217 @@ module.exports = {
       });
     }
   },
+  async confirmPaymentReq(req,res){
+    const paymentMethodId = req.body.paymentMethodId
+    const secret = req.body.secret;
+    const pedido_id = req.body.pedido_id;
+    const {error} = await stripe.confirmCardPayment(secret, {
+      payment_method: paymentMethodId
+    })
+    if(error){
+      return res.status(500).send({
+        success:false, 
+        msg:"Pagamento não realizado"
+      })
+    }else{
+        console.log('Pago')
+        //Caso pago então -> criar qrcode através do pedido 
+        //enviar ao email que foi pago e chegou
+        //Enviar ao requisitante qrcode
+        
+        //VERIFICANDO PEDIDO
+        try {
+          const pedido = await pedidosModel.findById({ _id: pedido_id });
+          if (!pedido) return false;
+          var aux_ticket = {};
+          var dataToSend = [];
+          var dataToSave = [];
+          var trigger = true;
+          var total = 0;
+          for (let i = 0; i < pedido.items.length; i++) {
+            //console.log(pedido.items[i].item_name)
+            //console.log("Loop => "+i)
+            let verify = await limiter.limit_controller(pedido.items[i]._id, pedido.items[i].qtd) //Verificador para reembolsar
+    
+            if (!verify.status && verify.find && trigger) { //Caso falhe realizar o processo de estorno e enviar email.
+              //Processo de Reembolso.
+    
+              await withDrawer.withDrawPedido(pedido, i); //REEMBOLSADOR
+    
+              trigger = false;
+              break;
+            }
+            if (trigger) {
+              aux_ticket = {
+                item: pedido.items[i],
+                user_id: pedido.user_id,
+                user_email: pedido.user_email,
+                pedido_id: pedido._id,
+                cortesia: pedido.cortesia,
+                company_id: pedido.company_id,
+                store_id: pedido.store_id,
+                store_name: pedido.store_name,
+                trava: pedido.items[i].trava, //TRAVA DE SEGURANÇA - NOVA
+                quantity: pedido.items[i].qtd,
+                duration: pedido.items[i].duration,
+                QrImage: "",
+                state: true,
+              };
+    
+              total = parseFloat((parseFloat(total) + parseFloat(pedido.items[i].price)).toFixed(2))
+    
+              var ticket = await QrCodesModel.create(aux_ticket);
+    
+              let datatoEncrypt = {
+                _id: ticket._id,
+                store_id: ticket.store_id,
+              };
+    
+              let texto = Encrypter.encrypt(datatoEncrypt);
+              const code = qr.imageSync(texto, {
+                type: "png",
+                size: 10,
+              });
+    
+              //console.log(code);
+              var base64data = Buffer.from(code, "binary").toString("base64");
+              //console.log(base64data);
+              ticket.QrImage = base64data;
+              //console.log(ticket.QrImage);
+    
+              let object = {
+                qrcode: base64data,
+              }
+              dataToSend.push(object);
+              dataToSave.push(ticket._id)
+              let updater = await QrCodesModel.findByIdAndUpdate(
+                { _id: ticket._id },
+                ticket
+              );
+            }
+          }
+    
+          if (!trigger) {
+            return "Finalizado.";
+          }
+          pedido.transaction_status = "Credito pago"
+          pedido.status = true; //PEDIDO FOI PAGO
+          await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
+          /* Enviar Email
+          */
+          if (pedido.user_email && !aux_ticket.cortesia) {
+    
+            var aux_items = pedido.items;
+            let aux_sender = "";
+            var store = await storeModel.findById({ _id: pedido.store_id })
+            //Adicionar resgate.
+            var url_button = store.store_url + "-" + ticket._id
+            for (let i = 0; i < aux_items.length; i++) {
+    
+              let cons =
+                "<tr style=border-collapse:collapse>" +
+                "<td style=padding:0;Margin:0;font-size:xx-small;width:60px;text-align:center>" +
+                aux_items[i].item_name +
+                "</td>" +
+                "<td style=padding:0;Margin:0;font-size:xx-small;width:60px;text-align:center>" +
+                aux_items[i].description +
+                "</td>" +
+                "<td style=padding:0;Margin:0;width:100px;text-align:center>" +
+                aux_items[i].qtd +
+                "</td>" +
+                "<td style=padding:0;Margin:0;width:60px;text-align:center>R$" +
+                aux_items[i].price +
+                "</td> " +
+                "</tr>";
+              /*
+              let auxiliar =
+              "<td align=center style=padding:0;Margin:0;font-size:0>"
+            aux_items[i].item_name
+            "</td>";
+              */
+    
+              let auxiliar =
+                `<td align="center" style="padding:0;Margin:0;font-size:0px"><img class="adapt-img" src="${aux_items[i].image_url}" alt style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="178" height="100"></td>`;
+    
+              aux_sender += `
+              <tr style="border-collapse:collapse"> 
+              <td align="left" style="Margin:0;padding-top:5px;padding-bottom:10px;padding-left:20px;padding-right:20px"> 
+              <!--[if mso]><table style="width:560px" cellpadding="0" cellspacing="0"><tr><td style="width:178px" valign="top"><![endif]--> 
+              <table class="es-left" cellspacing="0" cellpadding="0" align="left" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left"> 
+                <tr style="border-collapse:collapse"> 
+                 <td class="es-m-p0r es-m-p20b" valign="top" align="center" style="padding:0;Margin:0;width:178px"> 
+                  <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
+                    <tr style="border-collapse:collapse"> 
+                     ${auxiliar}
+                    </tr> 
+                  </table></td> 
+                </tr> 
+              </table> 
+              <!--[if mso]></td><td style="width:20px"></td><td style="width:362px" valign="top"><![endif]--> 
+              <table cellspacing="0" cellpadding="0" align="right" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
+                <tr style="border-collapse:collapse"> 
+                 <td align="left" style="padding:0;Margin:0;width:362px"> 
+                  <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
+                    <tr style="border-collapse:collapse"> 
+                     <td align="left" style="padding:0;Margin:0"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px"><br></p> 
+                      <table style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%" class="cke_show_border" cellspacing="1" cellpadding="1" border="0" role="presentation"> 
+                        ${cons}
+                      </table><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px"><br></p></td> 
+                    </tr> 
+                  </table></td> 
+                </tr> 
+              </table>
+              </tr>
+              <td align="left" style="padding:0;Margin:0;padding-left:20px;padding-right:20px"> 
+                       <table width="100%" cellspacing="0" cellpadding="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
+                         <tr style="border-collapse:collapse"> 
+                          <td valign="top" align="center" style="padding:0;Margin:0;width:560px"> 
+                           <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
+                             <tr style="border-collapse:collapse"> 
+                              <td align="center" style="padding:0;Margin:0;padding-bottom:10px;font-size:0"> 
+                               <table width="100%" height="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
+                                 <tr style="border-collapse:collapse"> 
+                                  <td style="padding:0;Margin:0;border-bottom:1px solid #EFEFEF;background:#FFFFFF none repeat scroll 0% 0%;height:1px;width:100%;margin:0px"></td> 
+                                 </tr> 
+                               </table></td> 
+                             </tr> 
+                           </table></td> 
+                         </tr> 
+                       </table></td>  `;
+            }
+    
+            let data_aux = AssimilateTime(pedido.createdAt)
+            mailer.sendMail(
+              {
+                to: pedido.user_email,
+                from: mailerconfig.from,
+                html: await templater.build_template(
+                  pedido._id,
+                  data_aux,
+                  pedido.store_name,
+                  total,
+                  aux_sender,
+                  url_button
+                ),
+                subject: "SemFila - Compra realizada com sucesso"
+              },
+              (err) => {
+                if (err) {
+                  console.log(err);
+                }
+              }
+            );
+            }
+            //Enviar um retorno
+            return res.send({success:true, msg:"Compra efetuada", obj: dataToSend})
+        }catch (e) {
+          console.log("Erro =============== paid");
+          console.log(e);
+          return res.send({success:false, error: error, msg: "Erro ocorreu"})
+        }
+      
+    }
+  },
   async afterRefund(order) {
     //Verificar pelo pedido o txid e preparar o refundEmail.
     //console.log(order)

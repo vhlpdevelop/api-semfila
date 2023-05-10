@@ -69,6 +69,9 @@ app.post('/stripeWebhook', express.raw({type: 'application/json'}), (request, re
     return;
   }
   switch (event.type) {
+    case 'charge.succeeded':
+      console.log(event.data.object)
+      break;
     case 'payment_intent.succeeded':
       const paymentIntentSucceeded = event.data.object;
       // Then define and call a function to handle the event payment_intent.succeeded

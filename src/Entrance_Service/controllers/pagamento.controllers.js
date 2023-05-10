@@ -1368,7 +1368,8 @@ module.exports = {
     
               let object = {
                 qrcode: base64data,
-              }
+                data: ticket,
+              };
               dataToSend.push(object);
               dataToSave.push(ticket._id)
               let updater = await QrCodesModel.findByIdAndUpdate(

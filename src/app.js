@@ -22,7 +22,7 @@ const httpsOptions = {
   requestCert: true,
   rejectUnauthorized: false, //Mantenha como false para que os demais endpoints da API não rejeitem requisições sem MTLS
 };
-const { QrcodeReturner, QrCodeReSend, afterRefund, notifications_api } = require("./Entrance_Service/controllers/pagamento.controllers");
+const { QrcodeReturner, QrCodeReSend, afterRefund, notifications_api, confirmPaymentReq } = require("./Entrance_Service/controllers/pagamento.controllers");
 const { updateQrCode } = require("./QrCode_Service/controllers/qrCode.controllers")
 const port = 443;
 const {
@@ -70,7 +70,8 @@ app.post('/stripeWebhook', express.raw({type: 'application/json'}), (request, re
   }
   switch (event.type) {
     case 'charge.succeeded':
-      console.log(event.data.object)
+      console.log(event.data.object.payment_intent)
+      confirmPaymentReq(io, event.data.object.payment_intent)
       break;
     case 'payment_intent.succeeded':
       const paymentIntentSucceeded = event.data.object;

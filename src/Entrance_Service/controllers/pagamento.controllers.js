@@ -1304,30 +1304,11 @@ module.exports = {
       });
     }
   },
-  async confirmPaymentReq(req,res){
-    const paymentMethodID = req.body.paymentMethodID
-    const secret = req.body.secret;
-    const pedido_id = req.body.pedido_id;
-    console.log(secret)
-    console.log(pedido_id)
-    console.log(paymentMethodID)
-    const {error} = await stripe.confirmCardPayment(secret, {
-      payment_method: paymentMethodID
-    })
-    if(error){
-      return res.status(500).send({
-        success:false, 
-        msg:"Pagamento não realizado"
-      })
-    }else{
-        console.log('Pago')
-        //Caso pago então -> criar qrcode através do pedido 
-        //enviar ao email que foi pago e chegou
-        //Enviar ao requisitante qrcode
-        
+  async confirmPaymentReq(io, charge_id){
         //VERIFICANDO PEDIDO
+        console.log(charge_id)
         try {
-          const pedido = await pedidosModel.findById({ _id: pedido_id });
+          const pedido = await pedidosModel.findOne({ charge_id: charge_id });
           if (!pedido) return false;
           var aux_ticket = {};
           var dataToSend = [];
@@ -1509,14 +1490,42 @@ module.exports = {
             );
             }
             //Enviar um retorno
-            return res.send({success:true, msg:"Compra efetuada", obj: dataToSend})
+            if (!aux_ticket.cortesia) {
+              io.to(pedido.socket)
+                .timeout(5000)
+                .emit(
+                  "qrcodeGet",
+                  {
+                    //realizar um callback
+                    dataToSend,
+                  },
+                  (err, response) => {
+                    if (err === null) { //Então gravar no global pois nao enviou
+                      let aux = {
+                        sessionID: pedido.socket,
+                        dataToSave: dataToSave,
+                      };
+                      globalUsers.push(aux);
+                
+                    }
+      
+                    if (!response) {
+      
+      
+                    } else {
+                      console.log(response);
+                    } //Faça nada
+                  }
+                );
+            }
+           
         }catch (e) {
           console.log("Erro =============== paid");
           console.log(e);
-          return res.send({success:false, error: error, msg: "Erro ocorreu"})
+
         }
       
-    }
+    
   },
   async afterRefund(order) {
     //Verificar pelo pedido o txid e preparar o refundEmail.

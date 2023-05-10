@@ -9,5 +9,4 @@ const middleware = require("../../middleware/auth.middleware")
 router.post('/payPix',limiter.padrao,pagamento.payPix);
 router.post('/CortesiaPay',limiter.padrao,middleware, pagamento.CortesiaPay);
 router.post('/payCreditCard',limiter.padrao,pagamento.payCreditCard);
-router.post('/confirmPayment', limiter.padrao, pagamento.confirmPaymentReq);
 module.exports = router;

@@ -1310,7 +1310,7 @@ module.exports = {
     const pedido_id = req.body.pedido_id;
     console.log(secret)
     console.log(pedido_id)
-    console.log(paymentMethodId)
+    console.log(paymentMethodID)
     const {error} = await stripe.confirmCardPayment(secret, {
       payment_method: paymentMethodID
     })

@@ -1305,11 +1305,14 @@ module.exports = {
     }
   },
   async confirmPaymentReq(req,res){
-    const paymentMethodId = req.body.paymentMethodId
+    const paymentMethodID = req.body.paymentMethodID
     const secret = req.body.secret;
     const pedido_id = req.body.pedido_id;
+    console.log(secret)
+    console.log(pedido_id)
+    console.log(paymentMethodId)
     const {error} = await stripe.confirmCardPayment(secret, {
-      payment_method: paymentMethodId
+      payment_method: paymentMethodID
     })
     if(error){
       return res.status(500).send({

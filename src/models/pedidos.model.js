@@ -7,7 +7,7 @@ const pedido = new Schema({
   socket: {type:String},
   loc_id: {type:String},
   user_id: {type:String},
-  user_email: {type:String},
+  user_phone: {type:String},
   payment: {type:String},
   price: {type: String},
   cortesia: {type: Boolean, default: false},

@@ -14,7 +14,7 @@ module.exports = {
 
         //Enviar link para visualização direto pelo sistema
         await axios.post(APIZ_INSTANCE+'/send-link', {
-            phone: pedido.phone,
+            phone: pedido.user_phone,
             message: "Veja sua compra no nosso cardapio, apenas clique no link! https://www.semfila.app/resgate/"+url_button,
             image: "https://i.ibb.co/Df7vzhn/imagephone-2.png",
             linkUrl: "https://www.semfila.app/resgate/"+url_button,
@@ -41,7 +41,7 @@ function ImageBuilder(item,phone){
     console.log(item)
     return {
         phone: phone,
-        image: item.qrcode,
-        caption: item.data.item.item_name + " " + item.data.quantity + " no " + item.data.store_name
+        image: "data:image/png;base64,"+item.qrcode,
+        caption: item.data.item.item_name + " " + item.data.quantity + " un em " + item.data.store_name
     }
 }

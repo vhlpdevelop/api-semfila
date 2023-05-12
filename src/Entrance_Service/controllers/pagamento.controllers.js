@@ -1390,6 +1390,7 @@ module.exports = {
       */
       if (pedido.user_phone && !aux_ticket.cortesia) {
         //Adicionar resgate.
+        var store = await storeModel.findById({ _id: pedido.store_id })
         var url_button = store.store_url + "-" + ticket._id
         sendConfirmPayMessage(pedido, dataToSend, url_button)
       }

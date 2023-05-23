@@ -861,19 +861,18 @@ module.exports = {
             customerRequest.name = 'Consumidor';
             customerRequest.phones = { mobile_phone: { country_code: '55', area_code: '67', number: '998355896' } }
 
-            console.log(pagarme)
             const request = new pagarme.CreateOrderRequest();
-            console.log(request)
+            
             request.items = [new pagarme.CreateOrderItemRequest()];
-            console.log(request.items)
+            
             request.items[0].description = 'Tesseract Bracelet';
             request.items[0].quantity = 3;
             request.items[0].amount = 1490;
             request.payments = [new pagarme.CreatePaymentRequest()];
-            console.log(request.payments)
+          
             const pixRequest = [new pagarme.CreatePixPaymentRequest()];
             pixRequest.expires_in = "3600";
-            pixRequest.additional_information[0] = { name: "Pedido", value: "1"}
+            pixRequest.additional_information = { name: "Pedido", value: "1"}
             request.payments[0].paymentMethod = 'pix';
             request.payments[0].split = [
               {

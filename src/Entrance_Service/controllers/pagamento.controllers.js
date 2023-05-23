@@ -928,17 +928,18 @@ module.exports = {
                 },
               })
               .then(async (order) => {
-                console.log(`Order Id: ${order}`);
+                console.log(`Order Id: ${order.data}`);
                 console.log(order)
-                order_id = order.id
-                //console.log(`Charge Id: ${order.charges[0].id}`);
-                //console.log(`Order status: ${order.status}`);
-               // console.log(order.charges[1])
-               // console.log(order.charges[1].last_transaction.qr_code_url)
+                let data = order.data
+                order_id = data.id
+                console.log(`Charge Id: ${data.charges[0].id}`);
+                console.log(`Order status: ${data.status}`);
+                console.log(data.charges[1])
+                console.log(data.charges[1].last_transaction.qr_code_url)
                 //SALVAR IMAGEM E PIXCOPIA E COLA
                 //imagemQrCode => 
-                pixCode.imagemQrcode = order.charges[1].last_transaction.qrcode
-                pixCode.qrcode = order.charges[1].last_transaction.qr_code_url
+                pixCode.imagemQrcode = data.charges[1].last_transaction.qrcode
+                pixCode.qrcode = data.charges[1].last_transaction.qr_code_url
                 console.log(pixCode)
 
               })

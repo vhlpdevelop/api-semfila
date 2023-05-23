@@ -929,6 +929,7 @@ module.exports = {
               })
               .then(async (order) => {
                 console.log(`Order Id: ${order}`);
+                console.log(order)
                 order_id = order.id
                 //console.log(`Charge Id: ${order.charges[0].id}`);
                 //console.log(`Order status: ${order.status}`);

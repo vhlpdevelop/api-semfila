@@ -129,12 +129,42 @@ app.post("/notification_bill", (request, response) => {
 
 //WEBHOOK PIX
 app.post("/webhook", (request, response) => {
-  // Verifica se a requisição que chegou nesse endpoint foi autorizada
-  if (request.client.authorized) {
-    response.status(200).end();
-  } else {
-    response.status(401).end();
+
+  const { type } = req.body
+  switch (type){
+    case 'order.paid':
+      console.log("Pedido foi pago")
+      break;
+    case 'order.payment_failed':
+      console.log("Pedido falhou ao pagar")
+      break;
+    case 'order.canceled':
+      console.log("Pedido foi cancelado")
+      break;
+    case 'charge.paid':
+      console.log("Cobrança foi pago")
+      break;
+    case 'charge.refunded':
+      console.log("Cobrança foi estornada")
+      break;
+    default: 
+    console.log(`Unhandled event type ${type}`);
   }
+  /*
+     for (const order of pix) {
+      let aux = {
+        object: order.txid //order id
+      }
+      req.aux = aux
+
+      //Só pode chamar caso for um pagamento.
+      if (!order.devolucoes) {
+        QrcodeReturner(req)
+      }
+      afterRefund(order) //Caso for reembolso.
+    }
+  */
+  response.status(200).end();
 });
 
 app.post("/webhook/pix*", (req, res, next) => {

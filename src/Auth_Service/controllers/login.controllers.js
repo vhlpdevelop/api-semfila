@@ -401,7 +401,7 @@ module.exports = {
         });
       }
       const datatoken = jwt.sign(
-        { id: user._id, time: Date.now(), email: user.email },
+        { id: user._id, time: Date.now(), email: user.email, phone: user.phone },
         authConfig.secret,
         {
           expiresIn: "7d",
@@ -409,7 +409,7 @@ module.exports = {
       );
       return res.send({
         success: true,
-        msg: "Estamos redirecionando...",
+        msg: "Sucesso redirecionando...",
         token: datatoken
       });
     } catch (e) {

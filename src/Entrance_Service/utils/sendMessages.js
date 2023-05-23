@@ -38,7 +38,7 @@ function MessageBuilder(item,phone){
 }
 
 function ImageBuilder(item,phone){
-    console.log(item)
+
     return {
         phone: phone,
         image: "data:image/png;base64,"+item.qrcode,

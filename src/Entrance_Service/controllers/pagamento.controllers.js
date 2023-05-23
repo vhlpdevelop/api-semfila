@@ -2,10 +2,10 @@ const userModel = require("../../models/user.model");
 const pedidosModel = require("../../models/pedidos.model");
 const authConfig = require("../config/auth");
 const jwt = require("jsonwebtoken");
-const { GNRequest } = require("../config/gerenciaNet.config");
+//const { GNRequest } = require("../config/gerenciaNet.config");
 const itemsModel = require("../../models/items.model");
 const templater = require("./methods/template_function");
-const Gerencianet = require('gn-api-sdk-node');
+//const Gerencianet = require('gn-api-sdk-node');
 const QrCodesModel = require("../../models/qrCode.model");
 const storeModel = require("../../models/store.model");
 const stripe = require('stripe')(process.env.STRIPE_CLIENT_SECRET)
@@ -19,7 +19,10 @@ const limiter = require("./methods/limit_control")
 const withDrawer = require("./methods/withDrawFunction")
 const sendEmailer = require("./methods/sendEmailReembolso");
 const sell_registryModel = require("../../models/sell_registry.model");
-const {sendConfirmPayMessage} = require("../utils/sendMessages")
+const { sendConfirmPayMessage } = require("../utils/sendMessages");
+const financialModel = require("../../models/financial.model");
+const contractModel = require("../../models/contract.model");
+const sdk = require('api')('@pagarme/v5#45wky94lggvt5g2');
 
 function AssimilateTime(time) {
   const d = new Date(time);
@@ -714,7 +717,7 @@ module.exports = {
   },
   async payPix(req, res) {
     var auth = "";
-    var email = req.body.itemData.email;
+    var phone = req.body.itemData.phone;
 
     if (req.headers.authorization) {
       //AUTH
@@ -737,17 +740,17 @@ module.exports = {
         if (err) return res.status(401).send({ error: 'Token inválido', success: false, msg: 'Entre novamente' });
 
         req.userID = decoded.id;
-        req.userEmail = decoded.email
+        req.userPhone = decoded.phone
 
       })
       auth = req.userID
-      email = req.userEmail
+      phone = req.userPhone
     }
     //Se usuário está autenticado, então.
-    if (email === "") {
+    if (phone === "") {
       return res.send({
         success: false,
-        msg: "Email vazio."
+        msg: "Núemero inválido."
       })
     }
 
@@ -850,40 +853,45 @@ module.exports = {
           const pedido = await pedidosModel.create(object);
 
           if (pedido) {
-            //Criar uma req pix
-            const reqGNAlready = GNRequest({
-              clientID: process.env.GN_CLIENT_ID,
-              clientSecret: process.env.GN_CLIENT_SECRET,
-            });
-            //Criar Chave aleatoria pix
-            const reqGN = await reqGNAlready;
-            //const chavePix = await reqGN.post("/v2/gn/evp"); //CHAVE FUNCIONA SOMENTE EM PROD
-            //Criar webhook com esta chave
+            var order_id = ''
+            const sdk = require('api')('@pagarme/v5#45wky94lggvt5g2');
+            const client = await sdk.client.connect({
+              api_key: 'pk_test_bm3B5LQzu7CaPLrv'
+            })
+            client.criarPedidoComSplit1({
+              items: [
+                { amount: 100, description: 'Chaveiro do Tesseract', quantity: 1, code: pedido._id }
+              ],
+              customer: { name: 'Consumidor', email: 'none@none.none', phones: { mobile_phone: { country_code: '55', area_code: '67', number: '998355896' } } },
+              payments: [
+                {
 
-            //Criando cobrança com esta chave
-
-            const dataCob = {
-              calendario: {
-                expiracao: 3600,
-              },
-              valor: {
-                original: pag.toString() //pag.toString(), //ATUALIZAR DEPOIS PARA pag
-              },
-              chave: "de8d8feb-a41c-47b0-969f-6afa1f35da4f",
-              solicitacaoPagador: `SemFila - Pedido N ${pedido._id}`,
-            };
-            const cobResponse = await reqGN.post("/v2/cob/", dataCob);
-
-            pedido.txid = cobResponse.data.txid;
-            pedido.user_email = email
-
-            pedido.loc_id = cobResponse.data.loc.id;
-            pedido.socket = socketId;
-
+                  split: [
+                    {
+                      options: { charge_processing_fee: true, charge_remainder_fee: true, liable: true },
+                      amount: 5,
+                      recipient_id: 're_cli0mncj2024k019tqxvlurws', //MARKETPLACE
+                      type: 'percentage'
+                    },
+                    {
+                      options: { charge_processing_fee: false, charge_remainder_fee: false, liable: false },
+                      amount: 95,
+                      type: 'percentage',
+                      recipient_id: 're_cli0ms72k023y019tmd58fhwf' //ALVO TESTE
+                    }
+                  ],
+                  payment_method: 'pix'
+                }
+              ]
+            })
+              .then(({ data }) => {
+                console.log(data)
+                console.log(data.charges[1].last_transaction.qr_code_url)
+                order_id = data.id
+              })
+              .catch(err => console.error(err));
+            pedido.txid = order_id
             await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
-            const pixCode = await reqGN.get(
-              `/v2/loc/${cobResponse.data.loc.id}/qrcode`
-            );
 
             res.send({
               success: true,
@@ -1130,6 +1138,15 @@ module.exports = {
       let store = await storeModel.findById(dados.store_id);
 
       if (store._id !== undefined) {
+        //Buscar dados da Stripe
+        const financeiro = await financialModel.findOne({ company_id: store.company_id })
+        if (!financeiro) {
+          return res.send({ success: false, msg: "Erro 705" })
+        }
+        const contract = await contractModel.findById({ _id: financeiro.contract_id })
+        if (!contract) {
+          return res.send({ success: false, msg: "Erro 706" })
+        }
         for (let i = 0; i < dados.cart.length; i++) {
           let itemChecker = await itemsModel.findById({
             _id: dados.cart[i]._id,
@@ -1148,6 +1165,7 @@ module.exports = {
             itemChecker.qtd = dados.cart[i].qtd;
 
             var duration = 0;
+
             if (itemChecker.promotion) {
               //Se ele estiver em uma promoção, tem tempo de vida
               duration = parseFloat(itemChecker.promotion_duration) * 24;
@@ -1242,14 +1260,26 @@ module.exports = {
             //Criar um link de pagamento.
 
             var payment_intent = ''
+            var transfer = '';
             try {
+              let value = object.price
+              var received = (value * contract.tax_credit) / 100;
+              var receiver = value - received;
               let aux_value = parseInt(object.price.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''))
+              let receiver_value = parseInt((receiver.toString()).replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''))
               payment_intent = await stripe.paymentIntents.create({
                 amount: aux_value,
                 currency: 'brl',
                 description: `Pagamento do pedido ${pedido._id} SemFila`,
                 automatic_payment_methods: { enabled: true },
               })
+              transfer = await stripe.transfers.create({
+                amount: receiver_value,
+                currency: 'brl',
+                source_transaction: payment_intent.id,
+                destination: financeiro.stripe_id,
+              })
+              console.log(transfer)
               console.log(payment_intent)
 
             } catch (e) {

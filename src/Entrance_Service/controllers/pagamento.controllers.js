@@ -935,8 +935,8 @@ module.exports = {
          
                 //SALVAR IMAGEM E PIXCOPIA E COLA
                 //imagemQrCode => 
-                pixCode.imagemQrcode = data.charges[0].last_transaction.qr_code
-                pixCode.qrcode = data.charges[0].last_transaction.qr_code_url
+                pixCode.qrcode = data.charges[0].last_transaction.qr_code
+                pixCode.imagemQrcode = data.charges[0].last_transaction.qr_code_url
                 console.log(pixCode.imagemQrcode)
                 console.log(pixCode.qrcode)
 

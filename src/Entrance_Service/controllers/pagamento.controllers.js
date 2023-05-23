@@ -919,7 +919,7 @@ module.exports = {
             axios
               .post(`https://api.pagar.me/core/v5/orders`, request, {
                 auth: {
-                  username: "sk_test_2R6YO8RtWH0M45pn",
+                  username: "sk_nOYR683C1MsL2ZEr",
                   password: "",
                 },
               })

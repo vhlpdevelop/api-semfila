@@ -871,6 +871,9 @@ module.exports = {
             request.items[0].amount = 1490;
             request.payments = [new pagarme.CreatePaymentRequest()];
             console.log(request.payments)
+            const pixRequest = [new pagarme.CreatePixRequest()];
+            pixRequest.pix[0].expires_in = "3600";
+            pixRequest.pix[0].additional_information[0] = { name: "Pedido", value: "1"}
             request.payments[0].paymentMethod = 'pix';
             request.payments[0].split = [
               {

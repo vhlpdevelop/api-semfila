@@ -22,7 +22,7 @@ const sell_registryModel = require("../../models/sell_registry.model");
 const { sendConfirmPayMessage } = require("../utils/sendMessages");
 const financialModel = require("../../models/financial.model");
 const contractModel = require("../../models/contract.model");
-const sdk = require('pagarme');
+const pagarme = require('@pagarme/sdk');
 
 function AssimilateTime(time) {
   const d = new Date(time);
@@ -854,41 +854,91 @@ module.exports = {
 
           if (pedido) {
             var order_id = ''
-            const client = await sdk.client.connect({
-              api_key: 'sk_test_2R6YO8RtWH0M45pn'
-            })
-            client.criarPedidoComSplit1({
-              items: [
-                { amount: 100, description: 'Chaveiro do Tesseract', quantity: 1, code: pedido._id }
-              ],
-              customer: { name: 'Consumidor', email: 'none@none.none', phones: { mobile_phone: { country_code: '55', area_code: '67', number: '998355896' } } },
-              payments: [
-                {
+            pagarme.Configuration.basicAuthUserName = "sk_test_2R6YO8RtWH0M45pn";
+            pagarme.Configuration.basicAuthPassword = ""; // 
+            const ordersController = pagarme.OrdersController;
+            const customerRequest = new pagarme.CreateCustomerRequest();
+            customerRequest.name = 'Consumidor';
+            customerRequest.phones = { mobile_phone: { country_code: '55', area_code: '67', number: '998355896' } }
 
-                  split: [
-                    {
-                      options: { charge_processing_fee: true, charge_remainder_fee: true, liable: true },
-                      amount: 5,
-                      recipient_id: 're_cli0mncj2024k019tqxvlurws', //MARKETPLACE
-                      type: 'percentage'
-                    },
-                    {
-                      options: { charge_processing_fee: false, charge_remainder_fee: false, liable: false },
-                      amount: 95,
-                      type: 'percentage',
-                      recipient_id: 're_cli0ms72k023y019tmd58fhwf' //ALVO TESTE
-                    }
-                  ],
-                  payment_method: 'pix'
-                }
-              ]
-            })
-              .then(({ data }) => {
-                console.log(data)
-                console.log(data.charges[1].last_transaction.qr_code_url)
-                order_id = data.id
+            console.log(pagarme)
+            const request = new pagarme.CreateOrderRequest();
+            console.log(request)
+            request.items = [new pagarme.CreateOrderItemRequest()];
+            console.log(request.items)
+            request.items[0].description = 'Tesseract Bracelet';
+            request.items[0].quantity = 3;
+            request.items[0].amount = 1490;
+            request.payments = [new pagarme.CreatePaymentRequest()];
+            console.log(request.payments)
+            request.payments[0].paymentMethod = 'pix';
+            request.payments[0].split = [
+              {
+                options: { charge_processing_fee: true, charge_remainder_fee: true, liable: true },
+                amount: 5,
+                recipient_id: 're_cli0mncj2024k019tqxvlurws', //MARKETPLACE
+                type: 'percentage'
+              },
+              {
+                options: { charge_processing_fee: false, charge_remainder_fee: false, liable: false },
+                amount: 95,
+                type: 'percentage',
+                recipient_id: 're_cli0ms72k023y019tmd58fhwf' //ALVO TESTE
+              }
+            ],
+              request.customer = customerRequest;
+            ordersController
+              .createOrder(request)
+              .then(order => {
+                console.log(`Order Id: ${order.id}`);
+                order_id = order.id
+                console.log(`Charge Id: ${order.charges[0].id}`);
+                console.log(`Order status: ${order.status}`);
               })
-              .catch(err => console.error(err));
+              .catch(error => {
+                console.log(`Status Code: ${error.errorCode}`);
+                if (error.errorResponse instanceof pagarme.ErrorException) {
+                  console.log(error.errorResponse.message);
+                  console.log(error.errorResponse.errors);
+                } else {
+                  throw error;
+                }
+              });
+            /*
+              client.criarPedidoComSplit1({
+                          items: [
+                            { amount: 100, description: 'Chaveiro do Tesseract', quantity: 1, code: pedido._id }
+                          ],
+                          customer: { name: 'Consumidor', email: 'none@none.none', phones: { mobile_phone: { country_code: '55', area_code: '67', number: '998355896' } } },
+                          payments: [
+                            {
+            
+                              split: [
+                                {
+                                  options: { charge_processing_fee: true, charge_remainder_fee: true, liable: true },
+                                  amount: 5,
+                                  recipient_id: 're_cli0mncj2024k019tqxvlurws', //MARKETPLACE
+                                  type: 'percentage'
+                                },
+                                {
+                                  options: { charge_processing_fee: false, charge_remainder_fee: false, liable: false },
+                                  amount: 95,
+                                  type: 'percentage',
+                                  recipient_id: 're_cli0ms72k023y019tmd58fhwf' //ALVO TESTE
+                                }
+                              ],
+                              payment_method: 'pix'
+                            }
+                          ]
+              })
+              .then(({ data }) => {
+                  console.log(data)
+                   console.log(data.charges[1].last_transaction.qr_code_url)
+                   order_id = data.id
+                   })
+              
+                   .catch(err => console.error(err));
+                    */
             pedido.txid = order_id
             await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
 

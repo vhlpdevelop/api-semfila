@@ -854,6 +854,10 @@ module.exports = {
 
           if (pedido) {
             var order_id = ''
+            var pixCode = {
+              qrcode: "",
+              imagemQrcode: ""
+            }
             //pagarme.Configuration.basicAuthUserName = "sk_test_2R6YO8RtWH0M45pn";
             //pagarme.Configuration.basicAuthPassword = ""; // 
             const request = {
@@ -923,8 +927,19 @@ module.exports = {
                   password: "",
                 },
               })
-              .then(async (res) => {
-                console.log(res)
+              .then(async (order) => {
+                console.log(`Order Id: ${order.id}`);
+                order_id = order.id
+                console.log(`Charge Id: ${order.charges[0].id}`);
+                console.log(`Order status: ${order.status}`);
+                console.log(order.charges[1])
+                console.log(order.charges[1].last_transaction.qr_code_url)
+                //SALVAR IMAGEM E PIXCOPIA E COLA
+                //imagemQrCode => 
+                pixCode.imagemQrcode = order.charges[1].last_transaction.qrcode
+                pixCode.qrcode = order.charges[1].last_transaction.qr_code_url
+                console.log(pixCode)
+
               })
               .catch((err) => {
                 console.log(err);
@@ -990,7 +1005,7 @@ module.exports = {
               success: true,
               msg: "Pix Gerado",
               obj_pedido: pedido._id,
-              obj: pixCode.data, //CODIGO PIX
+              obj: pixCode, //CODIGO PIX
             });
           }
 

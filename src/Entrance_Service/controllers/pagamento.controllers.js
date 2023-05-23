@@ -860,7 +860,7 @@ module.exports = {
             const customerRequest = new pagarme.CreateCustomerRequest();
             customerRequest.name = 'Consumidor';
             customerRequest.phones = { mobile_phone: { country_code: '55', area_code: '67', number: '998355896' } }
-
+            /*
             const request = new pagarme.CreateOrderRequest();
             
             request.items = [new pagarme.CreateOrderItemRequest()];
@@ -893,6 +893,66 @@ module.exports = {
               }
             ],
               request.customer = customerRequest;
+            */
+           const request = {
+            "items": [
+                {
+                    "amount": 100,
+                    "description": "Chaveiro do Tesseract",
+                    "quantity": 1,
+                    "code": "12345"
+                }
+            ],
+           "customer": {
+                "name": "Tony Stark",
+                "email": "avengerstark@ligadajustica.com.br",
+                "type": "individual",
+                "document": "01234567890",
+                "phones": {
+                    "home_phone": {
+                        "country_code": "55",
+                        "number": "22180513",
+                        "area_code": "21"
+                    }
+                }
+            },
+            "payments": [
+                {
+                    "payment_method": "pix",
+                    "pix": {
+                        "expires_in": "52134613",
+                        "additional_information": [
+                            {
+                                "name": "Quantidade",
+                                "value": "2"
+                            }
+                        ]
+                    },
+                    "split": [
+                        {
+                            "amount": 5,
+                            "recipient_id": "re_cli0mncj2024k019tqxvlurws",
+                            "type": "percentage",
+                            "options": {
+                                "charge_processing_fee": true,
+                                "charge_remainder_fee": true,
+                                "liable": true
+                            }
+                        },
+                        {
+                            "amount": 95,
+                            "type": "percentage",
+                            "recipient_id": "re_cli0ms72k023y019tmd58fhwf",
+                            "options": {
+                                "charge_processing_fee": false,
+                                "charge_remainder_fee": false,
+                                "liable": false
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
             ordersController
               .createOrder(request)
               .then(order => {

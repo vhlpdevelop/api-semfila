@@ -874,6 +874,7 @@ module.exports = {
             pixRequest.expires_in = "3600";
             pixRequest.additional_information = { name: "Pedido", value: "1"}
             request.payments[0].paymentMethod = 'pix';
+            request.payments[0].pix = pixRequest
             request.payments[0].split = [
               {
                 options: { charge_processing_fee: true, charge_remainder_fee: true, liable: true },

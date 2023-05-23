@@ -5,7 +5,7 @@ const httpProxy = require('express-http-proxy');
 const app = express();
 const db = require("./config/db"); //NÃO REMOVA DE HIPÓTESE ALGUMA
 const globalUsers = require("./resources/traficBus");
-const { createWebhook } = require('./config/gerenciaNet.config')
+//const { createWebhook } = require('./config/gerenciaNet.config')
 const fs = require("fs");
 const path = require('path');
 const bodyParser = require("body-parser");
@@ -231,8 +231,5 @@ io.sockets.on("connection", (socket) => { //Caso usuario não receba qrcode deve
 
 server.listen(port, "0.0.0.0", () => {
   console.log(`Servidor rodando na porta 443`);
-  createWebhook().then((output) => {
-    console.log('webhook created.', output)
-  })
 
 });

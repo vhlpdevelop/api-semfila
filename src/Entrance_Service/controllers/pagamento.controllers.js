@@ -855,7 +855,7 @@ module.exports = {
           if (pedido) {
             var order_id = ''
             const client = await sdk.client.connect({
-              api_key: 'pk_test_bm3B5LQzu7CaPLrv'
+              api_key: 'sk_test_2R6YO8RtWH0M45pn'
             })
             client.criarPedidoComSplit1({
               items: [

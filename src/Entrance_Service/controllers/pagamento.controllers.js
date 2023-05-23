@@ -928,13 +928,13 @@ module.exports = {
                 },
               })
               .then(async (order) => {
-                console.log(`Order Id: ${order.data}`);
                 console.log(order)
                 let data = order.data
                 order_id = data.id
                 console.log(`Charge Id: ${data.charges[0].id}`);
                 console.log(`Order status: ${data.status}`);
-                console.log(data.charges[1])
+                console.log(data.charges)
+                console.log(data.charges[0])
                 console.log(data.charges[1].last_transaction.qr_code_url)
                 //SALVAR IMAGEM E PIXCOPIA E COLA
                 //imagemQrCode => 

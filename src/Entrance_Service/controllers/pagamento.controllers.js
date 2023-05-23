@@ -872,7 +872,10 @@ module.exports = {
           
             const pixRequest = [new pagarme.CreatePixPaymentRequest()];
             pixRequest.expires_in = "3600";
-            pixRequest.additional_information = { name: "Pedido", value: "1"}
+            
+            pixRequest.additional_information = [new pagarme.PixAdditionalInformation()]
+            pixRequest.additional_information[0].name = "Quantidade"
+            pixRequest.additional_information[0].value= "1"
             request.payments[0].paymentMethod = 'pix';
             request.payments[0].pix = pixRequest
             request.payments[0].split = [

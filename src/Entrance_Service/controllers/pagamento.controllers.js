@@ -920,7 +920,7 @@ module.exports = {
               ]
             }
 
-            axios
+            await axios
               .post(`https://api.pagar.me/core/v5/orders`, request, {
                 auth: {
                   username: "sk_test_2R6YO8RtWH0M45pn",
@@ -937,7 +937,8 @@ module.exports = {
                 //imagemQrCode => 
                 pixCode.imagemQrcode = data.charges[0].last_transaction.qr_code
                 pixCode.qrcode = data.charges[0].last_transaction.qr_code_url
-               
+                console.log(pixCode.imagemQrcode)
+                console.log(pixCode.qrcode)
 
               })
               .catch((err) => {

@@ -22,7 +22,7 @@ const sell_registryModel = require("../../models/sell_registry.model");
 const { sendConfirmPayMessage } = require("../utils/sendMessages");
 const financialModel = require("../../models/financial.model");
 const contractModel = require("../../models/contract.model");
-const sdk = require('api')('@pagarme/v5#45wky94lggvt5g2');
+const sdk = require('pagarme');
 
 function AssimilateTime(time) {
   const d = new Date(time);
@@ -854,7 +854,6 @@ module.exports = {
 
           if (pedido) {
             var order_id = ''
-            const sdk = require('api')('@pagarme/v5#45wky94lggvt5g2');
             const client = await sdk.client.connect({
               api_key: 'pk_test_bm3B5LQzu7CaPLrv'
             })

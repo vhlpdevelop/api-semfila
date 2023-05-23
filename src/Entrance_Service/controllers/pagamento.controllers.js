@@ -23,7 +23,7 @@ const { sendConfirmPayMessage } = require("../utils/sendMessages");
 const financialModel = require("../../models/financial.model");
 const contractModel = require("../../models/contract.model");
 const pagarme = require('@pagarme/sdk');
-
+const axios = require('axios');
 function AssimilateTime(time) {
   const d = new Date(time);
   moment.locale("pt-br");
@@ -854,105 +854,82 @@ module.exports = {
 
           if (pedido) {
             var order_id = ''
-            pagarme.Configuration.basicAuthUserName = "sk_test_2R6YO8RtWH0M45pn";
-            pagarme.Configuration.basicAuthPassword = ""; // 
-            const ordersController = pagarme.OrdersController;
-            const customerRequest = new pagarme.CreateCustomerRequest();
-            customerRequest.name = 'Consumidor';
-            customerRequest.phones = { mobile_phone: { country_code: '55', area_code: '67', number: '998355896' } }
-            /*
-            const request = new pagarme.CreateOrderRequest();
-            
-            request.items = [new pagarme.CreateOrderItemRequest()];
-            
-            request.items[0].description = 'Tesseract Bracelet';
-            request.items[0].quantity = 3;
-            request.items[0].amount = 1490;
-            request.payments = [new pagarme.CreatePaymentRequest()];
-          
-            const pixRequest = [new pagarme.CreatePixPaymentRequest()];
-            pixRequest.expires_in = "3600";
-            
-            pixRequest.additional_information = [new pagarme.PixAdditionalInformation()]
-            pixRequest.additional_information[0].name = "Quantidade"
-            pixRequest.additional_information[0].value= "1"
-            request.payments[0].paymentMethod = 'pix';
-            request.payments[0].pix = pixRequest
-            request.payments[0].split = [
-              {
-                options: { charge_processing_fee: true, charge_remainder_fee: true, liable: true },
-                amount: 5,
-                recipient_id: 're_cli0mncj2024k019tqxvlurws', //MARKETPLACE
-                type: 'percentage'
-              },
-              {
-                options: { charge_processing_fee: false, charge_remainder_fee: false, liable: false },
-                amount: 95,
-                type: 'percentage',
-                recipient_id: 're_cli0ms72k023y019tmd58fhwf' //ALVO TESTE
-              }
-            ],
-              request.customer = customerRequest;
-            */
-           const request = {
-            "items": [
+            //pagarme.Configuration.basicAuthUserName = "sk_test_2R6YO8RtWH0M45pn";
+            //pagarme.Configuration.basicAuthPassword = ""; // 
+            const request = {
+              "items": [
                 {
-                    "amount": 100,
-                    "description": "Chaveiro do Tesseract",
-                    "quantity": 1,
-                    "code": "12345"
+                  "amount": 100,
+                  "description": "Chaveiro do Tesseract",
+                  "quantity": 1,
+                  "code": "12345"
                 }
-            ],
-           "customer": {
+              ],
+              "customer": {
                 "name": "Tony Stark",
                 "email": "avengerstark@ligadajustica.com.br",
                 "type": "individual",
                 "document": "01234567890",
                 "phones": {
-                    "home_phone": {
-                        "country_code": "55",
-                        "number": "22180513",
-                        "area_code": "21"
-                    }
+                  "home_phone": {
+                    "country_code": "55",
+                    "number": "22180513",
+                    "area_code": "21"
+                  }
                 }
-            },
-            "payments": [
+              },
+              "payments": [
                 {
-                    "payment_method": "pix",
-                    "pix": {
-                        "expires_in": "52134613",
-                        "additional_information": [
-                            {
-                                "name": "Quantidade",
-                                "value": "2"
-                            }
-                        ]
-                    },
-                    "split": [
-                        {
-                            "amount": 5,
-                            "recipient_id": "re_cli0mncj2024k019tqxvlurws",
-                            "type": "percentage",
-                            "options": {
-                                "charge_processing_fee": true,
-                                "charge_remainder_fee": true,
-                                "liable": true
-                            }
-                        },
-                        {
-                            "amount": 95,
-                            "type": "percentage",
-                            "recipient_id": "re_cli0ms72k023y019tmd58fhwf",
-                            "options": {
-                                "charge_processing_fee": false,
-                                "charge_remainder_fee": false,
-                                "liable": false
-                            }
-                        }
+                  "payment_method": "pix",
+                  "pix": {
+                    "expires_in": "52134613",
+                    "additional_information": [
+                      {
+                        "name": "Quantidade",
+                        "value": "2"
+                      }
                     ]
+                  },
+                  "split": [
+                    {
+                      "amount": 5,
+                      "recipient_id": "re_cli0mncj2024k019tqxvlurws",
+                      "type": "percentage",
+                      "options": {
+                        "charge_processing_fee": true,
+                        "charge_remainder_fee": true,
+                        "liable": true
+                      }
+                    },
+                    {
+                      "amount": 95,
+                      "type": "percentage",
+                      "recipient_id": "re_cli0ms72k023y019tmd58fhwf",
+                      "options": {
+                        "charge_processing_fee": false,
+                        "charge_remainder_fee": false,
+                        "liable": false
+                      }
+                    }
+                  ]
                 }
-            ]
-        }
+              ]
+            }
+
+            axios
+              .post(`https://api.pagar.me/core/v5/orders`, request, {
+                auth: {
+                  username: "sk_test_2R6YO8RtWH0M45pn",
+                  password: "",
+                },
+              })
+              .then(async (res) => {
+                console.log(res)
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+              /*
             ordersController
               .createOrder(request)
               .then(order => {
@@ -970,6 +947,7 @@ module.exports = {
                   throw error;
                 }
               });
+              */
             /*
               client.criarPedidoComSplit1({
                           items: [

@@ -773,8 +773,10 @@ module.exports = {
       var desconto = 0;
       //VERIFICAR SE STORE EXISTE PRIMEIRO
       let store = await storeModel.findById(dados.store_id);
-
+      
       if (store._id !== undefined) {
+        var pag_second=""
+        var items_second=[]
         for (let i = 0; i < dados.cart.length; i++) {
           let itemChecker = await itemsModel.findById({
             _id: dados.cart[i]._id,
@@ -799,15 +801,25 @@ module.exports = {
             } else {
               itemChecker.duration = 4380;
             }
-
+            pag_second = parseFloat(itemChecker.price).toFixed(2)
             if (itemChecker.discount_status) {
               desconto =
                 (parseFloat(desconto) +
                   parseFloat(itemChecker.discount_value)) *
                 dados.cart[i].qtd;
               desconto = desconto.toFixed(2);
+              pag_second = pag_second - desconto;
             }
             pag = pag + itemChecker.price * dados.cart[i].qtd;
+
+            let aux_value = parseInt(pag_second.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')) // 25.00 => 2500
+            items_second.push({
+              name: itemChecker.item_name,
+              amount: aux_value,
+              quantity: dados.cart[i].qtd,
+              description: itemChecker.description,
+              code: itemChecker._id
+            });
             let aux_pusher = {
               _id: itemChecker._id,
               item_name: itemChecker.item_name,
@@ -847,6 +859,7 @@ module.exports = {
             price: pag.toString(), //
             payment: "pix",
             store_id: dados.store_id,
+            socket: socketId,
             store_name: store.name,
             company_id: dados.company_id,
           };
@@ -861,23 +874,16 @@ module.exports = {
             //pagarme.Configuration.basicAuthUserName = "sk_test_2R6YO8RtWH0M45pn";
             //pagarme.Configuration.basicAuthPassword = ""; // 
             const request = {
-              "items": [
-                {
-                  "amount": 100,
-                  "description": "Chaveiro do Tesseract",
-                  "quantity": 1,
-                  "code": "12345"
-                }
-              ],
+              "items": items_second,
               "customer": {
-                "name": "Tony Stark",
-                "email": "avengerstark@ligadajustica.com.br",
+                "name": "Consumidor",
+                "email": "none@none.none",
                 "type": "individual",
                 "document": "01234567890",
                 "phones": {
-                  "home_phone": {
+                  "mobile_phone": {
                     "country_code": "55",
-                    "number": "22180513",
+                    "number": phone,
                     "area_code": "21"
                   }
                 }
@@ -886,11 +892,11 @@ module.exports = {
                 {
                   "payment_method": "pix",
                   "pix": {
-                    "expires_in": "52134613",
+                    "expires_in": "3600",
                     "additional_information": [
                       {
-                        "name": "Quantidade",
-                        "value": "2"
+                        "name": `Número do pedido ${pedido._id}` ,
+                        "value": "0"
                       }
                     ]
                   },
@@ -930,15 +936,10 @@ module.exports = {
               .then(async (order) => {
                 let data = order.data
                 order_id = data.id
- 
                 console.log(data.charges[0])
-         
-                //SALVAR IMAGEM E PIXCOPIA E COLA
-                //imagemQrCode => 
                 pixCode.qrcode = data.charges[0].last_transaction.qr_code
                 pixCode.imagemQrcode = data.charges[0].last_transaction.qr_code_url
-                console.log(pixCode.imagemQrcode)
-                console.log(pixCode.qrcode)
+                
 
               })
               .catch((err) => {

@@ -127,8 +127,8 @@ app.post("/notification_bill", (request, response) => {
 
 //WEBHOOK PIX
 app.post("/webhook", (request, response) => {
-
-  const { type } = req.body
+  console.log(request)
+  const { type } = request.body
   switch (type){
     case 'order.paid':
       console.log("Pedido foi pago")

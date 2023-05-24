@@ -38,6 +38,7 @@ const {
     PAGARME_SECRET
 } = process.env
 
+
 function buildOrder(items_second, pedido, phone, contract){
     const request = {
         "items": items_second,
@@ -50,7 +51,7 @@ function buildOrder(items_second, pedido, phone, contract){
             "mobile_phone": {
               "country_code": "55",
               "number": phone.substr(2),
-              "area_code": phone.substr(0,1)
+              "area_code": phone.substr(0,2)
             }
           }
         },

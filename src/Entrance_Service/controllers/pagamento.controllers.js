@@ -567,118 +567,16 @@ module.exports = {
         return "Finalizado.";
       }
       pedido.transaction_status = "PIX"
-      pedido.status = true; //PEDIDO FOI PAGO
+      pedido.status = true; 
 
       await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
 
-      /* Enviar Email
-      */
-      if (pedido.user_email && !aux_ticket.cortesia) {
-
-        var aux_items = pedido.items;
-        let aux_sender = "";
-        var store = await storeModel.findById({ _id: pedido.store_id })
+      if (pedido.user_phone && !aux_ticket.cortesia) {
         //Adicionar resgate.
+        var store = await storeModel.findById({ _id: pedido.store_id })
         var url_button = store.store_url + "-" + ticket._id
-        for (let i = 0; i < aux_items.length; i++) {
-
-          let cons =
-            "<tr style=border-collapse:collapse>" +
-            "<td style=padding:0;Margin:0;font-size:xx-small;width:60px;text-align:center>" +
-            aux_items[i].item_name +
-            "</td>" +
-            "<td style=padding:0;Margin:0;font-size:xx-small;width:60px;text-align:center>" +
-            aux_items[i].description +
-            "</td>" +
-            "<td style=padding:0;Margin:0;width:100px;text-align:center>" +
-            aux_items[i].qtd +
-            "</td>" +
-            "<td style=padding:0;Margin:0;width:60px;text-align:center>R$" +
-            aux_items[i].price +
-            "</td> " +
-            "</tr>";
-          /*
-          let auxiliar =
-          "<td align=center style=padding:0;Margin:0;font-size:0>"
-        aux_items[i].item_name
-        "</td>";
-          */
-
-          let auxiliar =
-            `<td align="center" style="padding:0;Margin:0;font-size:0px"><img class="adapt-img" src="${aux_items[i].image_url}" alt style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="178" height="100"></td>`;
-
-          aux_sender += `
-          <tr style="border-collapse:collapse"> 
-          <td align="left" style="Margin:0;padding-top:5px;padding-bottom:10px;padding-left:20px;padding-right:20px"> 
-          <!--[if mso]><table style="width:560px" cellpadding="0" cellspacing="0"><tr><td style="width:178px" valign="top"><![endif]--> 
-          <table class="es-left" cellspacing="0" cellpadding="0" align="left" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left"> 
-            <tr style="border-collapse:collapse"> 
-             <td class="es-m-p0r es-m-p20b" valign="top" align="center" style="padding:0;Margin:0;width:178px"> 
-              <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
-                <tr style="border-collapse:collapse"> 
-                 ${auxiliar}
-                </tr> 
-              </table></td> 
-            </tr> 
-          </table> 
-          <!--[if mso]></td><td style="width:20px"></td><td style="width:362px" valign="top"><![endif]--> 
-          <table cellspacing="0" cellpadding="0" align="right" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
-            <tr style="border-collapse:collapse"> 
-             <td align="left" style="padding:0;Margin:0;width:362px"> 
-              <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
-                <tr style="border-collapse:collapse"> 
-                 <td align="left" style="padding:0;Margin:0"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px"><br></p> 
-                  <table style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%" class="cke_show_border" cellspacing="1" cellpadding="1" border="0" role="presentation"> 
-                    ${cons}
-                  </table><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px"><br></p></td> 
-                </tr> 
-              </table></td> 
-            </tr> 
-          </table>
-          </tr>
-          <td align="left" style="padding:0;Margin:0;padding-left:20px;padding-right:20px"> 
-                   <table width="100%" cellspacing="0" cellpadding="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
-                     <tr style="border-collapse:collapse"> 
-                      <td valign="top" align="center" style="padding:0;Margin:0;width:560px"> 
-                       <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
-                         <tr style="border-collapse:collapse"> 
-                          <td align="center" style="padding:0;Margin:0;padding-bottom:10px;font-size:0"> 
-                           <table width="100%" height="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"> 
-                             <tr style="border-collapse:collapse"> 
-                              <td style="padding:0;Margin:0;border-bottom:1px solid #EFEFEF;background:#FFFFFF none repeat scroll 0% 0%;height:1px;width:100%;margin:0px"></td> 
-                             </tr> 
-                           </table></td> 
-                         </tr> 
-                       </table></td> 
-                     </tr> 
-                   </table></td>  `;
-        }
-
-        let data_aux = AssimilateTime(pedido.createdAt)
-        mailer.sendMail(
-          {
-            to: pedido.user_email,
-            from: mailerconfig.from,
-            html: await templater.build_template(
-              pedido._id,
-              data_aux,
-              pedido.store_name,
-              total,
-              aux_sender,
-              url_button
-            ),
-            subject: "SemFila - Compra realizada com sucesso"
-          },
-          (err) => {
-            if (err) {
-              console.log(err);
-            }
-          }
-        );
-
-
+        sendConfirmPayMessage(pedido, dataToSend, url_button)
       }
-
 
       //
       if (!aux_ticket.cortesia) {
@@ -870,9 +768,7 @@ module.exports = {
           const pedido = await pedidosModel.create(object);
 
           if (pedido) {
-
             const pixCode = await pagarme.CreateOrder(items_second, pedido, phone, contract)
-            console.log(pixCode)
             if(pixCode.success){
               pedido.txid = pixCode.order_id
               await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
@@ -884,6 +780,7 @@ module.exports = {
                 obj: pixCode, //CODIGO PIX
               });
             }else{
+              await pedidosModel.findByIdAndDelete({_id: pedido._id})
               return res.send({
                 success: false,
                 msg: "Falha ao criar PIX",
@@ -1292,6 +1189,10 @@ module.exports = {
                 obj_pedido: pedido._id
               });
             } else {
+
+              //Cancelar o pedido.
+              await pedidosModel.findByIdAndDelete({_id: pedido._id})
+
               return res.send({
                 success: false,
                 msg: "Não foi possivel gerar pagamento.",

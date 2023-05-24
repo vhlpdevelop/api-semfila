@@ -5,9 +5,8 @@ const httpProxy = require('express-http-proxy');
 const app = express();
 const db = require("./config/db"); //NÃO REMOVA DE HIPÓTESE ALGUMA
 const globalUsers = require("./resources/traficBus");
-//const { createWebhook } = require('./config/gerenciaNet.config')
+
 const fs = require("fs");
-const path = require('path');
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const crypto = require("crypto");
@@ -17,10 +16,9 @@ const mongoSanitize = require("express-mongo-sanitize")
 const httpsOptions = {
   cert: fs.readFileSync('/etc/letsencrypt/live/api-semfila.api-semfila.online/fullchain.pem'), // Certificado fullchain do dominio
   key: fs.readFileSync('/etc/letsencrypt/live/api-semfila.api-semfila.online/privkey.pem'), // Chave privada do domínio
-  ca: fs.readFileSync(path.resolve(__dirname, `./config/certs/${process.env.GN_WEBHOOK}`)), // Certificado público da Gerencianet
   minVersion: "TLSv1.2",
   requestCert: true,
-  rejectUnauthorized: false, //Mantenha como false para que os demais endpoints da API não rejeitem requisições sem MTLS
+  rejectUnauthorized: false, 
 };
 const { QrcodeReturner, QrCodeReSend, afterRefund, notifications_api, confirmPaymentReq } = require("./Entrance_Service/controllers/pagamento.controllers");
 const { updateQrCode } = require("./QrCode_Service/controllers/qrCode.controllers")

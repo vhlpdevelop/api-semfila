@@ -872,6 +872,7 @@ module.exports = {
           if (pedido) {
 
             const pixCode = await pagarme.CreateOrder(items_second, pedido, phone, contract)
+            console.log(pixCode)
             if(pixCode.success){
               pedido.txid = pixCode.order_id
               await pedidosModel.findByIdAndUpdate(pedido._id, pedido);

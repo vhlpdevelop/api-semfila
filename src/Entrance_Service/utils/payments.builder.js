@@ -22,12 +22,14 @@ module.exports={
           pixCode.qrcode = data.charges[0].last_transaction.qr_code
           pixCode.imagemQrcode = data.charges[0].last_transaction.qr_code_url
           pixCode.success=true;
-          return pixCode
+          console.log(pixCode)
+          
         })
         .catch((err) => {
           console.log(err);
-          return pixCode
+          
         });
+        return pixCode
 
     }
 }

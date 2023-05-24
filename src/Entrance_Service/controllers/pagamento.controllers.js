@@ -20,10 +20,10 @@ const withDrawer = require("./methods/withDrawFunction")
 const sendEmailer = require("./methods/sendEmailReembolso");
 const sell_registryModel = require("../../models/sell_registry.model");
 const { sendConfirmPayMessage } = require("../utils/sendMessages");
+const pagarme = require("../utils/payments.builder")
 const financialModel = require("../../models/financial.model");
 const contractModel = require("../../models/contract.model");
-const pagarme = require('@pagarme/sdk');
-const axios = require('axios');
+
 function AssimilateTime(time) {
   const d = new Date(time);
   moment.locale("pt-br");
@@ -775,6 +775,9 @@ module.exports = {
       let store = await storeModel.findById(dados.store_id);
       
       if (store._id !== undefined) {
+        //Buscar Financeiro e o Contrato
+        const financeiro = await financialModel.findOne({company_id:store.company_id})
+        const contract = await contractModel.findById({_id: financeiro.contract_id})
         var pag_second=""
         var items_second=[]
         for (let i = 0; i < dados.cart.length; i++) {
@@ -856,6 +859,7 @@ module.exports = {
             items: items,
             user_id: auth,
             txid: "",
+            user_phone: phone,
             price: pag.toString(), //
             payment: "pix",
             store_id: dados.store_id,
@@ -866,150 +870,26 @@ module.exports = {
           const pedido = await pedidosModel.create(object);
 
           if (pedido) {
-            var order_id = ''
-            var pixCode = {
-              qrcode: "",
-              imagemQrcode: ""
-            }
-            //pagarme.Configuration.basicAuthUserName = "sk_test_2R6YO8RtWH0M45pn";
-            //pagarme.Configuration.basicAuthPassword = ""; // 
-            const request = {
-              "items": items_second,
-              "customer": {
-                "name": "Consumidor",
-                "email": "none@none.none",
-                "type": "individual",
-                "document": "01234567890",
-                "phones": {
-                  "mobile_phone": {
-                    "country_code": "55",
-                    "number": phone,
-                    "area_code": "21"
-                  }
-                }
-              },
-              "payments": [
-                {
-                  "payment_method": "pix",
-                  "pix": {
-                    "expires_in": "3600",
-                    "additional_information": [
-                      {
-                        "name": `Número do pedido ${pedido._id}` ,
-                        "value": "0"
-                      }
-                    ]
-                  },
-                  "split": [
-                    {
-                      "amount": 5,
-                      "recipient_id": "re_cli0mncj2024k019tqxvlurws",
-                      "type": "percentage",
-                      "options": {
-                        "charge_processing_fee": true,
-                        "charge_remainder_fee": true,
-                        "liable": true
-                      }
-                    },
-                    {
-                      "amount": 95,
-                      "type": "percentage",
-                      "recipient_id": "re_cli0ms72k023y019tmd58fhwf",
-                      "options": {
-                        "charge_processing_fee": false,
-                        "charge_remainder_fee": false,
-                        "liable": false
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
 
-            await axios
-              .post(`https://api.pagar.me/core/v5/orders`, request, {
-                auth: {
-                  username: "sk_test_2R6YO8RtWH0M45pn",
-                  password: "",
-                },
-              })
-              .then(async (order) => {
-                let data = order.data
-                order_id = data.id
-                console.log(data.charges[0])
-                pixCode.qrcode = data.charges[0].last_transaction.qr_code
-                pixCode.imagemQrcode = data.charges[0].last_transaction.qr_code_url
-                
-
-              })
-              .catch((err) => {
-                console.log(err);
+            const pixCode = await pagarme.CreateOrder(items_second, pedido, phone, contract)
+            if(pixCode.success){
+              pedido.txid = pixCode.order_id
+              await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
+              pixCode.order_id = ""
+              res.send({
+                success: true,
+                msg: "Pix Gerado",
+                obj_pedido: pedido._id,
+                obj: pixCode, //CODIGO PIX
               });
-              /*
-            ordersController
-              .createOrder(request)
-              .then(order => {
-                console.log(`Order Id: ${order.id}`);
-                order_id = order.id
-                console.log(`Charge Id: ${order.charges[0].id}`);
-                console.log(`Order status: ${order.status}`);
-              })
-              .catch(error => {
-                console.log(`Status Code: ${error.errorCode}`);
-                if (error.errorResponse instanceof pagarme.ErrorException) {
-                  console.log(error.errorResponse.message);
-                  console.log(error.errorResponse.errors);
-                } else {
-                  throw error;
-                }
+            }else{
+              return res.send({
+                success: false,
+                msg: "Falha ao criar PIX",
+                obj: null,
               });
-              */
-            /*
-              client.criarPedidoComSplit1({
-                          items: [
-                            { amount: 100, description: 'Chaveiro do Tesseract', quantity: 1, code: pedido._id }
-                          ],
-                          customer: { name: 'Consumidor', email: 'none@none.none', phones: { mobile_phone: { country_code: '55', area_code: '67', number: '998355896' } } },
-                          payments: [
-                            {
-            
-                              split: [
-                                {
-                                  options: { charge_processing_fee: true, charge_remainder_fee: true, liable: true },
-                                  amount: 5,
-                                  recipient_id: 're_cli0mncj2024k019tqxvlurws', //MARKETPLACE
-                                  type: 'percentage'
-                                },
-                                {
-                                  options: { charge_processing_fee: false, charge_remainder_fee: false, liable: false },
-                                  amount: 95,
-                                  type: 'percentage',
-                                  recipient_id: 're_cli0ms72k023y019tmd58fhwf' //ALVO TESTE
-                                }
-                              ],
-                              payment_method: 'pix'
-                            }
-                          ]
-              })
-              .then(({ data }) => {
-                  console.log(data)
-                   console.log(data.charges[1].last_transaction.qr_code_url)
-                   order_id = data.id
-                   })
-              
-                   .catch(err => console.error(err));
-                    */
-            pedido.txid = order_id
-            await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
-
-            res.send({
-              success: true,
-              msg: "Pix Gerado",
-              obj_pedido: pedido._id,
-              obj: pixCode, //CODIGO PIX
-            });
+            }
           }
-
         } else {
           //Retorne, carrinho está vazio ou os itens não existem
           return res.send({

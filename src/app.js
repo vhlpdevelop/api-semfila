@@ -132,7 +132,7 @@ app.post("/webhook", (request, response) => {
   switch (type){
     case 'order.paid':
       console.log("Pedido foi pago")
-      request.aux = request.body.data.order.id
+      request.aux = request.body.data.id
       console.log(request.aux)
       QrcodeReturner(request)
       break;

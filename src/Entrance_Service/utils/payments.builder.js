@@ -8,6 +8,7 @@ module.exports={
             imagemQrcode: "", 
             order_id: "",
             success: false,
+            pix_charge_id: ""
           }
         await axios
         .post(`https://api.pagar.me/core/v5/orders`, request, {
@@ -22,6 +23,7 @@ module.exports={
           pixCode.qrcode = data.charges[0].last_transaction.qr_code
           pixCode.imagemQrcode = data.charges[0].last_transaction.qr_code_url
           pixCode.success=true;
+          pixCode.pix_charge_id = data.charges[0].id
           console.log(pixCode)
           
         })

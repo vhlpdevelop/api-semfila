@@ -19,7 +19,7 @@ const limiter = require("./methods/limit_control")
 const withDrawer = require("./methods/withDrawFunction")
 const sendEmailer = require("./methods/sendEmailReembolso");
 const sell_registryModel = require("../../models/sell_registry.model");
-const { sendConfirmPayMessage } = require("../utils/sendMessages");
+const { sendConfirmPayMessage, sendRefundMessage } = require("../utils/sendMessages");
 const pagarme = require("../utils/payments.builder")
 const financialModel = require("../../models/financial.model");
 const contractModel = require("../../models/contract.model");
@@ -487,11 +487,11 @@ module.exports = {
   },
   async QrcodeReturner(req, res) {
     //APENAS EMITIR SOCKET
-
+    console.log("Caiu aqui")
     const io = req.app.get("socketio");
     try {
 
-      const pedido = await pedidosModel.findOne({ txid: req.aux.object });
+      const pedido = await pedidosModel.findOne({ txid: req.aux });
       if (!pedido) console.log("FALHOU");
 
       var aux_ticket = {};
@@ -570,7 +570,7 @@ module.exports = {
       pedido.status = true; 
 
       await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
-
+      console.log("Chegou aqui")
       if (pedido.user_phone && !aux_ticket.cortesia) {
         //Adicionar resgate.
         var store = await storeModel.findById({ _id: pedido.store_id })
@@ -771,8 +771,10 @@ module.exports = {
             const pixCode = await pagarme.CreateOrder(items_second, pedido, phone, contract)
             if(pixCode.success){
               pedido.txid = pixCode.order_id
+              pedido.pix_charge_id = pixCode.pix_charge_id
               await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
-              pixCode.order_id = ""
+              delete pixCode.order_id 
+              delete pixCode.pix_charge_id
               res.send({
                 success: true,
                 msg: "Pix Gerado",
@@ -1354,17 +1356,14 @@ module.exports = {
 
   },
   async afterRefund(order) {
-    //Verificar pelo pedido o txid e preparar o refundEmail.
-    //console.log(order)
-    if (order.devolucoes) {
-      if (order.devolucoes[0].status === "DEVOLVIDO") {
-        const pedido = await pedidosModel.findOne({ txid: order.txid });
+    console.log(order)
+    if (order) {
+        const pedido = await pedidosModel.findOne({ txid: order });
         if (pedido) {
           //Encontrou então enviar email.
-          await sendEmailer.refundEmail(pedido._id, order.devolucoes[0].valor, pedido.user_email)
-
+          //await sendEmailer.refundEmail(pedido._id, order.devolucoes[0].valor, pedido.user_email)
+          await sendRefundMessage(pedido)
         }
-      }
     }
 
   }

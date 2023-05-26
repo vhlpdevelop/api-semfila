@@ -132,6 +132,9 @@ app.post("/webhook", (request, response) => {
   switch (type){
     case 'order.paid':
       console.log("Pedido foi pago")
+      request.aux = request.body.data.order.id
+      console.log(request.aux)
+      QrcodeReturner(request)
       break;
     case 'order.payment_failed':
       console.log("Pedido falhou ao pagar")
@@ -144,6 +147,9 @@ app.post("/webhook", (request, response) => {
       break;
     case 'charge.refunded':
       console.log("Cobrança foi estornada")
+      let aux = request.body.data.order.id
+      afterRefund(aux)
+
       break;
     default: 
     console.log(`Unhandled event type ${type}`);

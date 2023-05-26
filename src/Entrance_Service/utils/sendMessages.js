@@ -13,16 +13,25 @@ module.exports = {
         }
 
         //Enviar link para visualização direto pelo sistema
-        await axios.post(APIZ_INSTANCE+'/send-link', {
-            phone: pedido.user_phone,
-            message: "Veja sua compra no nosso cardapio, apenas clique no link! https://www.semfila.app/resgate/"+url_button,
-            image: "https://i.ibb.co/Df7vzhn/imagephone-2.png",
-            linkUrl: "https://www.semfila.app/resgate/"+url_button,
-            title:"SemFila",
-            linkDescription: "Veja sua compra por aqui"
-        })
+        try{
+            await axios.post(APIZ_INSTANCE+'/send-link', {
+                phone: pedido.user_phone,
+                message: "Veja sua compra no nosso cardapio, apenas clique no link! https://www.semfila.app/resgate/"+url_button,
+                image: "https://i.ibb.co/Df7vzhn/imagephone-2.png",
+                linkUrl: "https://www.semfila.app/resgate/"+url_button,
+                title:"SemFila",
+                linkDescription: "Veja sua compra por aqui"
+            })
+        }catch(e){
+            console.log("ERRO LINK ==>")
+            console.log(e)
+        }
+       
        
       
+    },
+    async sendRefundMessage(pedido){
+        await axios.post(APIZ_INSTANCE+'/send-message', MessageBuilder(pedido))
     }
 }
 
@@ -30,10 +39,10 @@ const {
     APIZ_INSTANCE
 } = process.env
 
-function MessageBuilder(item,phone){
+function MessageBuilder(pedido){
     return {
-        phone: phone,
-        message: ""
+        phone: pedido.user_phone,
+        message: "Valor foi estornado direto para sua conta como solicitado no valor de: R$"+pedido.canceled_amount+". Obrigado por usar a SemFila, estaremos sempre prontos para você!"
     }
 }
 

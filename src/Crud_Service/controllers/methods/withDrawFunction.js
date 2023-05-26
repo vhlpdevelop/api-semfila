@@ -1,23 +1,34 @@
-const { GNRequest } = require("../../config/gerenciaNet.config");
+const axios = require("axios")
+require("dotenv").config()
 module.exports = {
     async withDrawPedido(pedido, valor) { //Reembolso pelo pedido
-    
+        var aux_valor = parseInt(valor.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''))
+        var returned={
+            success: false,
+            msg: "Falha ao enviar reembolso"
+        }
         try {
-            const reqGNAlready = GNRequest({
-                clientID: process.env.GN_CLIENT_ID,
-                clientSecret: process.env.GN_CLIENT_SECRET,
-            });
-         
-            const reqGN = await reqGNAlready;
-            const cobResponse = await reqGN.get(`/v2/cob/${pedido}`);
-            
-            const data = await reqGN.put(`/v2/pix/${cobResponse.data.pix[0].endToEndId}/devolucao/${pedido}`, { valor: parseFloat(valor).toFixed(2) }) //ALTERAR DEPOIS
-            
-            return {success:true, msg: "Enviando reembolso"}
+            await axios
+        .delete(`https://api.pagar.me/core/v5/charges/`+pedido.charge_id, {"amount": aux_valor}, {
+          auth: {
+            username: PAGARME_SECRET,
+            password: "",
+          },
+        }).then( (res)=>{
+            if(res.status === "canceled"){
+                returned.success = true;
+                returned.msg ="Enviando Reembolso";
+            }
+        });
+            return returned
         } catch (e) {
             console.log(e)
             console.log(e.message)
-            return { success: false, msg: "ocorreu um erro"}
+            return returned
         }
     },
 }
+
+const {
+    PAGARME_SECRET
+} = process.env

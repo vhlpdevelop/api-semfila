@@ -346,8 +346,17 @@ module.exports = {
           });
         }
         if (QrCode) { //Verificar se qrcode esta expirado ou não
+          const item = await itemModel.findById({_id: QrCode.item._id})
+          if(!item){
+            return res.send({success:false, msg: "Este produto não existe"})
+          }
           if (QrCode.state) {
-            console.log(QrCode.item.promotion)
+            if(!item.status){
+              if(item.trava){
+                return res.send({success:false, msg: "Produto desativado"})
+              }
+            }
+            
             if (!QrCode.item.promotion) {
               //SE NAO ESTIVER, SOMAR COM 6 MESES
               var d = new Date(QrCode.createdAt);
@@ -393,50 +402,6 @@ module.exports = {
 
 
           } else {
-            if(!QrCode.trava){
-              if (!QrCode.item.promotion) {
-                //SE NAO ESTIVER, SOMAR COM 6 MESES
-                var d = new Date(QrCode.createdAt);
-                var seconds = d.getTime() / 1000;
-                var expire = seconds + 6 * 730 * 3600;
-                var date_expire = new Date(expire * 1000);
-                //checagem de 6 meses
-                if (date_expire > Date.now()) { //Pode utilizar
-                  return res.send({
-                    obj: QrCode,
-                    success: true,
-                    msg: "QrCode Encontrado",
-                  });
-                } else { //Expirou
-                  return res.send({
-                    obj: null,
-                    success: false,
-                    msg: "QrCode está Expirado",
-                  });
-                }
-              } else {
-                var d = new Date(QrCode.createdAt);
-                var seconds = d.getTime() / 1000;
-                var expire =
-                  seconds +
-                  parseFloat(QrCode.item.promotion_duration) * 24 * 3600;
-                var date_expire = new Date(expire * 1000)
-                console.log(date_expire)
-                if (date_expire > d) { //Pode utilizar
-                  return res.send({
-                    obj: QrCode,
-                    success: true,
-                    msg: "QrCode Encontrado",
-                  });
-                } else { //Expirou
-                  return res.send({
-                    obj: null,
-                    success: false,
-                    msg: "QrCode está Expirado",
-                  });
-                }
-              }
-            }
             return res.send({
               obj: null,
               success: false,

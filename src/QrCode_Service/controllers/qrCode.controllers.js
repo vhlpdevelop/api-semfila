@@ -352,7 +352,7 @@ module.exports = {
           }
           if (QrCode.state) {
             if(!item.status){
-              if(item.trava){
+              if(QrCode.trava){
                 return res.send({success:false, msg: "Produto desativado"})
               }
             }

@@ -20,6 +20,7 @@ module.exports = {
         }).then( (res)=>{
             console.log("Resultado.")
             console.log(res.status)
+            console.log(res)
             if(res.status === "canceled"){
                 console.log("aqui")
                 returned.success = true;

@@ -21,7 +21,7 @@ module.exports = {
             console.log("Resultado.")
             console.log(res.status)
             console.log(res)
-            if(res.status === "canceled"){
+            if(res.data.status === "processing"){
                 console.log("aqui")
                 returned.success = true;
                 returned.msg ="Enviando Reembolso";

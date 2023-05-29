@@ -18,7 +18,10 @@ module.exports = {
             amount: aux_valor
           }
         }).then( (res)=>{
+            console.log("Resultado.")
+            console.log(res.status)
             if(res.status === "canceled"){
+                console.log("aqui")
                 returned.success = true;
                 returned.msg ="Enviando Reembolso";
             }

@@ -683,6 +683,13 @@ module.exports = {
             _id: dados.cart[i]._id,
           });
           if (itemChecker !== undefined) {
+            if(!itemChecker.status){
+              return res.send({
+                success:false,
+                msg: "Este produto está desativado para compra",
+                obj:itemChecker._id
+              })
+            }
             if (itemChecker.limit_switch) {
               if (itemChecker.limit_number - dados.cart[i].qtd < 0) {
                 return res.send({
@@ -768,7 +775,7 @@ module.exports = {
           const pedido = await pedidosModel.create(object);
 
           if (pedido) {
-            const pixCode = await pagarme.CreateOrder(items_second, pedido, phone, contract)
+            const pixCode = await pagarme.CreateOrder(items_second, pedido, phone, contract, financeiro.pagarme_id)
             if(pixCode.success){
               pedido.txid = pixCode.order_id
               pedido.pix_charge_id = pixCode.pix_charge_id

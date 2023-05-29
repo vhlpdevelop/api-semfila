@@ -1,8 +1,8 @@
 const axios = require("axios")
 require("dotenv").config()
 module.exports={
-    async CreateOrder(items_second, pedido, phone, contract){
-        var request = buildOrder(items_second, pedido, phone, contract)
+    async CreateOrder(items_second, pedido, phone, contract, id){
+        var request = buildOrder(items_second, pedido, phone, contract, id)
         var pixCode = {
             qrcode: "",
             imagemQrcode: "", 
@@ -24,7 +24,6 @@ module.exports={
           pixCode.imagemQrcode = data.charges[0].last_transaction.qr_code_url
           pixCode.success=true;
           pixCode.pix_charge_id = data.charges[0].id
-          console.log(pixCode)
           
         })
         .catch((err) => {
@@ -41,7 +40,7 @@ const {
 } = process.env
 
 
-function buildOrder(items_second, pedido, phone, contract){
+function buildOrder(items_second, pedido, phone, contract, id){
     const request = {
         "items": items_second,
         "customer": {
@@ -83,7 +82,7 @@ function buildOrder(items_second, pedido, phone, contract){
               {
                 "amount": 100-parseFloat(contract.tax),
                 "type": "percentage",
-                "recipient_id": "re_cli0ms72k023y019tmd58fhwf",
+                "recipient_id": id,
                 "options": {
                   "charge_processing_fee": false,
                   "charge_remainder_fee": false,

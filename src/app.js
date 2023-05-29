@@ -154,20 +154,6 @@ app.post("/webhook", (request, response) => {
     default: 
     console.log(`Unhandled event type ${type}`);
   }
-  /*
-     for (const order of pix) {
-      let aux = {
-        object: order.txid //order id
-      }
-      req.aux = aux
-
-      //Só pode chamar caso for um pagamento.
-      if (!order.devolucoes) {
-        QrcodeReturner(req)
-      }
-      afterRefund(order) //Caso for reembolso.
-    }
-  */
   response.status(200).end();
 });
 

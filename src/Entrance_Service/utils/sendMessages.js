@@ -31,7 +31,7 @@ module.exports = {
       
     },
     async sendRefundMessage(pedido){
-        await axios.post(APIZ_INSTANCE+'/send-message', MessageBuilder(pedido))
+        await axios.post(APIZ_INSTANCE+'/send-message', MessageBuilderRefund(pedido))
     }
 }
 
@@ -39,7 +39,7 @@ const {
     APIZ_INSTANCE
 } = process.env
 
-function MessageBuilder(pedido){
+function MessageBuilderRefund(pedido){
     return {
         phone: pedido.user_phone,
         message: "Valor foi estornado direto para sua conta como solicitado no valor de: R$"+pedido.canceled_amount+". Obrigado por usar a SemFila, estaremos sempre prontos para você!"
@@ -51,6 +51,6 @@ function ImageBuilder(item,phone){
     return {
         phone: phone,
         image: "data:image/png;base64,"+item.qrcode,
-        caption: item.data.item.item_name + " " + item.data.quantity + " un em " + item.data.store_name
+        caption: item.data.item.item_name + ", " + item.data.quantity + " un(s) em " + item.data.store_name
     }
 }

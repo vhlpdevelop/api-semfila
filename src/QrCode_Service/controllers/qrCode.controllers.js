@@ -7,7 +7,7 @@ const userModel = require("../../models/user.model");
 const mailer = require("../../modules/NodeMailer.controllers");
 const mailerconfig = require("../../config/NodeMailer.config");
 const pedidosModel = require("../../models/pedidos.model");
-
+const itemModel = require("../../models/items.model")
 module.exports = {
   async requestWithDraw(req, res) {
     const id = req.body.id;
@@ -346,7 +346,7 @@ module.exports = {
           });
         }
         if (QrCode) { //Verificar se qrcode esta expirado ou não
-          if (QrCode.state || !QrCode.trava) {
+          if (QrCode.state) {
             console.log(QrCode.item.promotion)
             if (!QrCode.item.promotion) {
               //SE NAO ESTIVER, SOMAR COM 6 MESES
@@ -393,6 +393,50 @@ module.exports = {
 
 
           } else {
+            if(!QrCode.trava){
+              if (!QrCode.item.promotion) {
+                //SE NAO ESTIVER, SOMAR COM 6 MESES
+                var d = new Date(QrCode.createdAt);
+                var seconds = d.getTime() / 1000;
+                var expire = seconds + 6 * 730 * 3600;
+                var date_expire = new Date(expire * 1000);
+                //checagem de 6 meses
+                if (date_expire > Date.now()) { //Pode utilizar
+                  return res.send({
+                    obj: QrCode,
+                    success: true,
+                    msg: "QrCode Encontrado",
+                  });
+                } else { //Expirou
+                  return res.send({
+                    obj: null,
+                    success: false,
+                    msg: "QrCode está Expirado",
+                  });
+                }
+              } else {
+                var d = new Date(QrCode.createdAt);
+                var seconds = d.getTime() / 1000;
+                var expire =
+                  seconds +
+                  parseFloat(QrCode.item.promotion_duration) * 24 * 3600;
+                var date_expire = new Date(expire * 1000)
+                console.log(date_expire)
+                if (date_expire > d) { //Pode utilizar
+                  return res.send({
+                    obj: QrCode,
+                    success: true,
+                    msg: "QrCode Encontrado",
+                  });
+                } else { //Expirou
+                  return res.send({
+                    obj: null,
+                    success: false,
+                    msg: "QrCode está Expirado",
+                  });
+                }
+              }
+            }
             return res.send({
               obj: null,
               success: false,
@@ -448,6 +492,26 @@ module.exports = {
             success: false,
             msg: "QrCode em processo de Reembolso.",
           });
+        }
+        
+        //VERIFICAR SE O ITEM EXISTE.
+        const item = await itemModel.findById({_id: qrcode.item._id});
+        if(!item){
+          return res.send({
+            obj:null,
+            success:false,
+            msg: "Este produto não existe"
+          })
+        }
+
+        if(!item.status){ //Está desligado
+          if(item.trava){ //Trava está ativada. ENTÃO finalize
+            return res.send({
+              obj:null,
+              success:false,
+              msg: "Produto está desativado."
+            })
+          }
         }
 
         if (qrcode.quantity >= itemUpdate.quantity && itemUpdate.quantity > 0) {

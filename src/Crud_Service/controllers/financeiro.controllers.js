@@ -404,7 +404,7 @@ module.exports = {
       
       if (pedido.payment === 'pix') {
         const response = await withdraw_func.withDrawPedido(pedido.pix_charge_id, registry.total); //REEMBOLSADOR
-
+        console.log(response)
         if (response.success) { //Atualizar sell_registry e pedido para enviar via whatsapp
           pedido.canceled_amount = registry.total;
           pedido.markModified('canceled_amount')

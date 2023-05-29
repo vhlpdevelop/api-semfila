@@ -9,11 +9,14 @@ module.exports = {
         }
         try {
             await axios
-        .delete(`https://api.pagar.me/core/v5/charges/`+pedido, {"amount": aux_valor}, {
+        .delete(`https://api.pagar.me/core/v5/charges/`+pedido, {
           auth: {
             username: PAGARME_SECRET,
             password: "",
           },
+          data: {
+            amount: aux_valor
+          }
         }).then( (res)=>{
             if(res.status === "canceled"){
                 returned.success = true;

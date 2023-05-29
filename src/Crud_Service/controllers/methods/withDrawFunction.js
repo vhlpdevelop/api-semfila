@@ -9,7 +9,7 @@ module.exports = {
         }
         try {
             await axios
-        .delete(`https://api.pagar.me/core/v5/charges/`+pedido.charge_id, {"amount": aux_valor}, {
+        .delete(`https://api.pagar.me/core/v5/charges/`+pedido, {"amount": aux_valor}, {
           auth: {
             username: PAGARME_SECRET,
             password: "",

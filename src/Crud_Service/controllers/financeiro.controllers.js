@@ -403,7 +403,7 @@ module.exports = {
     try {
       
       if (pedido.payment === 'pix') {
-        const response = await withdraw_func.withDrawPedido(pedido.pix_charge_id, parseFloat(registry.total)); //REEMBOLSADOR
+        const response = await withdraw_func.withDrawPedido(pedido.pix_charge_id, registry.total); //REEMBOLSADOR
 
         if (response.success) { //Atualizar sell_registry e pedido para enviar via whatsapp
           pedido.canceled_amount = registry.total;

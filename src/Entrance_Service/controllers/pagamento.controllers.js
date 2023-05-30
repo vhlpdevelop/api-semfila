@@ -822,21 +822,16 @@ module.exports = {
     }
   },
   async CortesiaPay(req, res) {
-    //console.log(socketId)
-    //console.log("Pix")
     const dados = req.body.itemData;
-    //console.log(req.body)
-    //console.log(dados);
-
     //Primeiro autenticar os dados, verificar items
     try {
       const items = [];
       var pag = 0;
 
       //VERIFICAR SE STORE EXISTE PRIMEIRO
-      let store = await storeModel.findById(req.stores[0]._id);
+      const store = await storeModel.findById(req.stores[0]._id);
       //Verificações de segurança
-      if (store._id !== undefined) {
+      if (store) {
         if (store.company_id !== req.company_id) {
           return res.send({
             success: false,
@@ -846,14 +841,6 @@ module.exports = {
         }
         //Buscar e comparar se este usuário é o dono e esta gerando cortesia.
         let userChecker = await userModel.findById({ _id: req.userID });
-        if (!userChecker) {
-          return res.send({
-            success: false,
-            msg: "Usuário não existente",
-            obj: null,
-          });
-        }
-        //console.log(userChecker.type)
         if (userChecker.type !== "Owner") {
           return res.send({
             success: false,
@@ -911,42 +898,29 @@ module.exports = {
           };
           const pedido = await pedidosModel.create(object);
           if (pedido) {
-
             //Criar uma req pix
-            const reqGNAlready = GNRequest({
-              clientID: process.env.GN_CLIENT_ID,
-              clientSecret: process.env.GN_CLIENT_SECRET,
-            });
+            const pixCode = await pagarme.CreateOrder(items_second, pedido, phone, contract, financeiro.pagarme_id)
+            if (pixCode.success) {
+              pedido.txid = pixCode.order_id
+              pedido.pix_charge_id = pixCode.pix_charge_id
+              await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
+              delete pixCode.order_id
+              delete pixCode.pix_charge_id
 
-            const reqGN = await reqGNAlready;
+              return res.send({
+                success: true,
+                msg: "Pix Gerado",
 
-            const dataCob = {
-              calendario: {
-                expiracao: 3600,
-              },
-              valor: {
-                original: pag.toString(), //ATUALIZAR DEPOIS PARA pag
-              },
-              chave: "de8d8feb-a41c-47b0-969f-6afa1f35da4f",
-              solicitacaoPagador: `SemFila - Pedido N ${pedido._id}`,
-            };
-            const cobResponse = await reqGN.post("/v2/cob/", dataCob);
-
-            pedido.txid = cobResponse.data.txid;
-            pedido.loc_id = cobResponse.data.loc.id;
-
-
-            await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
-            const pixCode = await reqGN.get(
-              `/v2/loc/${cobResponse.data.loc.id}/qrcode`
-            );
-            console.log(pixCode.data)
-            res.send({
-              success: true,
-              msg: "Pix Gerado",
-
-              obj: pixCode.data.imagemQrcode, //CODIGO PIX
-            });
+                obj: pixCode, //CODIGO PIX
+              });
+            } else {
+              await pedidosModel.findByIdAndDelete({ _id: pedido._id })
+              return res.send({
+                success: false,
+                msg: "Falha ao criar PIX",
+                obj: null,
+              });
+            }
           }
         } else {
           //Retorne, carrinho está vazio ou os itens não existem
@@ -1363,7 +1337,6 @@ module.exports = {
 
   },
   async afterRefund(order) {
-    console.log(order)
     if (order) {
         const pedido = await pedidosModel.findOne({ pix_charge_id: order });
         if (pedido) {

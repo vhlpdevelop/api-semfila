@@ -147,7 +147,7 @@ app.post("/webhook", (request, response) => {
       break;
     case 'charge.refunded':
       console.log("Cobrança foi estornada")
-      let aux = request.body.data.order.id
+      let aux = request.body.data.id
       afterRefund(aux)
 
       break;

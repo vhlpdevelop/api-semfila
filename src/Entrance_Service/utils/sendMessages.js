@@ -31,6 +31,7 @@ module.exports = {
       
     },
     async sendRefundMessage(pedido){
+        console.log(pedido)
         await axios.post(APIZ_INSTANCE+'/send-message', MessageBuilderRefund(pedido))
     }
 }

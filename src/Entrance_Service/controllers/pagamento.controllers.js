@@ -860,7 +860,7 @@ module.exports = {
           for (let y = 0; y < dados[i].qtd_qrcodes; y++) { //LAÇO PARA CADA ITEM TEM SUA QUANTIDADE DE QRCODES PARA CRIAR.
             if (itemChecker !== undefined) {
               pag_second = parseFloat(itemChecker.price) * dados[i].qtd
-              let aux_value = parseInt(pag_second.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')) // 25.00 => 2500
+              let aux_value = parseInt((pag_second.toString()).replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')) // 25.00 => 2500
             items_second.push({
               name: itemChecker.item_name,
               amount: aux_value,

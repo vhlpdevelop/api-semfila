@@ -372,11 +372,19 @@ module.exports = {
           }
         );
         if (updater) {
-          return res.send({ msg: "Autenticação completa", success: true });
+          const datatoken = jwt.sign(
+            { id: response._id, time: Date.now(), email: response.email, phone: response.phone },
+            authConfig.secret,
+            {
+              expiresIn: "7d",
+            }
+          );
+          return res.send({ msg: "Autenticação completa", success: true, session: datatoken });
         } else {
           return res.send({
             msg: "Erro ocorreu ao autenticar",
             success: false,
+            
           });
         }
       }

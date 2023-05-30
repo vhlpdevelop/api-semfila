@@ -840,7 +840,7 @@ module.exports = {
           });
         }
         //Buscar e comparar se este usuário é o dono e esta gerando cortesia.
-        let userChecker = await userModel.findById({ _id: req.userID });
+        const userChecker = await userModel.findById({ _id: req.userID });
         if (userChecker.type !== "Owner") {
           return res.send({
             success: false,
@@ -848,14 +848,26 @@ module.exports = {
             obj: null,
           });
         }
-
+        const financeiro = await financialModel.findOne({company_id:store.company_id})
+        const contract = await contractModel.findById({_id: financeiro.contract_id})
         //Fim da verificação de segurança
+        var pag_second = ""
+        const items_second = [];
         for (let i = 0; i < dados.length; i++) {
           let itemChecker = await itemsModel.findById({
             _id: dados[i]._id,
           });
           for (let y = 0; y < dados[i].qtd_qrcodes; y++) { //LAÇO PARA CADA ITEM TEM SUA QUANTIDADE DE QRCODES PARA CRIAR.
             if (itemChecker !== undefined) {
+              pag_second = parseFloat(itemChecker.price) * dados[i].qtd
+              let aux_value = parseInt(pag_second.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')) // 25.00 => 2500
+            items_second.push({
+              name: itemChecker.item_name,
+              amount: aux_value,
+              quantity: dados[i].qtd,
+              description: itemChecker.description,
+              code: itemChecker._id
+            });
               //Este item existe. Guardar ele em uma variavel diferente para não haver discrepancias nos dados.
               itemChecker.qtd = dados[i].qtd;
               let aux_pusher = {
@@ -899,7 +911,7 @@ module.exports = {
           const pedido = await pedidosModel.create(object);
           if (pedido) {
             //Criar uma req pix
-            const pixCode = await pagarme.CreateOrder(items_second, pedido, phone, contract, financeiro.pagarme_id)
+            const pixCode = await pagarme.CreateOrder(items_second, pedido, userChecker.phone, contract, "")
             if (pixCode.success) {
               pedido.txid = pixCode.order_id
               pedido.pix_charge_id = pixCode.pix_charge_id

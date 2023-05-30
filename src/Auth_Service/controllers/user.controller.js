@@ -387,7 +387,7 @@ module.exports = {
   },
   async registerUser(req, res) {
     const { email } = req.body.account;
-
+    console.log(req.body.account)
     try {
       if(!validateEmail(email)){
         return res.send({success:false, msg:"Email inválido"})

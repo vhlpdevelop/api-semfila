@@ -9,6 +9,7 @@ const mailerconfig = require("../../config/NodeMailer.config");
 const bcrypt = require("bcrypt");
 const authConfig = require("../../config/auth");
 const jwt = require("jsonwebtoken");
+const {sendConfirmToken} = require("../utils/sendMessages")
 function validateEmail(email) {
   var re =
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -411,12 +412,14 @@ module.exports = {
         password: req.body.account.pss,
         email: req.body.account.email,
         cpf: req.body.account.cpf,
+        phone: req.body.account.phone,
         name: req.body.account.name,
         type: "Common",
         type_status: false,
         verifyEmail: false,
         verifyToken: verifyToken,
       };
+      console.log(userTosave)
 
       const user = await userModel.create(userTosave);
 
@@ -427,7 +430,9 @@ module.exports = {
 
 
       if (user) {
-        //Se cadastrou, enviar email de confirmação
+        //Se cadastrou, enviar email de confirmação e mensagem whatsapp
+
+        await sendConfirmToken(verifyToken, user.name, user.phone)
         mailer.sendMail(
           {
             to: email,
@@ -446,11 +451,12 @@ module.exports = {
             }
           }
         );
+        return res.send({
+          success: true,
+          msg: "Cadastrado com sucesso! Verifique seu Email!"
+        });
       }
-      return res.send({
-        success: true,
-        msg: "Cadastrado com sucesso! Verifique seu Email!"
-      });
+      
     } catch (error) {
       console.log(error);
       return res.send({ msg: "Falha ao cadastrar", success: false });

@@ -32,7 +32,13 @@ module.exports = {
     },
     async sendRefundMessage(pedido){
         console.log(pedido)
-        await axios.post(APIZ_INSTANCE+'/send-message', MessageBuilderRefund(pedido))
+        try{
+            await axios.post(APIZ_INSTANCE+'/send-text', MessageBuilderRefund(pedido))
+        }catch(e){
+            console.log("ERRO MESSAGE REFUND ==>")
+            console.log(e)
+        }
+        
     }
 }
 

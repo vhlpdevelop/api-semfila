@@ -13,7 +13,7 @@ module.exports = {
         }
         try{
             await axios.post(APIZ_INSTANCE+'/send-link', {
-                phone: phone,
+                phone: user_phone,
                 message: "Autentique sua conta agora clicando no link \n  https://semfila.app/"+token+"/autenticar",
                 image: "https://i.ibb.co/Df7vzhn/imagephone-2.png",
                 linkUrl: `https://semfila.app/${token}/autenticar`,

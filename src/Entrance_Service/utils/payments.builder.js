@@ -103,7 +103,7 @@ function buildOrder(items_second, pedido, phone, contract, id) {
     request.payments[0].split = [
       {
         "amount": contract.tax,
-        "recipient_id": "re_cli0mncj2024k019tqxvlurws",
+        "recipient_id": "re_clhzl359q4d8f019td3a2kd6o", //CHAVE PROD MARKETPLACE
         "type": "percentage",
         "options": {
           "charge_processing_fee": true,

@@ -265,7 +265,22 @@ module.exports = {
       const user = await User_model.findById(req.userID);
       if (!user)
         return res.send({ msg: "Realize o login primeiro", success: false });
-      const qrcodes = await QrCodesModel.find({ user_id: req.userID });
+      //Adicionar data
+      var aux_ini = new Date(new Date(req.body.dataIni).toDateString())
+      aux_ini.setUTCHours(0, 0, 0, 0);
+      var dataIni = new Date(aux_ini).toUTCString();
+
+      var aux_fim = new Date(new Date(req.body.dataFim).toDateString())
+      aux_fim.setUTCHours(23, 59, 59, 999);
+      var dataFim = new Date(aux_fim).toUTCString();
+
+      const qrcodes = await QrCodesModel.find({
+        user_id: req.userID,
+        createdAt: {
+          $gte: dataIni,
+          $lt: dataFim
+        }
+      })
       var array_toSend = [];
       var trigger = false;
       for (let i = 0; i < qrcodes.length; i++) {
@@ -429,7 +444,7 @@ module.exports = {
       res.send({ obj: null, success: false, msg: "QrCode Inválido" });
     }
   },
-  async updateQrCode(req) {
+  async updateQrCode(req,res) {
     const itemUpdate = req.body;
     //Buscar qrcode para validar
     try {
@@ -437,11 +452,11 @@ module.exports = {
       if (itemUpdate.store_id !== req.stores[0]._id) { 
 
         //Precisa arrumar depois o metodo de verificação.
-        return {
+        return res.send({
           obj: null,
           success: false,
           msg: "QrCode de outro cardapio.",
-        };
+        });
       }
       const qrcode = await QrCodesModel.findById(itemUpdate._id);
       if (qrcode) {
@@ -604,6 +619,30 @@ module.exports = {
         error: e.message,
       };
     }
+  },
+  async updateQrCodeOptionalName(req,res){
+    const itemUpdate = req.body
+    if (itemUpdate.store_id !== req.stores[0]._id) { 
+      return res.send({
+        obj: null,
+        success: false,
+        msg: "QrCode de outro cardapio.",
+      });
+    }
+    const qrcode = await QrCodesModel.findById(itemUpdate._id);
+      if (qrcode) {
+        qrcode.optional_name = itemUpdate.optional_name;
+        qrcode.markModified('optional_name')
+        qrcode.save();
+        return res.send({
+          success:true,
+          msg: "Qrcode alterado."
+        })
+      }
+    return res.send({
+      success:false,
+      msg:"Qrcode não foi encontrado."
+    })
   },
   async deleteQrCode(req, res) { },
   async recoverQrCode(req, res) { //Recuperar qrcode.

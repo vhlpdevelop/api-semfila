@@ -498,16 +498,16 @@ module.exports = {
       var dataToSend = [];
       var dataToSave = [];
       var trigger = true;
-      var total = 0;
+      var type = false;
       for (let i = 0; i < pedido.items.length; i++) {
         //console.log(pedido.items[i].item_name)
         //console.log("Loop => "+i)
         let verify = await limiter.limit_controller(pedido.items[i]._id, pedido.items[i].qtd) //Verificador para reembolsar
 
-        if (!verify.status && verify.find && trigger) { //Caso falhe realizar o processo de estorno e enviar email.
+        if (!verify.status && verify.find && trigger) { //Caso falhe realizar o processo de estorno e enviar whatsapp.
           //Processo de Reembolso.
 
-          await withDrawer.withDrawPedido(pedido, i); //REEMBOLSADOR
+          await withDrawer.withDrawPedido(pedido, i); //REEMBOLSADOR REFAZER para pagarme
 
           trigger = false;
           break;
@@ -528,11 +528,8 @@ module.exports = {
             QrImage: "",
             state: true,
           };
-
-          total = parseFloat((parseFloat(total) + parseFloat(pedido.items[i].price)).toFixed(2))
-
           var ticket = await QrCodesModel.create(aux_ticket);
-
+          if(pedido.items[i].type === 'commom'  || pedido.cortesia ){ //Caso seja cortesia ou comum crie.
           let datatoEncrypt = {
             _id: ticket._id,
             store_id: ticket.store_id,
@@ -556,10 +553,13 @@ module.exports = {
           };
           dataToSend.push(object);
           dataToSave.push(ticket._id)
-          let updater = await QrCodesModel.findByIdAndUpdate(
+          await QrCodesModel.findByIdAndUpdate(
             { _id: ticket._id },
             ticket
           );
+        }else{
+          type = true;
+        }
         }
       }
 
@@ -570,12 +570,12 @@ module.exports = {
       pedido.status = true; 
 
       await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
-      console.log("Chegou aqui")
+   
       if (pedido.user_phone && !aux_ticket.cortesia) {
         //Adicionar resgate.
         var store = await storeModel.findById({ _id: pedido.store_id })
-        var url_button = store.store_url + "-" + ticket._id
-        sendConfirmPayMessage(pedido, dataToSend, url_button)
+        var url_button = store.store_url + "-" + pedido._id
+        sendConfirmPayMessage(pedido, dataToSend, url_button, type)
       }
 
       //

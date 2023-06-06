@@ -645,12 +645,26 @@ module.exports = {
     })
   },
   async deleteQrCode(req, res) { },
-  async recoverQrCode(req, res) { //Recuperar qrcode.
+  async recoverQrCode(req, res) { //Recuperar qrcodes do pedido. Alto risco
     if (req.body.qrcode) {
       try {
-        const qrcode = await QrCodesModel.findOne({ _id: req.body.qrcode, state: true, withdraw: false })
+        const qrcode = await QrCodesModel.find({ pedido_id: req.body.qrcode, state: true, withdraw: false })
         if (qrcode) {
-          return res.send({ success: true, msg: "Qrcode localizado", obj: qrcode })
+          var type = false;
+          var qrcodes_to_complete = []
+          for(let i =0; i<qrcode.length; i++){
+            if(qrcode[i].QrImage === ""){
+              type=true;
+              qrcodes_to_complete.push(qrcode[i])
+            }
+          }
+          console.log(qrcodes_to_complete)
+          if(type){
+            return res.send({ success: true, msg: "Pedido localizado", obj: qrcode, isType:type, objectType: qrcodes_to_complete})
+          }else{
+            return res.send({ success: true, msg: "Pedido localizado", obj: qrcode, isType:false, objectType: null })
+          }
+          
         } else {
           return res.send({ success: false })
         }

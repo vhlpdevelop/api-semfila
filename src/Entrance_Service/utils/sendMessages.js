@@ -1,7 +1,7 @@
 require("dotenv").config()
 const axios = require("axios")
 module.exports = {
-    async sendConfirmPayMessage(pedido, items, url_button){
+    async sendConfirmPayMessage(pedido, items, url_button, type){
         //Receber objeto item e tratar com messageBuilder e depois enviar.
         for(let i =0; i < items.length; i++){
             try{
@@ -14,14 +14,20 @@ module.exports = {
 
         //Enviar link para visualização direto pelo sistema
         try{
-            await axios.post(APIZ_INSTANCE+'/send-link', {
-                phone: pedido.user_phone,
-                message: "Veja sua compra no nosso cardapio, apenas clique no link! https://www.semfila.app/resgate/"+url_button,
-                image: "https://i.ibb.co/Df7vzhn/imagephone-2.png",
-                linkUrl: "https://www.semfila.app/resgate/"+url_button,
-                title:"SemFila",
-                linkDescription: "Veja sua compra por aqui"
-            })
+            if(type){
+                await axios.post(APIZ_INSTANCE+'/send-text', {phone:pedido.user_phone,message:"Para finalizar a inscrição do(s) ingresso(s), abra o link abaixo. Os qrcodes serão enviados para este mesmo número "})
+                await axios.post(APIZ_INSTANCE+'/send-text', {phone:pedido.user_phone,message:"https://www.semfila.app/resgate/"+url_button})
+            }else{
+                await axios.post(APIZ_INSTANCE+'/send-link', {
+                    phone: pedido.user_phone,
+                    message: "Veja sua compra no nosso cardapio, apenas clique no link! https://www.semfila.app/resgate/"+url_button,
+                    image: "https://i.ibb.co/Df7vzhn/imagephone-2.png",
+                    linkUrl: "https://www.semfila.app/resgate/"+url_button,
+                    title:"SemFila",
+                    linkDescription: "Veja sua compra por aqui"
+                })
+            }
+            
         }catch(e){
             console.log("ERRO LINK ==>")
             console.log(e)

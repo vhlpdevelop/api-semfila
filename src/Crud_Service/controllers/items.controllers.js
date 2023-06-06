@@ -72,7 +72,6 @@ module.exports = {
         let dataSAVE = {
           item_name: newItem.item.item_name,
           description: newItem.item.description,
-          type: newItem.type,
           image_url: newItem.item.image_url,
           icms: newItem.item.icms,
           ncm: newItem.item.ncm,
@@ -85,6 +84,7 @@ module.exports = {
           discount_value: aux_price_discount,
           promotion_duration: newItem.promotion_duration,
           trava: newItem.trava,
+          type: newItem.tipo_produto,
           destaques: newItem.destaque,
         };
         const item = await itemsModel.create(dataSAVE);

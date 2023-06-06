@@ -654,7 +654,7 @@ module.exports = {
           var qrcodes_to_complete = []
           for(let i =0; i<qrcode.length; i++){
             if(qrcode[i].QrImage === ""){
-              type=true;
+              type=qrcode[i].item.type;
               qrcodes_to_complete.push(qrcode[i])
             }
           }

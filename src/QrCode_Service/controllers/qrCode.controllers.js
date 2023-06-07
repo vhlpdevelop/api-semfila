@@ -679,7 +679,7 @@ module.exports = {
     }
   },
   async qrCodeTicketUpdate(req,res){
-    const request = req.body;
+    const request = req.body.itemData;
     try{
       var dataToSend = [];
       var aux_dataToSend = [];

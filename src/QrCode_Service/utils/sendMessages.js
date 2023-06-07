@@ -25,6 +25,6 @@ function ImageBuilder(item,phone){
         phone: phone,
         image: "data:image/png;base64,"+item.qrcode,
         caption: item.data.item.item_name + ", " + item.data.quantity + " un(s) em " + item.data.store_name+ "\n"+
-        "Nome -"+item.data.user_name+ "\n CPF -"+item.data.user_cpf
+        "Nome -"+item.data.user_name+ "\n"+"CPF -"+item.data.user_cpf
     }
 }

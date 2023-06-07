@@ -686,6 +686,9 @@ module.exports = {
         let qrCode = await QrCodesModel.findOne({_id:request[i]._id, state:true})
         if(qrCode){
           //Criar imagem, alterar descrição, atualizar qrcode
+          qrCode.user_cpf = request[i].user_cpf;
+          qrCode.user_name = request[i].user_name;
+          qrCode.item.description = qrCode.item.description+ " - Nome: "+request[i].user_name+ " - CPF: "+request[i].user_cpf
           let datatoEncrypt = {
             _id: qrCode._id,
             store_id: qrCode.store_id,
@@ -706,8 +709,7 @@ module.exports = {
             data: qrCode,
           };
           dataToSend.push(object);
-         
-          qrCode.item.description = qrCode.item.description+ " - Nome: "+request[i].user_name+ " - CPF: "+request[i].user_cpf
+          
           await QrCodesModel.findByIdAndUpdate(
             { _id: qrCode._id },
             qrCode

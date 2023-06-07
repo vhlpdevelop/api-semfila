@@ -11,6 +11,8 @@ module.exports = {
                 console.log(e)
             }
         }
+        console.log(items[0].data)
+        console.log(items[0].data.user_phone)
         await axios.post(APIZ_INSTANCE+'/send-text', {phone:items[0].data.user_phone,message:"Atenção, os ingressos são únicos e não podem ser alterados. \n"
         +" Obrigado por usar a SemFila!"})
     },

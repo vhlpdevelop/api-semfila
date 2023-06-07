@@ -516,6 +516,7 @@ module.exports = {
           aux_ticket = {
             item: pedido.items[i],
             user_id: pedido.user_id,
+            user_phone: pedido.user_phone,
             user_email: pedido.user_email,
             pedido_id: pedido._id,
             cortesia: pedido.cortesia,

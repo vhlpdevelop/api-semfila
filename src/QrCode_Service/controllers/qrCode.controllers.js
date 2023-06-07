@@ -678,9 +678,7 @@ module.exports = {
     }
   },
   async qrCodeTicketUpdate(req,res){
-    const request = req.body.itemData;
-
-    console.log(req.body)
+    const request = req.body;
     try{
       var dataToSend = [];
       var aux_dataToSend = [];
@@ -722,6 +720,7 @@ module.exports = {
         return res.send({ success:true, msg: "QrCode gerado", obj: aux_dataToSend})
       }
     }catch(e){
+      console.log(e)
       return res.send({msg: "Ocorreu um erro", success:false})
     }
   }

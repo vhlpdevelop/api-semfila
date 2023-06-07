@@ -654,6 +654,7 @@ module.exports = {
         if (qrcode) {
           var type = false;
           var qrcodes_to_complete = []
+          console.log(qrcode.length)
           for(let i =0; i<qrcode.length; i++){
             if(qrcode[i].QrImage === ""){
               type=qrcode[i].item.type;
@@ -682,10 +683,12 @@ module.exports = {
     try{
       var dataToSend = [];
       var aux_dataToSend = [];
+      console.log(request)
       for(let i =0; i<request.length; i++){
         let qrCode = await QrCodesModel.findOne({_id:request[i]._id, state:true})
         if(qrCode){
           //Criar imagem, alterar descrição, atualizar qrcode
+          console.log(request)
           qrCode.user_cpf = request[i].user_cpf;
           qrCode.user_name = request[i].user_name;
           qrCode.item.description = qrCode.item.description+ " - Nome: "+request[i].user_name+ " - CPF: "+request[i].user_cpf
@@ -717,9 +720,13 @@ module.exports = {
           aux_dataToSend.push(qrCode)
         }
       }
+      console.log(dataToSend)
+      console.log(dataToSend.length)
       if(dataToSend.length > 0){
         await sendQrCodeUpdates(dataToSend)
         return res.send({ success:true, msg: "QrCode gerado", obj: aux_dataToSend})
+      }else{
+        return res.send({success:false, msg:"Ocorreu um erro"})
       }
     }catch(e){
       console.log(e)

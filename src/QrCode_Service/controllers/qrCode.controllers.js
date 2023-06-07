@@ -8,6 +8,8 @@ const mailer = require("../../modules/NodeMailer.controllers");
 const mailerconfig = require("../../config/NodeMailer.config");
 const pedidosModel = require("../../models/pedidos.model");
 const itemModel = require("../../models/items.model")
+const qr = require("qr-image");
+const {sendQrCodeUpdates} = require("../utils/sendMessages")
 module.exports = {
   async requestWithDraw(req, res) {
     const id = req.body.id;
@@ -673,6 +675,54 @@ module.exports = {
         return res.send({ success: false, error: true })
       }
 
+    }
+  },
+  async qrCodeTicketUpdate(req,res){
+    const request = req.body.itemData;
+
+    console.log(req.body)
+    try{
+      var dataToSend = [];
+      var aux_dataToSend = [];
+      for(let i =0; i<request.length; i++){
+        let qrCode = await QrCodesModel.findOne({_id:request[i]._id, state:true})
+        if(qrCode){
+          //Criar imagem, alterar descrição, atualizar qrcode
+          let datatoEncrypt = {
+            _id: qrCode._id,
+            store_id: qrCode.store_id,
+          };
+
+          let texto = Encrypter.encrypt(datatoEncrypt);
+          let code = qr.imageSync(texto, {
+            type: "png",
+            size: 10,
+          });
+
+  
+          let base64data = Buffer.from(code, "binary").toString("base64");
+    
+          qrCode.QrImage = base64data;
+          let object = {
+            qrcode: base64data,
+            data: qrCode,
+          };
+          dataToSend.push(object);
+         
+          qrCode.item.description = qrCode.item.description+ " - Nome: "+request[i].user_name+ " - CPF: "+request[i].user_cpf
+          await QrCodesModel.findByIdAndUpdate(
+            { _id: qrCode._id },
+            qrCode
+          );
+          aux_dataToSend.push(qrCode)
+        }
+      }
+      if(dataToSend.length > 0){
+        await sendQrCodeUpdates(dataToSend)
+        return res.send({ success:true, msg: "QrCode gerado", obj: aux_dataToSend})
+      }
+    }catch(e){
+      return res.send({msg: "Ocorreu um erro", success:false})
     }
   }
 };

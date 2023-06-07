@@ -7,6 +7,7 @@ const router = express.Router();
 router.post('/refreshSingleQrCode', limiter.padrao, qrCode.refreshSingleQrCode)
 router.post('/requestWithdraw', limiter.padrao, qrCode.requestWithDraw)
 router.post('/recoverQrCode', limiter.Login_limiter, qrCode.recoverQrCode)
+router.post('/qrCodeTicketUpdate', limiter.padrao, qrCode.qrCodeTicketUpdate)
 router.use(middleware)
 router.post('/refreshQrCodeUser', limiter.padrao,qrCode.refreshQrCodes)
 router.post('/fetchQrCodesEmp', limiter.padrao,qrCode.fetchQrCodesEmp)

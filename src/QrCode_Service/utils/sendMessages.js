@@ -2,6 +2,8 @@ require("dotenv").config()
 const axios = require("axios")
 module.exports = {
     async sendQrCodeUpdates(items){
+        await axios.post(APIZ_INSTANCE+'/send-text', {phone:items[0].data.user_phone,message:"Opa! Estou aqui para te mostrar que chegou seu incrível QrCode.  \n"
+        +"Use-o para fugir da fila!."})
         for(let i =0; i < items.length; i++){
             try{
                 await axios.post(APIZ_INSTANCE+'/send-image', ImageBuilder(items[i],items[i].data.user_phone))
@@ -11,8 +13,6 @@ module.exports = {
                 console.log(e)
             }
         }
-        console.log(items[0].data)
-        console.log(items[0].data.user_phone)
         await axios.post(APIZ_INSTANCE+'/send-text', {phone:items[0].data.user_phone,message:"Atenção, os ingressos são únicos e não podem ser alterados. \n"
         +" Obrigado por usar a SemFila!"})
     },

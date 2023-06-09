@@ -652,9 +652,13 @@ module.exports = {
       try {
         const qrcode = await QrCodesModel.find({ pedido_id: req.body.qrcode, state: true, withdraw: false })
         if (qrcode) {
+          if(!qrcode.state){
+            return res.send({success:false, msg:"QrCode já utilizado"})
+          }
           var type = false;
           var qrcodes_to_complete = []
           console.log(qrcode.length)
+          
           for(let i =0; i<qrcode.length; i++){
             if(qrcode[i].QrImage === ""){
               type=qrcode[i].item.type;

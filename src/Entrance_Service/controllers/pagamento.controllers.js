@@ -655,8 +655,6 @@ module.exports = {
 
     const socketId = req.body.idSocket;
 
-    process.stdout.write("\033c");
-
 
     if (!req.body.itemData) {
       return res.send({
@@ -962,7 +960,12 @@ module.exports = {
   async payCreditCard(req, res) {
     var auth = "";
     var phone = req.body.itemData.phone;
-
+    if (!req.body.itemData) {
+      return res.send({
+        success: false,
+        msg: "Carrinho vazio."
+      })
+    }
     if (req.headers.authorization) {
       //AUTH
       const authHeader = JSON.parse(req.headers.authorization);
@@ -999,16 +1002,7 @@ module.exports = {
     }
     phone = "55" + phone
     const socketId = req.body.idSocket;
-
-    process.stdout.write("\033c");
-
-
-    if (!req.body.itemData) {
-      return res.send({
-        success: false,
-        msg: "Carrinho vazio."
-      })
-    }
+   
     const dados = req.body.itemData;
     //Primeiro autenticar os dados, verificar items
     try {
@@ -1162,8 +1156,6 @@ module.exports = {
                 source_transaction: payment_intent.id,
                 destination: financeiro.stripe_id,
               })
-              console.log(transfer)
-              console.log(payment_intent)
 
             } catch (e) {
               console.log('error =', e)

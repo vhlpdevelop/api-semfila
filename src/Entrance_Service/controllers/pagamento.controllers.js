@@ -1140,22 +1140,18 @@ module.exports = {
             var transfer = '';
             try {
               let value = object.price
-              var received = (value * contract.tax_credit) / 100;
-              var receiver = value - received;
+              
               let aux_value = parseInt(object.price.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''))
-              let receiver_value = parseInt((receiver.toString()).replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''))
+             
               payment_intent = await stripe.paymentIntents.create({
                 amount: aux_value,
                 currency: 'brl',
                 description: `Pagamento do pedido ${pedido._id} SemFila`,
                 automatic_payment_methods: { enabled: true },
               })
-              transfer = await stripe.transfers.create({
-                amount: receiver_value,
-                currency: 'brl',
-                source_transaction: payment_intent.id,
-                destination: financeiro.stripe_id,
-              })
+              console.log(payment_intent)
+              console.log(payment_intent.id)
+              
 
             } catch (e) {
               console.log('error =', e)
@@ -1212,6 +1208,31 @@ module.exports = {
         msg: "Ops, ocorreu um erro",
         obj: null,
       });
+    }
+  },
+  async updateIntent(intent){
+    //Atualizar um intent ao ser criado para colocar transfer.
+    console.log("==> Objeto INTENT")
+    console.log(intent)
+    try{
+      const pedido = await pedidosModel.findOne({charge_id: intent.id})
+      if(pedido){
+        const financeiro = await financialModel.findOne({company_id: pedido.company_id})
+        const contrato = await contractModel.findById({_id: financeiro.contract_id})
+        var value = intent.amount / 100;
+        var received = (value * contrato.tax_credit) / 100;
+        var receiver = value - received;
+        let receiver_value = parseInt((receiver.toString()).replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''))
+        transfer = await stripe.transfers.create({
+          amount: receiver_value,
+          currency: 'brl',
+          source_transaction: intent.id,
+          destination: financeiro.stripe_id,
+        })
+        console.log(transfer)
+      }
+    }catch(e){
+      console.log(e.message)
     }
   },
   async confirmPaymentReq(io, charge_id) {

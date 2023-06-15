@@ -1210,12 +1210,12 @@ module.exports = {
       });
     }
   },
-  async updateIntent(intent){
+  async createTransfer(intent){
     //Atualizar um intent ao ser criado para colocar transfer.
-    console.log("==> Objeto INTENT")
+    console.log("==> Objeto Charge")
     console.log(intent)
     try{
-      const pedido = await pedidosModel.findOne({charge_id: intent.id})
+      const pedido = await pedidosModel.findOne({charge_id: intent.payment_intent})
       if(pedido){
         const financeiro = await financialModel.findOne({company_id: pedido.company_id})
         const contrato = await contractModel.findById({_id: financeiro.contract_id})

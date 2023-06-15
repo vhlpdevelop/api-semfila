@@ -77,11 +77,8 @@ app.post('/stripeWebhook', express.raw({type: 'application/json'}), (request, re
       break;
     case 'payment_intent.created':
       const paymentIntent = event.data.object;
-      console.log(event.data.object)
-      console.log(paymentIntent)
       const caller = (async () => {
         try {
-          console.log("Entrou aqui")
             await updateIntent(paymentIntent);
         } catch (e) {
           console.log(e)

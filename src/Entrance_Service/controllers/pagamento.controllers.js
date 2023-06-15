@@ -1219,9 +1219,10 @@ module.exports = {
       if(pedido){
         const financeiro = await financialModel.findOne({company_id: pedido.company_id})
         const contrato = await contractModel.findById({_id: financeiro.contract_id})
-        var value = intent.amount / 100;
-        var received = (value * contrato.tax_credit) / 100;
-        var receiver = value - received;
+        var value = ( ( (parseFloat(intent.amount) /100) - 0.39) - ((parseFloat(intent.amount)/100) * 0.039) ).toFixed(2); //400 => 4 ( 4 - 0.39) - (4*3.9%)
+        console.log(value)
+        var received = ((value * contrato.tax_credit) / 100).toFixed(2);
+        var receiver = parseFloat(value) - parseFloat(received);
         let receiver_value = parseInt((receiver.toString()).replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''))
         transfer = await stripe.transfers.create({
           amount: receiver_value,

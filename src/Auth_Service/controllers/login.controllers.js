@@ -85,7 +85,7 @@ module.exports = {
     }
   },
   async loginEmp(req, res) {
-
+    console.log(req.body)
     const { user, pss } = req.body;
     try {
       if(!validateEmail(user)){

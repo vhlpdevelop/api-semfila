@@ -19,6 +19,7 @@ module.exports = {
       })
       .then(async (order) => {
         let data = order.data
+        
         pixCode.order_id = data.id
         pixCode.qrcode = data.charges[0].last_transaction.qr_code
         pixCode.imagemQrcode = data.charges[0].last_transaction.qr_code_url
@@ -26,6 +27,11 @@ module.exports = {
         pixCode.pix_charge_id = data.charges[0].id
         console.log("Resultado ===>")
         console.log(order.data)
+        if(data.status === 'failed'){
+          pixCode.success = false;
+          pixCode.pix_charge_id = ""
+          pixCode.order_id = ""
+        }
 
       })
       .catch((err) => {

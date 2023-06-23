@@ -68,7 +68,7 @@ app.post('/stripeWebhook', express.raw({type: 'application/json'}), (request, re
   }
   switch (event.type) {
     case 'charge.succeeded':
-      console.log(event.data.object.payment_intent)
+      //console.log(event.data.object.payment_intent)
       confirmPaymentReq(io, event.data.object.payment_intent)
       const charge = event.data.object
       const caller = (async () => {

@@ -25,8 +25,6 @@ module.exports = {
         pixCode.imagemQrcode = data.charges[0].last_transaction.qr_code_url
         pixCode.success = true;
         pixCode.pix_charge_id = data.charges[0].id
-        console.log("Resultado ===>")
-        console.log(order.data)
         if(data.status === 'failed'){
           pixCode.success = false;
           pixCode.pix_charge_id = ""
@@ -49,7 +47,7 @@ const {
 
 
 function buildOrder(items_second, pedido, phone, contract, id) {
-  console.log(id)
+  //console.log(id)
   const request = {
     "items": items_second,
     "customer": {
@@ -111,7 +109,7 @@ function buildOrder(items_second, pedido, phone, contract, id) {
     request.payments[0].split = [
       {
         "amount": contract.tax,
-        "recipient_id": "re_cli0mncj2024k019tqxvlurws", //CHAVE PROD MARKETPLACE PROD ==>re_clhzl359q4d8f019td3a2kd6o
+        "recipient_id": "re_clhzl359q4d8f019td3a2kd6o", //CHAVE PROD MARKETPLACE PROD ==> re_cli0mncj2024k019tqxvlurws
         "type": "percentage",
         "options": {
           "charge_processing_fee": true,
@@ -131,6 +129,6 @@ function buildOrder(items_second, pedido, phone, contract, id) {
       }
     ]
   }
-  console.log(request)
+  //console.log(request)
   return request
 }

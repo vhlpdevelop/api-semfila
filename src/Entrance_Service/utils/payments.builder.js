@@ -24,7 +24,7 @@ module.exports = {
         pixCode.imagemQrcode = data.charges[0].last_transaction.qr_code_url
         pixCode.success = true;
         pixCode.pix_charge_id = data.charges[0].id
-        console.log(data)
+        console.log("Resultado ===>")
         console.log(pixCode)
 
       })

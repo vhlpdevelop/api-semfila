@@ -779,8 +779,6 @@ module.exports = {
               pedido.txid = pixCode.order_id
               pedido.pix_charge_id = pixCode.pix_charge_id
               await pedidosModel.findByIdAndUpdate(pedido._id, pedido);
-              delete pixCode.order_id 
-              delete pixCode.pix_charge_id
               res.send({
                 success: true,
                 msg: "Pix Gerado",

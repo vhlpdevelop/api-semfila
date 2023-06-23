@@ -25,7 +25,7 @@ module.exports = {
         pixCode.success = true;
         pixCode.pix_charge_id = data.charges[0].id
         console.log("Resultado ===>")
-        console.log(pixCode)
+        console.log(order.data)
 
       })
       .catch((err) => {

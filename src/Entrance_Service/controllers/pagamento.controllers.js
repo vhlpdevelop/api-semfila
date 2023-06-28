@@ -715,10 +715,10 @@ module.exports = {
                 (parseFloat(desconto) +
                   parseFloat(itemChecker.discount_value)) *
                 dados.cart[i].qtd;
-              console.log(desconto)
+             
               desconto = desconto.toFixed(2);
               console.log(pag_second)
-              pag_second = pag_second - desconto;
+              pag_second = parseFloat( (pag_second - desconto)).toFixed(2);
               console.log(pag_second)
             }
             pag = pag + itemChecker.price * dados.cart[i].qtd;

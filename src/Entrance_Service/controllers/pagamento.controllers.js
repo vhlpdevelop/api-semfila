@@ -717,7 +717,9 @@ module.exports = {
                 dados.cart[i].qtd;
               console.log(desconto)
               desconto = desconto.toFixed(2);
+              console.log(pag_second)
               pag_second = pag_second - desconto;
+              console.log(pag_second)
             }
             pag = pag + itemChecker.price * dados.cart[i].qtd;
 

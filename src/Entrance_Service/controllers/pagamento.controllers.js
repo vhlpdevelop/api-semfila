@@ -1213,8 +1213,6 @@ module.exports = {
   },
   async createTransfer(intent){
     //Atualizar um intent ao ser criado para colocar transfer.
-    console.log("==> Objeto Charge")
-    console.log(intent)
     try{
       const pedido = await pedidosModel.findOne({charge_id: intent.payment_intent})
       if(pedido){
@@ -1223,7 +1221,7 @@ module.exports = {
         var value = ( ( (parseFloat(intent.amount) /100) - 0.39) - ((parseFloat(intent.amount)/100) * 0.039) ).toFixed(2); //400 => 4 ( 4 - 0.39) - (4*3.9%)
         console.log(value)
         var received = ((value * contrato.tax_credit) / 100).toFixed(2);
-        var receiver = parseFloat(value) - parseFloat(received);
+        var receiver = (parseFloat(value) - parseFloat(received)).toFixed(2);
         let receiver_value = parseInt((receiver.toString()).replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''))
         transfer = await stripe.transfers.create({
           amount: receiver_value,
@@ -1231,9 +1229,10 @@ module.exports = {
           source_transaction: intent.id,
           destination: financeiro.stripe_id,
         })
-        console.log(transfer)
+        
       }
     }catch(e){
+      console.log("ERRO  TRANSFER ===============>")
       console.log(e.message)
     }
   },

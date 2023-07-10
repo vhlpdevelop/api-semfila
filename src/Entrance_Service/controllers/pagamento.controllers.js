@@ -1115,6 +1115,7 @@ module.exports = {
 
 
             pag = parseFloat(pag) - 0.01
+            pag = parseFloat(pag.toFixed(2))
 
           }
           console.log(pag)
@@ -1140,8 +1141,6 @@ module.exports = {
             var payment_intent = ''
             var transfer = '';
             try {
-              let value = object.price
-              
               let aux_value = parseInt(object.price.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''))
              
               payment_intent = await stripe.paymentIntents.create({

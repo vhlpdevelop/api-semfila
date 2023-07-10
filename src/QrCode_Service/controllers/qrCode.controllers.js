@@ -669,22 +669,6 @@ module.exports = {
             }
           }
           console.log(qrcodes_to_complete)
-          //REMOVER APOS CONSERTAR
-          let datatoEncrypt = {
-            _id: qrcode[0]._id,
-            store_id: qrcode[0].store_id,
-          };
-
-          let texto = Encrypter.encrypt(datatoEncrypt);
-          const code = qr.imageSync(texto, {
-            type: "png",
-            size: 10,
-          });
-
-          //console.log(code);
-          var base64data = Buffer.from(code, "binary").toString("base64");
-          //console.log(base64data);
-          qrcode[0].QrImage = base64data;
           await QrCodesModel.findByIdAndUpdate({_id: qrcode[0]._id}, qrcode[0])
           if(type){
             return res.send({ success: true, msg: "Pedido localizado", obj: qrcode, isType:type, objectType: qrcodes_to_complete})

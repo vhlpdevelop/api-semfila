@@ -9,7 +9,6 @@ const mailerconfig = require("../../config/NodeMailer.config");
 const pedidosModel = require("../../models/pedidos.model");
 const itemModel = require("../../models/items.model")
 const qr = require("qr-image");
-const Encrypter = require("./methods/Encrypter");
 
 
 const {sendQrCodeUpdates} = require("../utils/sendMessages")

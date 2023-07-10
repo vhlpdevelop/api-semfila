@@ -9,6 +9,9 @@ const mailerconfig = require("../../config/NodeMailer.config");
 const pedidosModel = require("../../models/pedidos.model");
 const itemModel = require("../../models/items.model")
 const qr = require("qr-image");
+const Encrypter = require("./methods/Encrypter");
+
+
 const {sendQrCodeUpdates} = require("../utils/sendMessages")
 module.exports = {
   async requestWithDraw(req, res) {
@@ -650,11 +653,9 @@ module.exports = {
   async recoverQrCode(req, res) { //Recuperar qrcodes do pedido. Alto risco
     if (req.body.qrcode) {
       try {
-        const qrcode = await QrCodesModel.findOne({ pedido_id: req.body.qrcode, state: true, withdraw: false })
+        const qrcode = await QrCodesModel.find({ pedido_id: req.body.qrcode, state: true, withdraw: false })
         if (qrcode) {
-          if(!qrcode.state){
-            console.log(qrcode)
-            console.log(qrcode.state)
+          if(!qrcode[0].state){
             return res.send({success:false, msg:"QrCode já utilizado"})
           }
           var type = false;
@@ -668,6 +669,23 @@ module.exports = {
             }
           }
           console.log(qrcodes_to_complete)
+          //REMOVER APOS CONSERTAR
+          let datatoEncrypt = {
+            _id: qrcode[0]._id,
+            store_id: qrcode[0].store_id,
+          };
+
+          let texto = Encrypter.encrypt(datatoEncrypt);
+          const code = qr.imageSync(texto, {
+            type: "png",
+            size: 10,
+          });
+
+          //console.log(code);
+          var base64data = Buffer.from(code, "binary").toString("base64");
+          //console.log(base64data);
+          qrcode[0].QrImage = base64data;
+          await QrCodesModel.findByIdAndUpdate({_id: qrcode[0]._id}, qrcode[0])
           if(type){
             return res.send({ success: true, msg: "Pedido localizado", obj: qrcode, isType:type, objectType: qrcodes_to_complete})
           }else{

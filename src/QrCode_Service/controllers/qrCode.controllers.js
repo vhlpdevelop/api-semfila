@@ -650,7 +650,7 @@ module.exports = {
   async recoverQrCode(req, res) { //Recuperar qrcodes do pedido. Alto risco
     if (req.body.qrcode) {
       try {
-        const qrcode = await QrCodesModel.find({ pedido_id: req.body.qrcode, state: true, withdraw: false })
+        const qrcode = await QrCodesModel.findOne({ pedido_id: req.body.qrcode, state: true, withdraw: false })
         if (qrcode) {
           if(!qrcode.state){
             console.log(qrcode)

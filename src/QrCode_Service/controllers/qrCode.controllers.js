@@ -653,6 +653,8 @@ module.exports = {
         const qrcode = await QrCodesModel.find({ pedido_id: req.body.qrcode, state: true, withdraw: false })
         if (qrcode) {
           if(!qrcode.state){
+            console.log(qrcode)
+            console.log(qrcode.state)
             return res.send({success:false, msg:"QrCode já utilizado"})
           }
           var type = false;

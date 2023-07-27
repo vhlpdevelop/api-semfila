@@ -9,7 +9,7 @@ const Admin = require("../../models/adminUser.model");
 const QrcodesModel = require("../../models/qrCode.model")
 const authConfig = require("../../config/auth");
 const jwt = require("jsonwebtoken");
-
+const stripe = require('stripe')(process.env.STRIPE_CLIENT_SECRET)
 function validateEmail(email) {
   var re =
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -400,8 +400,9 @@ module.exports = {
           msg: "Necessário autenticar o email primeiro",
         });
       }
+    
       const datatoken = jwt.sign(
-        { id: user._id, time: Date.now(), email: user.email, phone: user.phone },
+        { id: user._id, time: Date.now(), email: user.email, phone: user.phone, customer_id: user.customer_id },
         authConfig.secret,
         {
           expiresIn: "7d",

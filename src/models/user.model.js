@@ -7,7 +7,8 @@ const User = new Schema({
   name: { type:String},
   type: { type:String},
   phone: {type:String},
-  cpf: {type:String},
+  cpf: {type:String}, 
+  customer_id: {type:String},
   profile: { type: Array, default: []},
   config_profile: {type:Object}, //Novo
   type_status: {type:Boolean}, //Caso seja um emp e esteja Validado

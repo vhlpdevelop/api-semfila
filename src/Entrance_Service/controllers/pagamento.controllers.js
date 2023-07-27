@@ -989,7 +989,7 @@ module.exports = {
 
         req.userID = decoded.id;
         req.userPhone = decoded.phone
-
+        req.customer_id = decoded.customer_id;
       })
       auth = req.userID
       phone = req.userPhone
@@ -1137,21 +1137,37 @@ module.exports = {
 
           if (pedido) {
             //Criar um link de pagamento.
-
+            var customer = ""
+            if(!req.body.itemData.customer_id){
+              customer = await stripe.customers.create({
+                email: req.body.itemData.email,
+                phone: phone,
+              })
+            }else{
+              customer = req.body.itemData.customer_id
+            }
             var payment_intent = ''
-            var transfer = '';
+          
             try {
               let aux_value = parseInt(object.price.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''))
-             
+              var ephemeralKey = ""
+              if(req.customer_id){
+                ephemeralKey = await stripe.ephemeralKeys.create(
+                  {customer: req.customer_id},
+                  {apiVersion: '2022-11-15'}
+                );
+              }else{
+                ephemeralKey.secret = ""
+              }
               payment_intent = await stripe.paymentIntents.create({
                 amount: aux_value,
                 currency: 'brl',
                 description: `Pagamento do pedido ${pedido._id} SemFila`,
                 automatic_payment_methods: { enabled: true },
+                setup_future_usage: 'on_session',
+                customer: customer, //NOVO
+                
               })
-              console.log(payment_intent)
-              console.log(payment_intent.id)
-              
 
             } catch (e) {
               console.log('error =', e)
@@ -1170,6 +1186,8 @@ module.exports = {
                 success: true,
                 msg: "Transferindo para o pagamento",
                 url: payment_intent.client_secret,
+                ephemeralKey: ephemeralKey.secret,
+                customer: customer.id,
                 obj_pedido: pedido._id
               });
             } else {
@@ -1208,6 +1226,21 @@ module.exports = {
         msg: "Ops, ocorreu um erro",
         obj: null,
       });
+    }
+  },
+  async fetchCard(req,res){
+    try{
+      if(!req.body.itemData.customer_id){
+        return res.send({success:false})
+      }
+      const details = await stripe.customers.listPaymentMethods(
+        req.body.itemData.customer_id,
+        {type: 'card'}
+      )
+      console.log(details)
+      return res.send({success:true, data: details.data[details.data.length - 1].card})
+    }catch(e){
+
     }
   },
   async createTransfer(intent){

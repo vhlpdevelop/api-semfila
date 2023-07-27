@@ -6,6 +6,7 @@ const User_store_model = require("../../models/user_store.model")
 const menuModel = require("../../models/menu.model");
 const mailer = require("../../modules/NodeMailer.controllers");
 const mailerconfig = require("../../config/NodeMailer.config");
+const stripe = require('stripe')(process.env.STRIPE_CLIENT_SECRET)
 const bcrypt = require("bcrypt");
 const authConfig = require("../../config/auth");
 const jwt = require("jsonwebtoken");
@@ -434,13 +435,21 @@ module.exports = {
       if (!user)
         return res.send({ msg: "Erro ao criar usuário", success: false });
 
-      user.password = undefined;
+     
 
 
       if (user) {
         //Se cadastrou, enviar email de confirmação e mensagem whatsapp
-
+        let customer_object = {
+          email: user.email,
+          name: user.name,
+          phone: user.phone,
+        }
+        const customer = await stripe.customer.create(customer_object);
+        user.customer_id = customer.id
+        await userModel.findByIdAndRemove(user._id, user)
         await sendConfirmToken(verifyToken, user.name, user.phone)
+        user.password = undefined;
         mailer.sendMail(
           {
             to: email,

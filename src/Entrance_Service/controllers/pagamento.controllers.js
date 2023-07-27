@@ -1230,6 +1230,7 @@ module.exports = {
     }
   },
   async fetchCard(req,res){
+    console.log(req.body)
     try{
       if(!req.body.itemData.customer_id){
         return res.send({success:false})

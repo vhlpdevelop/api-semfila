@@ -1240,8 +1240,8 @@ module.exports = {
         req.body.customer_id,
         {type: 'card'}
       )
-      //console.log(details)
-      return res.send({success:true, data: details.data[details.data.length - 1].card})
+      console.log(details)
+      return res.send({success:true, data: details.data[details.data.length - 1].card, id: details.data[details.data.length - 1].id})
     }catch(e){
       //console.log(e)
       return res.send({success:false})

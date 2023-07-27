@@ -1232,11 +1232,11 @@ module.exports = {
   async fetchCard(req,res){
     console.log(req.body)
     try{
-      if(!req.body.itemData.customer_id){
+      if(!req.body.customer_id){
         return res.send({success:false})
       }
       const details = await stripe.customers.listPaymentMethods(
-        req.body.itemData.customer_id,
+        req.body.customer_id,
         {type: 'card'}
       )
       console.log(details)

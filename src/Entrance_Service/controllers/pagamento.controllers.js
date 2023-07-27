@@ -1159,13 +1159,14 @@ module.exports = {
               }else{
                 ephemeralKey.secret = ""
               }
+              console.log(customer)
               payment_intent = await stripe.paymentIntents.create({
                 amount: aux_value,
                 currency: 'brl',
                 description: `Pagamento do pedido ${pedido._id} SemFila`,
                 automatic_payment_methods: { enabled: true },
                 setup_future_usage: 'on_session',
-                customer: customer, //NOVO
+                customer: customer.id, //NOVO
                 
               })
 

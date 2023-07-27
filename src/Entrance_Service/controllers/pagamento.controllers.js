@@ -1143,6 +1143,7 @@ module.exports = {
                 email: req.body.itemData.email,
                 phone: phone,
               })
+              customer = customer.id
             }else{
               customer = req.body.itemData.customer
             }
@@ -1166,7 +1167,7 @@ module.exports = {
                 description: `Pagamento do pedido ${pedido._id} SemFila`,
                 automatic_payment_methods: { enabled: true },
                 setup_future_usage: 'on_session',
-                customer: customer.id, //NOVO
+                customer: customer, //NOVO
                 
               })
 
@@ -1188,7 +1189,7 @@ module.exports = {
                 msg: "Transferindo para o pagamento",
                 url: payment_intent.client_secret,
                 ephemeralKey: ephemeralKey.secret,
-                customer: customer.id,
+                customer: customer,
                 obj_pedido: pedido._id
               });
             } else {

@@ -1241,7 +1241,8 @@ module.exports = {
       console.log(details)
       return res.send({success:true, data: details.data[details.data.length - 1].card})
     }catch(e){
-
+      console.log(e)
+      return res.send({success:false})
     }
   },
   async createTransfer(intent){

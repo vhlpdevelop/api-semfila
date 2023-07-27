@@ -1138,13 +1138,13 @@ module.exports = {
           if (pedido) {
             //Criar um link de pagamento.
             var customer = ""
-            if(!req.body.itemData.customer_id){
+            if(!req.body.itemData.customer){
               customer = await stripe.customers.create({
                 email: req.body.itemData.email,
                 phone: phone,
               })
             }else{
-              customer = req.body.itemData.customer_id
+              customer = req.body.itemData.customer
             }
             var payment_intent = ''
           
@@ -1230,7 +1230,7 @@ module.exports = {
     }
   },
   async fetchCard(req,res){
-    console.log(req.body)
+    //console.log(req.body)
     try{
       if(!req.body.customer_id){
         return res.send({success:false})
@@ -1239,10 +1239,10 @@ module.exports = {
         req.body.customer_id,
         {type: 'card'}
       )
-      console.log(details)
+      //console.log(details)
       return res.send({success:true, data: details.data[details.data.length - 1].card})
     }catch(e){
-      console.log(e)
+      //console.log(e)
       return res.send({success:false})
     }
   },

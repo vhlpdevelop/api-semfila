@@ -1160,7 +1160,7 @@ module.exports = {
               }else{
                 ephemeralKey.secret = ""
               }
-              console.log(customer)
+              //console.log(customer)
               payment_intent = await stripe.paymentIntents.create({
                 amount: aux_value,
                 currency: 'brl',
@@ -1240,7 +1240,7 @@ module.exports = {
         req.body.customer_id,
         {type: 'card'}
       )
-      console.log(details)
+      //console.log(details)
       return res.send({success:true, data: details.data[details.data.length - 1].card, id: details.data[details.data.length - 1].id})
     }catch(e){
       //console.log(e)

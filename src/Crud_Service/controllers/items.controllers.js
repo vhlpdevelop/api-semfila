@@ -88,7 +88,7 @@ module.exports = {
           destaques: newItem.destaque,
         };
         const item = await itemsModel.create(dataSAVE);
-        //console.log(item);
+        console.log(item);
         if (item) {
           //Enviar ao stripe
           const product = await stripe.products.create({

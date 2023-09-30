@@ -12,7 +12,8 @@ const qr = require("qr-image");
 
 
 
-const {sendQrCodeUpdates} = require("../utils/sendMessages")
+const { sendQrCodeUpdates } = require("../utils/sendMessages");
+const itemsModel = require("../../models/items.model");
 module.exports = {
   async requestWithDraw(req, res) {
     const id = req.body.id;
@@ -191,7 +192,6 @@ module.exports = {
       }
     }
   },
-
   async refreshQrCodes(req, res) {
     try {
       const user = await User_model.findById(req.userID);
@@ -366,17 +366,17 @@ module.exports = {
           });
         }
         if (QrCode) { //Verificar se qrcode esta expirado ou não
-          const item = await itemModel.findById({_id: QrCode.item._id})
-          if(!item){
-            return res.send({success:false, msg: "Este produto não existe"})
+          const item = await itemModel.findById({ _id: QrCode.item._id })
+          if (!item) {
+            return res.send({ success: false, msg: "Este produto não existe" })
           }
           if (QrCode.state) {
-            if(!item.status){
-              if(QrCode.trava){
-                return res.send({success:false, msg: "Produto desativado"})
+            if (!item.status) {
+              if (QrCode.trava) {
+                return res.send({ success: false, msg: "Produto desativado" })
               }
             }
-            
+
             if (!QrCode.item.promotion) {
               //SE NAO ESTIVER, SOMAR COM 6 MESES
               var d = new Date(QrCode.createdAt);
@@ -449,12 +449,12 @@ module.exports = {
       res.send({ obj: null, success: false, msg: "QrCode Inválido" });
     }
   },
-  async updateQrCode(req,res) {
+  async updateQrCode(req, res) {
     const itemUpdate = req.body;
     //Buscar qrcode para validar
     try {
       //Verificar primeiro se QrCode é dessa loja mesmo.
-      if (itemUpdate.store_id !== req.stores[0]._id) { 
+      if (itemUpdate.store_id !== req.stores[0]._id) {
 
         //Precisa arrumar depois o metodo de verificação.
         return res.send({
@@ -478,22 +478,22 @@ module.exports = {
             msg: "QrCode em processo de Reembolso.",
           });
         }
-        
+
         //VERIFICAR SE O ITEM EXISTE.
-        const item = await itemModel.findById({_id: qrcode.item._id});
-        if(!item){
+        const item = await itemModel.findById({ _id: qrcode.item._id });
+        if (!item) {
           return res.send({
-            obj:null,
-            success:false,
+            obj: null,
+            success: false,
             msg: "Este produto não existe"
           })
         }
 
-        if(!item.status){ //Está desligado
-          if(item.trava){ //Trava está ativada. ENTÃO finalize
+        if (!item.status) { //Está desligado
+          if (item.trava) { //Trava está ativada. ENTÃO finalize
             return res.send({
-              obj:null,
-              success:false,
+              obj: null,
+              success: false,
               msg: "Produto está desativado."
             })
           }
@@ -505,7 +505,7 @@ module.exports = {
           //ALTERAR QRCODE E SALVAR NO REGISTRO
           qrcode.quantity = qrcode.quantity - itemUpdate.quantity;
           if (qrcode.quantity < 0) {//Nunca se sabe
-            
+
             return res.send({
               obj: null,
               success: false,
@@ -563,7 +563,7 @@ module.exports = {
                     qrcode,
                   },
                   (err, response) => {
-                    
+
                   }
                 );
 
@@ -625,9 +625,9 @@ module.exports = {
       };
     }
   },
-  async updateQrCodeOptionalName(req,res){
+  async updateQrCodeOptionalName(req, res) {
     const itemUpdate = req.body
-    if (itemUpdate.store_id !== req.stores[0]._id) { 
+    if (itemUpdate.store_id !== req.stores[0]._id) {
       return res.send({
         obj: null,
         success: false,
@@ -635,18 +635,18 @@ module.exports = {
       });
     }
     const qrcode = await QrCodesModel.findById(itemUpdate._id);
-      if (qrcode) {
-        qrcode.optional_name = itemUpdate.optional_name;
-        qrcode.markModified('optional_name')
-        qrcode.save();
-        return res.send({
-          success:true,
-          msg: "Qrcode alterado."
-        })
-      }
+    if (qrcode) {
+      qrcode.optional_name = itemUpdate.optional_name;
+      qrcode.markModified('optional_name')
+      qrcode.save();
+      return res.send({
+        success: true,
+        msg: "Qrcode alterado."
+      })
+    }
     return res.send({
-      success:false,
-      msg:"Qrcode não foi encontrado."
+      success: false,
+      msg: "Qrcode não foi encontrado."
     })
   },
   async deleteQrCode(req, res) { },
@@ -655,27 +655,27 @@ module.exports = {
       try {
         const qrcode = await QrCodesModel.find({ pedido_id: req.body.qrcode, state: true, withdraw: false })
         if (qrcode) {
-          if(!qrcode[0].state){
-            return res.send({success:false, msg:"QrCode já utilizado"})
+          if (!qrcode[0].state) {
+            return res.send({ success: false, msg: "QrCode já utilizado" })
           }
           var type = false;
           var qrcodes_to_complete = []
           console.log(qrcode.length)
-          
-          for(let i =0; i<qrcode.length; i++){
-            if(qrcode[i].QrImage === ""){
-              type=qrcode[i].item.type;
+
+          for (let i = 0; i < qrcode.length; i++) {
+            if (qrcode[i].QrImage === "") {
+              type = qrcode[i].item.type;
               qrcodes_to_complete.push(qrcode[i])
             }
           }
           console.log(qrcodes_to_complete)
-          await QrCodesModel.findByIdAndUpdate({_id: qrcode[0]._id}, qrcode[0])
-          if(type){
-            return res.send({ success: true, msg: "Pedido localizado", obj: qrcode, isType:type, objectType: qrcodes_to_complete})
-          }else{
-            return res.send({ success: true, msg: "Pedido localizado", obj: qrcode, isType:false, objectType: null })
+          await QrCodesModel.findByIdAndUpdate({ _id: qrcode[0]._id }, qrcode[0])
+          if (type) {
+            return res.send({ success: true, msg: "Pedido localizado", obj: qrcode, isType: type, objectType: qrcodes_to_complete })
+          } else {
+            return res.send({ success: true, msg: "Pedido localizado", obj: qrcode, isType: false, objectType: null })
           }
-          
+
         } else {
           return res.send({ success: false })
         }
@@ -686,19 +686,19 @@ module.exports = {
 
     }
   },
-  async qrCodeTicketUpdate(req,res){
+  async qrCodeTicketUpdate(req, res) {
     const request = req.body.itemData;
-    try{
+    try {
       var dataToSend = [];
       var aux_dataToSend = [];
-      for(let i =0; i<request.length; i++){
-        let qrCode = await QrCodesModel.findOne({_id:request[i]._id, state:true})
-        if(qrCode){
+      for (let i = 0; i < request.length; i++) {
+        let qrCode = await QrCodesModel.findOne({ _id: request[i]._id, state: true })
+        if (qrCode) {
           //Criar imagem, alterar descrição, atualizar qrcode
-      
+
           qrCode.user_cpf = request[i].user_cpf;
           qrCode.user_name = request[i].user_name;
-          qrCode.item.description = qrCode.item.description+ " - Nome: "+request[i].user_name+ " - CPF: "+request[i].user_cpf
+          qrCode.item.description = qrCode.item.description + " - Nome: " + request[i].user_name + " - CPF: " + request[i].user_cpf
           let datatoEncrypt = {
             _id: qrCode._id,
             store_id: qrCode.store_id,
@@ -710,16 +710,16 @@ module.exports = {
             size: 10,
           });
 
-  
+
           let base64data = Buffer.from(code, "binary").toString("base64");
-    
+
           qrCode.QrImage = base64data;
           let object = {
             qrcode: base64data,
             data: qrCode,
           };
           dataToSend.push(object);
-          
+
           await QrCodesModel.findByIdAndUpdate(
             { _id: qrCode._id },
             qrCode
@@ -727,16 +727,75 @@ module.exports = {
           aux_dataToSend.push(qrCode)
         }
       }
-      if(dataToSend.length > 0){
+      if (dataToSend.length > 0) {
         await sendQrCodeUpdates(dataToSend)
         console.log("Retornando")
-        return res.send({ success:true, msg: "QrCode gerado", obj: aux_dataToSend})
-      }else{
-        return res.send({success:false, msg:"Ocorreu um erro"})
+        return res.send({ success: true, msg: "QrCode gerado", obj: aux_dataToSend })
+      } else {
+        return res.send({ success: false, msg: "Ocorreu um erro" })
       }
+    } catch (e) {
+      console.log(e)
+      return res.send({ msg: "Ocorreu um erro", success: false })
+    }
+  },
+  async generateQrCode(req, res) {
+    console.log(req.body)
+    try{
+      const itemModel = await itemsModel.findById(req.body._id)
+    if (itemModel) {
+      aux_ticket = {
+        item: itemModel,
+        user_id: req.user_id,
+        user_phone: "Adquirido na Portaria",
+        user_email: "none",
+        pedido_id: "Adquirido na portaria",
+        cortesia: false,
+        company_id: req.company_id,
+        store_id: req.stores[0],
+        store_name: "Estação Caxara", //MUDAR DEPOIS
+        trava: itemModel.trava, //TRAVA DE SEGURANÇA - NOVA
+        quantity: 1,
+        QrImage: "",
+        state: true,
+        devedor: {
+          cpf: "Adquirido na Portaria",
+          nome: "Adquirido na Portaria"
+        }
+      };
+      var ticket = await QrCodesModel.create(aux_ticket);
+        let datatoEncrypt = {
+          _id: ticket._id,
+          store_id: ticket.store_id,
+        };
+        let texto = Encrypter.encrypt(datatoEncrypt);
+        const code = qr.imageSync(texto, {
+          type: "png",
+          size: 10,
+        });
+
+        //console.log(code);
+        var base64data = Buffer.from(code, "binary").toString("base64");
+        //console.log(base64data);
+        ticket.QrImage = base64data;
+        //console.log(ticket.QrImage);
+
+        let object = {
+          qrcode: base64data,
+          data: ticket,
+        };
+        dataToSend.push(object);
+        dataToSave.push(ticket._id)
+        await QrCodesModel.findByIdAndUpdate(
+          { _id: ticket._id },
+          ticket
+        );
+        return res.send({obj:object, msg: "QrCode Gerado", success:true})
+    }
     }catch(e){
       console.log(e)
-      return res.send({msg: "Ocorreu um erro", success:false})
+      return res.send({success:false, msg: "Um erro ocorreu"})
     }
+    
   }
-};
+}

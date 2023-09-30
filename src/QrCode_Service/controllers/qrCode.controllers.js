@@ -741,8 +741,10 @@ module.exports = {
   },
   async generateQrCode(req, res) {
     console.log(req.body)
+    console.log("Aqui teste teste =====>")
     try{
       const itemModel = await itemsModel.findById(req.body._id)
+      console.log(itemModel)
     if (itemModel) {
       aux_ticket = {
         item: itemModel,

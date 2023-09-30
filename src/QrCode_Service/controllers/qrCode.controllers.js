@@ -786,13 +786,16 @@ module.exports = {
           qrcode: base64data,
           data: ticket,
         };
-        dataToSend.push(object);
-        dataToSave.push(ticket._id)
         await QrCodesModel.findByIdAndUpdate(
           { _id: ticket._id },
           ticket
         );
-        return res.send({obj:object, msg: "QrCode Gerado", success:true})
+        if(QrCodesModel){
+          return res.send({obj:object, msg: "QrCode Gerado", success:true})
+        }else{
+          return res.send({success:false, msg: "Falhou ao salvar"})
+        }
+        
     }
     }catch(e){
       console.log(e)

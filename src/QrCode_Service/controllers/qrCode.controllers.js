@@ -446,7 +446,7 @@ module.exports = {
         });
       }
     } else {
-      res.send({ obj: null, success: false, msg: "QrCode Inválido" });
+      res.send({ obj: null, success: false, msg: "QrCode Inválido-2" });
     }
   },
   async updateQrCode(req, res) {

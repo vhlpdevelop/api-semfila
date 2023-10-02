@@ -802,5 +802,142 @@ module.exports = {
       return res.send({success:false, msg: "Um erro ocorreu"})
     }
     
+  },
+  async generateCortesia(req,res){
+    const dados = req.body.itemData;
+    //Primeiro autenticar os dados, verificar items
+    try {
+      const items = [];
+      //VERIFICAR SE STORE EXISTE PRIMEIRO
+      const store = await storeModel.findById(req.stores[0]._id);
+      //Verificações de segurança
+      if (store) {
+        if (store.company_id !== req.company_id) {
+          return res.send({
+            success: false,
+            msg: "Erro 801",
+            obj: null,
+          });
+        }
+        //Buscar e comparar se este usuário é o dono e esta gerando cortesia.
+        const userChecker = await userModel.findById({ _id: req.userID });
+        if (userChecker.type !== "Owner") {
+          return res.send({
+            success: false,
+            msg: "Usuário não é Dono.",
+            obj: null,
+          });
+        }
+        for (let i = 0; i < dados.length; i++) {
+          let itemChecker = await itemsModel.findById({
+            _id: dados[i]._id,
+          });
+          for (let y = 0; y < dados[i].qtd_qrcodes; y++) { //LAÇO PARA CADA ITEM TEM SUA QUANTIDADE DE QRCODES PARA CRIAR.
+            if (itemChecker !== undefined) {
+              //Este item existe. Guardar ele em uma variavel diferente para não haver discrepancias nos dados.
+              itemChecker.qtd = dados[i].qtd;
+              let aux_pusher = {
+                item_name: itemChecker.item_name,
+                description: itemChecker.description,
+                type: itemChecker.type,
+                image_url: itemChecker.image_url,
+                price: itemChecker.price,
+                qtd: dados[i].qtd,
+                category_id: itemChecker.category_id,
+                company_id: itemChecker.company_id,
+                promotion: false,
+                cortesia: true,
+                discount_status: false,
+                discount_value: itemChecker.discount_value,
+                promotion_duration: itemChecker.promotion_duration,
+                duration: 4380,
+                destaques: false,
+              };
+              items.push(aux_pusher);
+            }
+          }
+        }
+        if (items.length > 0) {
+          //Se existir items validados continue
+          //CRIAR UM PEDIDO COM OS ITEMS
+          let object = {
+            items: items,
+            user_id: req.userID,
+            cortesia: true,
+            txid: "",
+            price: "0",
+            store_name: store.name,
+            store_id: store._id,
+            company_id: req.company_id,
+          };
+          const pedido = await pedidosModel.create(object);
+          if (pedido) {
+            //Criar QRCODES
+            var aux_ticket = {};
+            for (let i = 0; i < pedido.items.length; i++) {
+              aux_ticket = {
+                item: pedido.items[i],
+                user_id: pedido.user_id,
+                user_phone: pedido.user_phone,
+                user_email: pedido.user_email,
+                pedido_id: pedido._id,
+                cortesia: pedido.cortesia,
+                company_id: pedido.company_id,
+                store_id: pedido.store_id,
+                store_name: pedido.store_name,
+                trava: pedido.items[i].trava, //TRAVA DE SEGURANÇA - NOVA
+                quantity: pedido.items[i].qtd,
+                duration: pedido.items[i].duration,
+                QrImage: "",
+                state: true,
+              };
+              var ticket = await QrCodesModel.create(aux_ticket);
+              let datatoEncrypt = {
+                _id: ticket._id,
+                store_id: ticket.store_id,
+              };
+    
+              let texto = Encrypter.encrypt(datatoEncrypt);
+              const code = qr.imageSync(texto, {
+                type: "png",
+                size: 10,
+              });
+    
+              //console.log(code);
+              var base64data = Buffer.from(code, "binary").toString("base64");
+              //console.log(base64data);
+              ticket.QrImage = base64data;
+              //console.log(ticket.QrImage);
+              await QrCodesModel.findByIdAndUpdate(
+                { _id: ticket._id },
+                ticket
+              );
+
+            }
+            return res.send({msg:"QRCODES CRIADOS", success:true}) 
+          }
+        } else {
+          //Retorne, carrinho está vazio ou os itens não existem
+          return res.send({
+            success: false,
+            msg: "Por favor, selecione os items.",
+            obj: null,
+          });
+        }
+      } else {
+        return res.send({
+          success: false,
+          msg: "Loja não existe",
+          obj: null,
+        });
+      }
+    } catch (e) {
+      console.log(e);
+      return res.send({
+        success: false,
+        msg: "Ops, ocorreu um erro",
+        obj: null,
+      });
+    }
   }
 }

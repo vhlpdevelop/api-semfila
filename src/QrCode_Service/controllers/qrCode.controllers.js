@@ -457,11 +457,11 @@ module.exports = {
       if (itemUpdate.store_id !== req.stores[0]._id) {
 
         //Precisa arrumar depois o metodo de verificação.
-        return res.send({
+        return {
           obj: null,
           success: false,
           msg: "QrCode de outro cardapio.",
-        });
+        };
       }
       const qrcode = await QrCodesModel.findById(itemUpdate._id);
       if (qrcode) {
@@ -474,35 +474,35 @@ module.exports = {
         }
         
         if (!pedido) {
-          return res.send({ success: false, msg: "Compra não encontrada" })
+          return { success: false, msg: "Compra não encontrada" }
         }
         //Caso existe verificar store_id e quantidade pedida
         if (qrcode.withdraw) { //Caso o QrCode foi solicitado para reembolso.
-          return res.send({
+          return {
             obj: null,
             success: false,
             msg: "QrCode em processo de Reembolso.",
-          });
+          };
         }
 
         //VERIFICAR SE O ITEM EXISTE.
         
         const item = await itemModel.findById({ _id: qrcode.item._id });
         if (!item) {
-          return res.send({
+          return {
             obj: null,
             success: false,
             msg: "Este produto não existe"
-          })
+          }
         }
 
         if (!item.status) { //Está desligado
           if (item.trava) { //Trava está ativada. ENTÃO finalize
-            return res.send({
+            return {
               obj: null,
               success: false,
               msg: "Produto está desativado."
-            })
+            }
           }
         }
 
@@ -513,11 +513,11 @@ module.exports = {
           qrcode.quantity = qrcode.quantity - itemUpdate.quantity;
           if (qrcode.quantity < 0) {//Nunca se sabe
 
-            return res.send({
+            return {
               obj: null,
               success: false,
               msg: "Erro 712 - Qtd negativa.",
-            });
+            };
           }
 
           if (qrcode.quantity === "0") {
@@ -565,61 +565,61 @@ module.exports = {
                 .timeout(8000)
                 .emit("updateQrCode",{qrcode});
               console.log("Aqui ----=>")
-              return res.send({
+              return {
                 obj: qrcode,
                 success: true,
                 msg: "Retirado :" + itemUpdate.quantity + " item(s)",
-              });
+              };
             } else {
               const removeUpdate = await sellRegistryModel.findByIdAndDelete(
                 sellRegistry._id
               );
               if (removeUpdate) {
-                return res.send({
+                return {
                   obj: null,
                   success: false,
                   msg: "Falha ao gravar no sistema",
-                });
+                };
               } else {
-                return res.send({
+                return {
                   obj: null,
                   success: false,
                   error:
                     "Erro critico no sistema ao deletar registro de venda após qrcode não ser criado.",
                   msg: "Erro Critico",
-                });
+                };
               }
             }
           } else {
-            return res.send({
+            return {
               obj: null,
               success: false,
               msg: "Falha ao gravar no sistema",
-            });
+            }
           }
         } else {
-          return res.send({
+          return {
             obj: null,
             success: false,
             msg: "Sem itens no qrcode",
-          });
+          }
         }
       } else {
 
-        return res.send({
+        return {
           obj: null,
           success: false,
           msg: "QrCode não localizado",
-        });
+        }
       }
     } catch (e) {
       console.log(e);
-      return res.send({
+      return {
         obj: null,
         success: false,
         msg: "Erro ao atualizar",
         error: e.message,
-      });
+      }
     }
   },
   async updateQrCodeOptionalName(req, res) {

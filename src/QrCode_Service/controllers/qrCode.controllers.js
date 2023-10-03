@@ -441,7 +441,7 @@ module.exports = {
         res.send({
           obj: null,
           success: false,
-          msg: "QrCode Inválido",
+          msg: "QrCode Inválido-1",
           error: e.message,
         });
       }

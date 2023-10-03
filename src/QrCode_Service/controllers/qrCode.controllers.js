@@ -672,7 +672,7 @@ module.exports = {
         }
         console.log("FLAG 3")
         //Atualizar QRCODE
-        if(itemUpdate >=0){
+        if(itemUpdate.quantity >=0){
           qrcode.quantity = itemUpdate.quantity;
         }
         if(itemUpdate.user_name !== undefined)

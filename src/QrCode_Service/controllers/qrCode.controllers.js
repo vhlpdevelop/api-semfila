@@ -291,7 +291,7 @@ module.exports = {
       for (let i = 0; i < qrcodes.length; i++) {
           if (qrcodes[i].quantity >= 0) {
             //A PARTIR DAQUI É CHECAGEM DE DATAS (PROMOÇÃO E SE PASSOU DE 6 MESES.)
-            if (qrcodes[i].cortesia) {
+           
               //SE NAO ESTIVER, SOMAR COM 6 MESES
               var d = new Date(qrcodes[i].createdAt);
               var seconds = d.getTime() / 1000;
@@ -306,7 +306,7 @@ module.exports = {
                 trigger = false;
                 array_toSend.push(qrcodes[i]);
               }
-            }
+            
           } else {
             qrcodes[i].state = false;
             trigger = true
@@ -551,7 +551,7 @@ module.exports = {
             quantity: itemUpdate.quantity,
             total: aux_price,
           };
-
+          console.log(objeto_registro)
           const sellRegistry = await sellRegistryModel.create(objeto_registro);
           if (sellRegistry) {
 

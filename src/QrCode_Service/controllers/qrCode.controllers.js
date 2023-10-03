@@ -560,11 +560,13 @@ module.exports = {
               qrcode
             );
 
-            if (qrcodeUpdater && !pedido.cortesia) {
-              io.to(pedido.socket)
+            if (qrcodeUpdater) {
+              if(pedido.socket !== ""){
+                io.to(pedido.socket)
                 .timeout(8000)
                 .emit("updateQrCode",{qrcode});
-              console.log("Aqui ----=>")
+              }
+              
               return {
                 obj: qrcode,
                 success: true,

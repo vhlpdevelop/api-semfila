@@ -481,6 +481,7 @@ module.exports = {
         }
 
         //VERIFICAR SE O ITEM EXISTE.
+        console.log(qrcode.item)
         const item = await itemModel.findById({ _id: qrcode.item._id });
         if (!item) {
           return res.send({
@@ -845,6 +846,9 @@ module.exports = {
                 image_url: itemChecker.image_url,
                 price: itemChecker.price,
                 qtd: dados[i].qtd,
+                trava: itemChecker.trava,
+                ncm: itemChecker.ncm,
+                icms: itemChecker.icms,
                 category_id: itemChecker.category_id,
                 company_id: itemChecker.company_id,
                 promotion: false,

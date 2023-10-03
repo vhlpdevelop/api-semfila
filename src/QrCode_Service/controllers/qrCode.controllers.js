@@ -622,6 +622,91 @@ module.exports = {
       }
     }
   },
+  async updateQrCodeCortesia(req, res) {
+    const itemUpdate = req.body;
+    console.log(req.body)
+    //Buscar qrcode para validar
+    try {
+      //Verificar primeiro se QrCode é dessa loja mesmo.
+      if (itemUpdate.store_id !== req.stores[0]._id) {
+
+        //Precisa arrumar depois o metodo de verificação.
+        return {
+          obj: null,
+          success: false,
+          msg: "QrCode de outro cardapio.",
+        };
+      }
+      const qrcode = await QrCodesModel.findById(itemUpdate._id);
+      if (qrcode) {
+        if(qrcode.pedido_id !== "Adquirido na portaria"){
+          pedido = await pedidosModel.findById({ _id: qrcode.pedido_id })
+        }else{
+          pedido = true; //ADQUIRIDO NA PORTARIA
+        }
+        
+        if (!pedido) {
+          return res.send({ success: false, msg: "Compra não encontrada" })
+        }
+      
+        if (qrcode.withdraw) { //Caso o QrCode foi solicitado para reembolso.
+          return res.send({
+            obj: null,
+            success: false,
+            msg: "QrCode em processo de Reembolso.",
+          })
+        }
+
+        //VERIFICAR SE O ITEM EXISTE.
+        
+        const item = await itemModel.findById({ _id: qrcode.item._id });
+        if (!item) {
+          return res.send({
+            obj: null,
+            success: false,
+            msg: "Este produto não existe"
+          })
+        }
+
+        //Atualizar QRCODE
+        if(itemUpdate >=0){
+          qrcode.quantity = itemUpdate.quantity;
+        }
+        if(itemUpdate.user_name.length < 20){
+          qrcode.user_name = itemUpdate.user_name;
+        }
+        if(itemUpdate.cpf.length < 14){
+        qrcode.user_cpf = itemUpdate.cpf;
+        }
+        
+      
+        qrcode.state = itemUpdate.state;
+        
+        const updateQRCODE = await QrCodesModel.findByIdAndUpdate({_id:qrcode._id}, qrcode)
+        if(updateQRCODE){
+          return res.send({obj:qrcode, msg:"QRCODE ATUALIZADO", success:true})
+        }else{
+          return res.send({msg:"Falha ao atualizar", success:false})
+        }
+       
+      } else {
+
+        return {
+          obj: null,
+          success: false,
+          msg: "QrCode não localizado",
+        }
+      }
+    } catch (e) {
+      console.log(e);
+      return {
+        obj: null,
+        success: false,
+        msg: "Erro ao atualizar",
+        error: e.message,
+      }
+    }
+  },
   async updateQrCodeOptionalName(req, res) {
     const itemUpdate = req.body
     if (itemUpdate.store_id !== req.stores[0]._id) {

@@ -16,5 +16,6 @@ router.post('/generateQrCode', limiter.padrao,qrCode.generateQrCode)
 router.post('/generateCortesia', limiter.padrao,qrCode.generateCortesia)
 router.post('/fetch', limiter.padrao,qrCode.fetchQrCode)
 router.post('/update',limiter.padrao,qrCode.updateQrCode)
+router.post('/updateQrCodeCortesia', limiter.padrao, qrCode.updateQrCodeCortesia)
 router.post('/delete', limiter.padrao,qrCode.deleteQrCode)
 module.exports = router;

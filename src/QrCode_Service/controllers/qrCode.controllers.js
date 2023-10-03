@@ -289,7 +289,6 @@ module.exports = {
       var array_toSend = [];
       var trigger = false;
       for (let i = 0; i < qrcodes.length; i++) {
-        if (qrcodes[i].state) {
           if (qrcodes[i].quantity > 0) {
             //A PARTIR DAQUI É CHECAGEM DE DATAS (PROMOÇÃO E SE PASSOU DE 6 MESES.)
             if (qrcodes[i].cortesia) {
@@ -312,7 +311,7 @@ module.exports = {
             qrcodes[i].state = false;
             trigger = true
           }
-        }
+        
         if (trigger) {
           await QrCodesModel.findByIdAndUpdate({ _id: qrcodes[i]._id }, qrcodes[i]);
         }
@@ -574,13 +573,11 @@ module.exports = {
 
                   }
                 );
-
-
-              return {
+              return res.send({
                 obj: qrcode,
                 success: true,
                 msg: "Retirado :" + itemUpdate.quantity + " item(s)",
-              };
+              });
             } else {
               const removeUpdate = await sellRegistryModel.findByIdAndDelete(
                 sellRegistry._id
@@ -592,45 +589,45 @@ module.exports = {
                   msg: "Falha ao gravar no sistema",
                 });
               } else {
-                return {
+                return res.send({
                   obj: null,
                   success: false,
                   error:
                     "Erro critico no sistema ao deletar registro de venda após qrcode não ser criado.",
                   msg: "Erro Critico",
-                };
+                });
               }
             }
           } else {
-            return {
+            return res.send({
               obj: null,
               success: false,
               msg: "Falha ao gravar no sistema",
-            };
+            });
           }
         } else {
-          return {
+          return res.send({
             obj: null,
             success: false,
             msg: "Sem itens no qrcode",
-          };
+          });
         }
       } else {
 
-        return {
+        return res.send({
           obj: null,
           success: false,
           msg: "QrCode não localizado",
-        };
+        });
       }
     } catch (e) {
       console.log(e);
-      return {
+      return res.send({
         obj: null,
         success: false,
         msg: "Erro ao atualizar",
         error: e.message,
-      };
+      });
     }
   },
   async updateQrCodeOptionalName(req, res) {

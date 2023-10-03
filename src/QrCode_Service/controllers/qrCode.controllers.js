@@ -628,6 +628,7 @@ module.exports = {
     //Buscar qrcode para validar
     try {
       //Verificar primeiro se QrCode é dessa loja mesmo.
+
       if (itemUpdate.store_id !== req.stores[0]._id) {
 
         //Precisa arrumar depois o metodo de verificação.
@@ -674,11 +675,13 @@ module.exports = {
         if(itemUpdate >=0){
           qrcode.quantity = itemUpdate.quantity;
         }
-        if(itemUpdate.user_name.length < 20){
+        if(itemUpdate.user_name !== undefined)
+        if(itemUpdate.user_name.length < 20 && itemUpdate.user_name.length > 0){
           qrcode.user_name = itemUpdate.user_name;
         }
-        if(itemUpdate.cpf.length < 14){
-        qrcode.user_cpf = itemUpdate.cpf;
+        if(itemUpdate.user_cpf !== undefined)
+        if(itemUpdate.user_cpf.length < 14 && itemUpdate.user_cpf.length > 0 ){
+        qrcode.user_cpf = itemUpdate.user_cpf;
         }
         
       

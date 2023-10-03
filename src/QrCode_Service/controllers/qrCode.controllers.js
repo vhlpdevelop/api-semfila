@@ -838,6 +838,7 @@ module.exports = {
               //Este item existe. Guardar ele em uma variavel diferente para não haver discrepancias nos dados.
               itemChecker.qtd = dados[i].qtd;
               let aux_pusher = {
+                _id: itemChecker._id,
                 item_name: itemChecker.item_name,
                 description: itemChecker.description,
                 type: itemChecker.type,

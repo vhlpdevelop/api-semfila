@@ -631,14 +631,16 @@ module.exports = {
       if (itemUpdate.store_id !== req.stores[0]._id) {
 
         //Precisa arrumar depois o metodo de verificação.
-        return {
+        return res.send({
           obj: null,
           success: false,
           msg: "QrCode de outro cardapio.",
-        };
+        });
       }
+      console.log("FLAG 1")
       const qrcode = await QrCodesModel.findById(itemUpdate._id);
       if (qrcode) {
+        console.log("FLAG 2")
         if(qrcode.pedido_id !== "Adquirido na portaria"){
           pedido = await pedidosModel.findById({ _id: qrcode.pedido_id })
         }else{
@@ -667,7 +669,7 @@ module.exports = {
             msg: "Este produto não existe"
           })
         }
-
+        console.log("FLAG 3")
         //Atualizar QRCODE
         if(itemUpdate >=0){
           qrcode.quantity = itemUpdate.quantity;
@@ -681,7 +683,8 @@ module.exports = {
         
       
         qrcode.state = itemUpdate.state;
-        
+        console.log(qrcode)
+        console.log("FLAG 4")
         const updateQRCODE = await QrCodesModel.findByIdAndUpdate({_id:qrcode._id}, qrcode)
         if(updateQRCODE){
           return res.send({obj:qrcode, msg:"QRCODE ATUALIZADO", success:true})
@@ -691,20 +694,20 @@ module.exports = {
        
       } else {
 
-        return {
+        return res.send({
           obj: null,
           success: false,
           msg: "QrCode não localizado",
-        }
+        })
       }
     } catch (e) {
       console.log(e);
-      return {
+      return res.send({
         obj: null,
         success: false,
         msg: "Erro ao atualizar",
         error: e.message,
-      }
+      })
     }
   },
   async updateQrCodeOptionalName(req, res) {

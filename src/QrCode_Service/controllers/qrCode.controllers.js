@@ -578,7 +578,7 @@ module.exports = {
                 return {
                   obj: null,
                   success: false,
-                  msg: "Falha ao gravar no sistema",
+                  msg: "Falha ao gravar no sistema - 101",
                 };
               } else {
                 return {
@@ -594,7 +594,7 @@ module.exports = {
             return {
               obj: null,
               success: false,
-              msg: "Falha ao gravar no sistema",
+              msg: "Falha ao gravar no sistema - 102",
             }
           }
         } else {

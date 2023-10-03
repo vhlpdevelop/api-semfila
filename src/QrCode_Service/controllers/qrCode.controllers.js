@@ -467,7 +467,13 @@ module.exports = {
       const qrcode = await QrCodesModel.findById(itemUpdate._id);
       if (qrcode) {
         const io = req.app.get("socketio");
-        const pedido = await pedidosModel.findById({ _id: qrcode.pedido_id })
+        var pedido = ''
+        if(qrcode.pedido_id !== "Adquirido na portaria"){
+          pedido = await pedidosModel.findById({ _id: qrcode.pedido_id })
+        }else{
+          pedido = true; //ADQUIRIDO NA PORTARIA
+        }
+        
         if (!pedido) {
           return res.send({ success: false, msg: "Compra não encontrada" })
         }
@@ -481,7 +487,7 @@ module.exports = {
         }
 
         //VERIFICAR SE O ITEM EXISTE.
-        console.log(qrcode.item)
+        
         const item = await itemModel.findById({ _id: qrcode.item._id });
         if (!item) {
           return res.send({
@@ -742,11 +748,8 @@ module.exports = {
     }
   },
   async generateQrCode(req, res) {
-    console.log(req.body)
-    console.log("Aqui teste teste =====>")
     try{
       const itemModel = await itemsModel.findById(req.body._id)
-      console.log(itemModel)
     if (itemModel) {
       aux_ticket = {
         item: itemModel,

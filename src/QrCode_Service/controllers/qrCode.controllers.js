@@ -366,6 +366,7 @@ module.exports = {
           });
         }
         if (QrCode) { //Verificar se qrcode esta expirado ou não
+          console.log(QrCode.item)
           const item = await itemModel.findById({ _id: QrCode.item._id })
           if (!item) {
             return res.send({ success: false, msg: "Este produto não existe" })

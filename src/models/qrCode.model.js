@@ -9,6 +9,7 @@ const qrcode = new Schema({
   pedido_id: {type:String},
   company_id: { type:String},
   quantity: {type:String},
+  generated: {type:Boolean, default:false},
   optional_name: {type:String},
   trava: {type:Boolean, default:true},
   store_id: {type:String},

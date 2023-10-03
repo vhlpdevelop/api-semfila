@@ -679,11 +679,11 @@ module.exports = {
           qrcode.user_name = itemUpdate.user_name;
         }
         if(itemUpdate.user_cpf !== undefined){
-          if(itemUpdate.user_cpf.length < 15 && itemUpdate.user_cpf.length > 0 ){
+          if(itemUpdate.user_cpf.length < 16 && itemUpdate.user_cpf.length > 0 ){
             qrcode.user_cpf = itemUpdate.user_cpf;
           }
         }
-       
+       qrcode.cortesia = itemUpdate.cortesia;
         
       
         qrcode.state = itemUpdate.state;

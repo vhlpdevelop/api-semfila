@@ -289,7 +289,7 @@ module.exports = {
       var array_toSend = [];
       var trigger = false;
       for (let i = 0; i < qrcodes.length; i++) {
-          if (qrcodes[i].quantity > 0) {
+          if (qrcodes[i].quantity >= 0) {
             //A PARTIR DAQUI É CHECAGEM DE DATAS (PROMOÇÃO E SE PASSOU DE 6 MESES.)
             if (qrcodes[i].cortesia) {
               //SE NAO ESTIVER, SOMAR COM 6 MESES

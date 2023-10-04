@@ -785,7 +785,7 @@ module.exports = {
               res.send({
                 success: true,
                 msg: "Pix Gerado",
-                obj_pedido: pedido._id,
+                obj_pedido: pedido,
                 obj: pixCode, //CODIGO PIX
               });
             }else{
@@ -1190,7 +1190,7 @@ module.exports = {
                 url: payment_intent.client_secret,
                 ephemeralKey: ephemeralKey.secret,
                 customer: customer,
-                obj_pedido: pedido._id
+                obj_pedido: pedido
               });
             } else {
 

@@ -92,7 +92,7 @@ app.post('/stripeWebhook', express.raw({type: 'application/json'}), (request, re
       break;
     // ... handle other event types
     default:
-      console.log(`Unhandled event type ${event.type}`);
+      //console.log(`Unhandled event type ${event.type}`);
   }
 
   // Return a 200 response to acknowledge receipt of the event

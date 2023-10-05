@@ -749,7 +749,7 @@ module.exports = {
           }
           var type = false;
           var qrcodes_to_complete = []
-          console.log(qrcode.length)
+          //console.log(qrcode.length)
 
           for (let i = 0; i < qrcode.length; i++) {
             if (qrcode[i].QrImage === "") {
@@ -757,7 +757,7 @@ module.exports = {
               qrcodes_to_complete.push(qrcode[i])
             }
           }
-          console.log(qrcodes_to_complete)
+          //console.log(qrcodes_to_complete)
           await QrCodesModel.findByIdAndUpdate({ _id: qrcode[0]._id }, qrcode[0])
           if (type) {
             return res.send({ success: true, msg: "Pedido localizado", obj: qrcode, isType: type, objectType: qrcodes_to_complete })
@@ -818,7 +818,7 @@ module.exports = {
       }
       if (dataToSend.length > 0) {
         await sendQrCodeUpdates(dataToSend)
-        console.log("Retornando")
+        //console.log("Retornando")
         return res.send({ success: true, msg: "QrCode gerado", obj: aux_dataToSend })
       } else {
         return res.send({ success: false, msg: "Ocorreu um erro" })

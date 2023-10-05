@@ -365,7 +365,7 @@ module.exports = {
           });
         }
         if (QrCode) { //Verificar se qrcode esta expirado ou não
-          console.log(QrCode.item)
+          //console.log(QrCode.item)
           const item = await itemModel.findById({ _id: QrCode.item._id })
           if (!item) {
             return res.send({ success: false, msg: "Este produto não existe" })
@@ -422,8 +422,18 @@ module.exports = {
 
 
           } else {
+            var aux_sender = {
+              item_name: QrCode.item.item_name,
+              usedAt: QrCode.usedAt,
+              user_name: QrCode.user_name,
+              store_name: QrCode.store_name,
+              store_id: QrCode.store_id,
+              type: QrCode.item.type
+
+            }
+            console.log(aux_sender)
             return res.send({
-              obj: QrCode,
+              obj: aux_sender,
               success: false,
               msg: "QrCode está Zerado",
             });
@@ -536,6 +546,8 @@ module.exports = {
             ).toFixed(2);
           }
 
+          
+
           let objeto_registro = {
             user_id: req.userID,
             user_name: req.userName,
@@ -554,7 +566,7 @@ module.exports = {
           console.log(objeto_registro)
           const sellRegistry = await sellRegistryModel.create(objeto_registro);
           if (sellRegistry) {
-
+            qrcode.usedAt = itemUpdate.usedAt
             const qrcodeUpdater = await QrCodesModel.findByIdAndUpdate(
               qrcode._id,
               qrcode

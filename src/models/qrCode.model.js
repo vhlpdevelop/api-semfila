@@ -22,6 +22,7 @@ const qrcode = new Schema({
   },
   state: {type:Boolean, default:true},
   cortesia: {type:Boolean, default:false},
+  usedAt: {type:Date},
   createdAt:{ type: Date, default: Date.now }
 },{collection: 'Qrcode'});
 module.exports = model('Qrcode', qrcode);

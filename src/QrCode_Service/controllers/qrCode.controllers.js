@@ -563,9 +563,10 @@ module.exports = {
             quantity: itemUpdate.quantity,
             total: aux_price,
           };
-          console.log(objeto_registro)
+          //console.log(objeto_registro)
           const sellRegistry = await sellRegistryModel.create(objeto_registro);
           if (sellRegistry) {
+            console.log(itemUpdate)
             qrcode.usedAt = itemUpdate.usedAt
             const qrcodeUpdater = await QrCodesModel.findByIdAndUpdate(
               qrcode._id,

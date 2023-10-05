@@ -423,7 +423,7 @@ module.exports = {
 
           } else {
             return res.send({
-              obj: null,
+              obj: QrCode,
               success: false,
               msg: "QrCode está Zerado",
             });

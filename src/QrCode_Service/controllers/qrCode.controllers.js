@@ -344,8 +344,19 @@ module.exports = {
     //Descriptografa
 
     let criptografado = req.body.itemData;
-
-    const dados = await Encrypter.decrypt(criptografado);
+    var dados = ''
+    try{
+      dados = await Encrypter.decrypt(criptografado);
+    }catch(e){
+      console.log("ERRO NA LEITURA DO QRCODE ===>")
+      console.log(e)
+      return res.send({
+        obj: null,
+        success: false,
+        msg: "Este QRCODE não é da SEMFILA",
+      })
+    }
+    
 
     if (req.body.itemData !== "") {
       try {

@@ -722,7 +722,7 @@ module.exports = {
            
               
               desconto = parseFloat(itemChecker.discount_value).toFixed(2);
-              save_desconto = (save_desconto + desconto) * dados.cart[i].qtd;
+              save_desconto = (parseFloat(save_desconto) + parseFloat(desconto)) * dados.cart[i].qtd;
               pag_second = parseFloat( (pag_second - desconto)).toFixed(2);
 
       
@@ -732,8 +732,6 @@ module.exports = {
             pag = pag + itemChecker.price * dados.cart[i].qtd;
 
             let aux_value = parseInt(pag_second.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')) // 25.00 => 2500
-            console.log("VALOR ARRUMADO ===>")
-            console.log(aux_value)
             items_second.push({
               name: itemChecker.item_name,
               amount: aux_value,

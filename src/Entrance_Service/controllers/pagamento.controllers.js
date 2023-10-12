@@ -777,6 +777,11 @@ module.exports = {
           const pedido = await pedidosModel.create(object);
 
           if (pedido) {
+            console.log("PEDIDO ===> ")
+            console.log(pedido)
+            console.log("items_second ===> ")
+            console.log(items_second)
+            
             const pixCode = await pagarme.CreateOrder(items_second, pedido, phone, contract, financeiro.pagarme_id)
             if(pixCode.success){
               pedido.txid = pixCode.order_id

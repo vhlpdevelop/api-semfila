@@ -735,6 +735,8 @@ module.exports = {
             pag = pag + itemChecker.price * dados.cart[i].qtd;
 
             let aux_value = parseInt(pag_second.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')) // 25.00 => 2500
+            console.log("VALOR ARRUMADO ===>")
+            console.log(aux_value)
             items_second.push({
               name: itemChecker.item_name,
               amount: aux_value,
@@ -789,6 +791,10 @@ module.exports = {
           const pedido = await pedidosModel.create(object);
 
           if (pedido) {
+            console.log("ITEMS_SECOND ====>")
+            console.log(items_second)
+            console.log("PEDIDO ===>")
+            console.log(pedido)
             const pixCode = await pagarme.CreateOrder(items_second, pedido, phone, contract, financeiro.pagarme_id)
             if(pixCode.success){
               pedido.txid = pixCode.order_id

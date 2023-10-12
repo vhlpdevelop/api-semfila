@@ -167,7 +167,7 @@ app.post("/webhook", (request, response) => {
 
       break;
     default: 
-    console.log(`Unhandled event type ${type}`);
+    //console.log(`Unhandled event type ${type}`);
   }
   response.status(200).end();
 });

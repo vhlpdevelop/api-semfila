@@ -142,13 +142,13 @@ app.post("/notification_bill", (request, response) => {
 
 //WEBHOOK PIX
 app.post("/webhook", (request, response) => {
-  console.log(request)
+  //console.log(request)
   const { type } = request.body
   switch (type){
     case 'order.paid':
-      console.log("Pedido foi pago")
+      //console.log("Pedido foi pago")
       request.aux = request.body.data.id
-      console.log(request.aux)
+      //console.log(request.aux)
       QrcodeReturner(request)
       break;
     case 'order.payment_failed':

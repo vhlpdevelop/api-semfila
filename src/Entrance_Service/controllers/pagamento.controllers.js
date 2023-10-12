@@ -668,6 +668,7 @@ module.exports = {
       var items = [];
       var pag = 0;
       var desconto = 0;
+      var save_desconto = 0;
       //VERIFICAR SE STORE EXISTE PRIMEIRO
       let store = await storeModel.findById(dados.store_id);
       
@@ -721,7 +722,7 @@ module.exports = {
            
               
               desconto = parseFloat(itemChecker.discount_value).toFixed(2);
-
+              save_desconto = (save_desconto + desconto) * dados.cart[i].qtd;
               pag_second = parseFloat( (pag_second - desconto)).toFixed(2);
 
       
@@ -765,7 +766,7 @@ module.exports = {
         }
 
         pag = pag.toFixed(2);
-        pag = parseFloat(pag) - parseFloat(desconto);
+        pag = parseFloat(pag) - parseFloat(save_desconto);
         pag = pag.toFixed(2);
         //console.log(dados);
 

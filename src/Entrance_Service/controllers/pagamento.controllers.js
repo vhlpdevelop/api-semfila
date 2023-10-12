@@ -708,7 +708,9 @@ module.exports = {
             } else {
               itemChecker.duration = 4380;
             }
+            console.log("AREA DE RESTAURAÇÃO =======>")
             pag_second = parseFloat(itemChecker.price).toFixed(2)
+            console.log(pag_second)
             if (itemChecker.discount_status) {
               desconto =
                 (parseFloat(desconto) +
@@ -716,9 +718,9 @@ module.exports = {
                 dados.cart[i].qtd;
              
               desconto = desconto.toFixed(2);
-            
+              console.log(desconto)
               pag_second = parseFloat( (pag_second - desconto)).toFixed(2);
-              
+              console.log(pag_second)
             }
             pag = pag + itemChecker.price * dados.cart[i].qtd;
 
@@ -777,11 +779,6 @@ module.exports = {
           const pedido = await pedidosModel.create(object);
 
           if (pedido) {
-            console.log("PEDIDO ===> ")
-            console.log(pedido)
-            console.log("items_second ===> ")
-            console.log(items_second)
-            
             const pixCode = await pagarme.CreateOrder(items_second, pedido, phone, contract, financeiro.pagarme_id)
             if(pixCode.success){
               pedido.txid = pixCode.order_id

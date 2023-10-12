@@ -2,7 +2,7 @@ const axios = require("axios")
 require("dotenv").config()
 module.exports = {
   async CreateOrder(items_second, pedido, phone, contract, id) {
-    console.log("Entrou aqui ===================================>")
+   
     var request = buildOrder(items_second, pedido, phone, contract, id)
     var pixCode = {
       qrcode: "",
@@ -34,7 +34,8 @@ module.exports = {
 
       })
       .catch((err) => {
-        //console.log(err);
+        console.log("ERRO CONSTRUIR ORDER PIX =============>")
+        console.log(err);
 
       });
     return pixCode

@@ -708,9 +708,9 @@ module.exports = {
             } else {
               itemChecker.duration = 4380;
             }
-            console.log("AREA DE RESTAURAÇÃO =======>")
+            
             pag_second = parseFloat(itemChecker.price).toFixed(2)
-            console.log(pag_second)
+           
             if (itemChecker.discount_status) {
               /*
                  desconto =
@@ -725,7 +725,7 @@ module.exports = {
               pag_second = parseFloat( (pag_second - desconto)).toFixed(2);
 
       
-              pag_second = pag_second.toFixed(2)
+             
 
             }
             pag = pag + itemChecker.price * dados.cart[i].qtd;

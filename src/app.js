@@ -75,9 +75,9 @@ app.post('/stripeWebhook', express.raw({type: 'application/json'}), (request, re
         try {
             await createTransfer(charge);
         } catch (e) {
-          console.log(e)
-          console.log(e.message)
-            
+          //console.log(e)
+          //console.log(e.message)
+          console.log("Problema no CHARGE SUCCEEDED")
         }
        
     })();

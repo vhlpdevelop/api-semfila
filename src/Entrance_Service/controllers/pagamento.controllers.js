@@ -712,14 +712,24 @@ module.exports = {
             pag_second = parseFloat(itemChecker.price).toFixed(2)
             console.log(pag_second)
             if (itemChecker.discount_status) {
-              desconto =
+              /*
+                 desconto =
                 (parseFloat(desconto) +
                   parseFloat(itemChecker.discount_value)) *
                 dados.cart[i].qtd;
-             
-              desconto = desconto.toFixed(2);
+              */
+           
+              
+              desconto = parseFloat(itemChecker.discount_value).toFixed(2);
               console.log(desconto)
               pag_second = parseFloat( (pag_second - desconto)).toFixed(2);
+              console.log("PAGSECOND - DESCONTO")
+              console.log(pag_second)
+              pag_second = pag_second * dados.cart[i].qtd
+              console.log("PAGSECOND X QTD DE ITEMS NO CARRINHO")
+              console.log(pag_second)
+              pag_second = pag_second.toFixed(2)
+              console.log("Resultado fixed")
               console.log(pag_second)
             }
             pag = pag + itemChecker.price * dados.cart[i].qtd;

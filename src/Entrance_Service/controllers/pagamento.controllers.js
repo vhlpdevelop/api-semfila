@@ -722,7 +722,7 @@ module.exports = {
            
               
               desconto = parseFloat(itemChecker.discount_value).toFixed(2);
-              save_desconto = (parseFloat(save_desconto) + parseFloat(desconto)) * dados.cart[i].qtd;
+              save_desconto = parseFloat(save_desconto)+ ( parseFloat(desconto) * dados.cart[i].qtd) 
               pag_second = parseFloat( (pag_second - desconto)).toFixed(2);
 
       
